@@ -1,9 +1,11 @@
-=============================================================================
-wwt_data_formats: low-level interface to AAS WorldWide Telescope data formats
-=============================================================================
+====================================
+AAS WorldWide Telescope Data Formats
+====================================
 
 `wwt_data_formats`_ is a low-level Python package that interfaces with the
-various XML serialization formats used by the AAS_ `WorldWide Telescope`_.
+various XML serialization formats used by the AAS_ `WorldWide Telescope`_. The
+documentation of this package aims to provide a comprehensive reference for
+these data formats.
 
 .. _wwt_data_formats: https://wwt-data-formats.readthedocs.io/
 .. _AAS: https://aas.org/
