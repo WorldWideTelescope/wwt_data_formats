@@ -1,0 +1,40 @@
+language: c
+
+os:
+  - linux
+  - osx
+
+sudo: false
+
+# Don't CI branches besides master. PR's still get built -- this just prevents
+# PR branches from being built twice in the standard workflow.
+branches:
+  only:
+    - master
+
+notifications:
+  email: false
+
+env:
+  global:
+    - CONDA_CHANNELS="conda-forge"
+    - CONDA_DEPENDENCIES="astropy coveralls numpydoc pytest-cov sphinx sphinx-automodapi"
+    - PIP_DEPENDENCIES="astropy-sphinx-theme"
+  matrix:
+    - PYTHON_VERSION=2.7
+    - PYTHON_VERSION=3.6
+    - PYTHON_VERSION=3.7
+
+install:
+  - git clone git://github.com/astropy/ci-helpers.git
+  - source ci-helpers/travis/setup_conda.sh
+
+script:
+  - python setup.py sdist
+  - cd dist && pip install *.tar.gz --verbose && cd ..
+  - python setup.py build_ext --inplace
+  - py.test --cov wwt_data_formats wwt_data_formats
+  - make -C docs html linkcheck
+
+after_success:
+  - coveralls
