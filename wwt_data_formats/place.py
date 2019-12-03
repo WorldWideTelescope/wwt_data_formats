@@ -16,8 +16,8 @@ class Place(object):
 
     data_set_type = 'Earth'
     name = ''
-    ra = 0.0
-    dec = 0.0
+    ra_hr = 0.0
+    dec_deg = 0.0
     latitude = 0.0
     longitude = 0.0
     constellation = ''
@@ -26,7 +26,7 @@ class Place(object):
     distance = 0.0
     angular_size = 0.0
     zoom_level = 0.0
-    rotation = 0.0
+    rotation_deg = 0.0
     angle = 0.0
     opacity = 100.0
     dome_alt = 0.0
@@ -52,8 +52,8 @@ class Place(object):
         place = etree.Element('Place')
         place.set('Name', self.name)
         place.set('DataSetType', self.data_set_type)
-        place.set('RA', str(self.ra))
-        place.set('Dec', str(self.dec))
+        place.set('RA', str(self.ra_hr))
+        place.set('Dec', str(self.dec_deg))
         place.set('Lat', str(self.latitude))
         place.set('Lng', str(self.longitude))
         place.set('Constellation', self.constellation)
@@ -62,7 +62,7 @@ class Place(object):
         place.set('Distance', str(self.distance))
         place.set('AngularSize', str(self.angular_size))
         place.set('ZoomLevel', str(self.zoom_level))
-        place.set('Rotation', str(self.rotation))
+        place.set('Rotation', str(self.rotation_deg))
         place.set('Angle', str(self.angle))
         place.set('Opacity', str(self.opacity))
         place.set('DomeAlt', str(self.dome_alt))
