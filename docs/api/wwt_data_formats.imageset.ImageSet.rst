@@ -25,7 +25,7 @@ ImageSet
       ~ImageSet.offset_x
       ~ImageSet.offset_y
       ~ImageSet.projection
-      ~ImageSet.rotation
+      ~ImageSet.rotation_deg
       ~ImageSet.sparse
       ~ImageSet.thumbnail_url
       ~ImageSet.tile_levels
@@ -36,6 +36,7 @@ ImageSet
 
    .. autosummary::
 
+      ~ImageSet.set_position_from_wcs
       ~ImageSet.to_xml
 
    .. rubric:: Attributes Documentation
@@ -55,7 +56,7 @@ ImageSet
    .. autoattribute:: offset_x
    .. autoattribute:: offset_y
    .. autoattribute:: projection
-   .. autoattribute:: rotation
+   .. autoattribute:: rotation_deg
    .. autoattribute:: sparse
    .. autoattribute:: thumbnail_url
    .. autoattribute:: tile_levels
@@ -64,4 +65,5 @@ ImageSet
 
    .. rubric:: Methods Documentation
 
+   .. automethod:: set_position_from_wcs
    .. automethod:: to_xml

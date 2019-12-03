@@ -16,7 +16,7 @@ Place
       ~Place.classification
       ~Place.constellation
       ~Place.data_set_type
-      ~Place.dec
+      ~Place.dec_deg
       ~Place.description
       ~Place.distance
       ~Place.dome_alt
@@ -31,8 +31,8 @@ Place
       ~Place.name
       ~Place.opacity
       ~Place.permission
-      ~Place.ra
-      ~Place.rotation
+      ~Place.ra_hr
+      ~Place.rotation_deg
       ~Place.thumbnail
       ~Place.zoom_level
 
@@ -50,7 +50,7 @@ Place
    .. autoattribute:: classification
    .. autoattribute:: constellation
    .. autoattribute:: data_set_type
-   .. autoattribute:: dec
+   .. autoattribute:: dec_deg
    .. autoattribute:: description
    .. autoattribute:: distance
    .. autoattribute:: dome_alt
@@ -65,8 +65,8 @@ Place
    .. autoattribute:: name
    .. autoattribute:: opacity
    .. autoattribute:: permission
-   .. autoattribute:: ra
-   .. autoattribute:: rotation
+   .. autoattribute:: ra_hr
+   .. autoattribute:: rotation_deg
    .. autoattribute:: thumbnail
    .. autoattribute:: zoom_level
 
