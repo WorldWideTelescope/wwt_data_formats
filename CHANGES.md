@@ -1,3 +1,3 @@
-# 0.0.1.dev0 (unreleased)
+# 0.0.1 (2019-Dec-04)
 
 - First version
