@@ -6,7 +6,8 @@ from __future__ import absolute_import, division, print_function
 
 __all__ = '''
 indent_xml
-indent_and_write_doc
+write_xml_doc
+stringify_xml_doc
 '''.split()
 
 from xml.etree import ElementTree as etree
@@ -37,10 +38,10 @@ def indent_xml(elem, level=0):
             elem.tail = i
 
 
-def indent_and_write_doc(root_element, dest_stream=None, dest_wants_bytes=False):
-    """Indent some XML elements and write them out as a document.
+def write_xml_doc(root_element, indent=True, dest_stream=None, dest_wants_bytes=False):
+    """Write out some XML elements, indenting them by default
 
-    This function modifies *root_element* and so should be used sparingly.
+    When *indent* is true, the default setting, this function modifies *root_element*.
 
     If *dest_stream* is left unspecified, ``sys.stdout`` is used.
 
@@ -49,7 +50,9 @@ def indent_and_write_doc(root_element, dest_stream=None, dest_wants_bytes=False)
         import sys
         dest_stream = sys.stdout
 
-    indent_xml(root_element)
+    if indent:
+        indent_xml(root_element)
+
     doc = etree.ElementTree(root_element)
 
     # We could in principle auto-detect this with a 0-byte write(), I guess?
@@ -59,3 +62,16 @@ def indent_and_write_doc(root_element, dest_stream=None, dest_wants_bytes=False)
         encoding = 'Unicode'
 
     doc.write(dest_stream, encoding=encoding, xml_declaration=True)
+
+
+def stringify_xml_doc(root_element, indent=True):
+    """Stringify some XML elements, indenting them by default.
+
+    When *indent* is true, the default setting, this function modifies *root_element*.
+
+    """
+    from io import StringIO
+    with StringIO() as dest:
+        write_xml_doc(root_element, indent, dest, dest_wants_bytes=False)
+        result = dest.getvalue()
+    return result
