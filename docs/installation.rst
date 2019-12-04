@@ -5,7 +5,7 @@ Installing wwt_data_formats
 Installing wwt_data_formats with pip
 ====================================
 
-You can also install the latest release of ``wwt_data_formats`` using pip_::
+You can install the latest release of ``wwt_data_formats`` using pip_::
 
   pip install wwt_data_formats
 

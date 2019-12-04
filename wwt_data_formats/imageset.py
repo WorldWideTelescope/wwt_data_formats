@@ -35,27 +35,120 @@ from xml.etree import ElementTree as etree
 class ImageSet(object):
     """A set of images."""
 
-    data_set_type = 'Earth'
+    data_set_type = 'Sky'
+    """The renderer mode to which these data apply.
+
+    Possible values are ``"Earth"``, ``"Planet"``, ``"Sky"``, ``"Panorama"``,
+    ``"SolarSystem"``, and ``"Sandbox"``.
+
+    """
     name = ''
+    """A name used to refer to this imageset.
+
+    Various parts of the WWT internals reference imagesets by this name, so
+    it should be distinctive.
+
+    """
     url = ''
+    """The URL of the image data.
+
+    Either a URL or a URL template. TODO: details
+
+    """
     width_factor = 2
+    """TODO I don't understand this parameters."""
+
     base_tile_level = 0
+    """TBD.
+
+    Should be zero for untiled images.
+
+    """
     tile_levels = 0
+    """TBD.
+
+    Should be zero for untiled images.
+
+    """
     base_degrees_per_tile = 0
+    """The angular scale of the image.
+
+    For untiled images, should be the pixel scale: the numer of degrees per
+    pixel in the vertical direction. Non-square pixels are not supported.
+
+    """
     file_type = '.png'
+    """The extension of the image file(s) in this set, including a leading period.
+
+    """
     bottoms_up = False
+    """TBD."""
+
     projection = 'Tan'
+    """The type of projection used to place this image on the sky.
+
+    """
     center_x = 0.0
+    """The horizontal location of the center of the image’s projection coordinate
+    system.
+
+    For sky images, this is a right ascension in degrees.
+
+    """
     center_y = 0.0
+    """The vertical location of the center of the image’s projection coordinate
+    system.
+
+    For sky images, this is a declination in degrees.
+
+    """
     offset_x = 0.0
+    """The horizontal positioning of the image relative to its projection
+    coordinate system.
+
+    For untiled sky images, the image is by default positioned such that its
+    lower left lands at the center of the projection coordinate system
+    (namely, ``center_x`` and ``center_y``). The offset is measured in pixels
+    and moves the image leftwards. Therefore, ``offset_x = image_width / 2``
+    places the center of the image at ``center_x``. This parameter is
+    therefore analogous to the WCS keyword ``CRVAL1``.
+
+    """
     offset_y = 0.0
+    """The vertical positioning of the image relative to its projection
+    coordinate system.
+
+    For untiled sky images, the image is by default positioned such that its
+    lower left lands at the center of the projection coordinate system
+    (namely, ``center_x`` and ``center_y``). The offset is measured in pixels
+    and moves the image downwards. Therefore, ``offset_y = image_height / 2``
+    places the center of the image at ``center_y``. This parameter is
+    therefore analogous to the WCS keyword ``CRVAL2``.
+
+    """
     rotation_deg = 0.0
+    """The rotation of image’s projection coordinate system, in degrees.
+
+    For sky images, this is East from North, i.e. counterclockwise.
+
+    """
     band_pass = 'Visible'
+    """The bandpass of the image data."""
+
     sparse = True
+    """TBD."""
+
     credits = None
+    """Textual credits for the image originator."""
+
     credits_url = ''
+    """A URL giving the source of the image or more information about its creation."""
+
     thumbnail_url = ''
+    """A URL to a standard WWT thumbnail representation of this imageset."""
+
     description = ''
+    """A textual description of the imagery."""
 
     def to_xml(self):
         """Seralize this object to XML.
@@ -103,6 +196,45 @@ class ImageSet(object):
     def set_position_from_wcs(self, headers, width, height, place=None, fov_factor=1.7):
         """Set the positional information associated with this imageset to match a set
         of WCS headers.
+
+        Parameters
+        ----------
+        headers : :class:`~astropy.io.fits.Header` or string-keyed dict-like
+          A set of FITS-like headers including WCS keywords such as ``CRVAL1``.
+        width : positive integer
+          The width of the image associated with the WCS, in pixels.
+        height : positive integer
+          The height of the image associated with the WCS, in pixels.
+        place : optional :class:`~wwt_data_formats.place.Place`
+          If specified, the centering and zoom level of the :class:`~wwt_data_formats.place.Place`
+          object will be set to match the center and size of this image.
+        fov_factor : optional float
+          If *place* is provided, its zoom level will be set so that the
+          angular height of the client viewport is this factor times the
+          angular height of the image. The default is 1.7.
+
+        Returns
+        -------
+        self
+          For convenience in chaining function calls.
+
+        Remarks
+        -------
+
+        For the time being, the WCS must be equatorial using the gnomonic
+        (``TAN``) projection.
+
+        Required keywords in *headers* are:
+
+        - ``CTYPE1`` and ``CTYPE2``
+        - ``CRVAL1`` and ``CRVAL2``
+        - ``CRPIX1`` and ``CRPIX2``
+        - Either:
+          - ``CDELT1``, ``CDELT2``, ``PC1_1``, and ``PC1_2``; or
+          - ``CD1_1``, ``CD2_2``
+
+        If present ``PC1_2``, ``PC2_1``, ``CD1_2``, and/or ``CD2_1`` are used.
+        If absent, they are assumed to be zero.
 
         """
         if headers['CTYPE1'] != 'RA---TAN' or headers['CTYPE2'] != 'DEC--TAN':
@@ -177,3 +309,5 @@ class ImageSet(object):
             place.dec_deg = center_dec_deg
             # It is hardcoded that in sky mode, zoom_level = height of client FOV * 6.
             place.zoom_level = height * scale_y * fov_factor * 6
+
+        return self
