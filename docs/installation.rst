@@ -9,7 +9,7 @@ You can also install the latest release of ``wwt_data_formats`` using pip_::
 
   pip install wwt_data_formats
 
-.. _pip: https://pip.pypa.io/
+.. _pip: https://pip.pypa.io/en/stable/
 
 
 Dependencies

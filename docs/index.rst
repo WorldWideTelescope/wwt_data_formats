@@ -7,7 +7,7 @@ various XML serialization formats used by the AAS_ `WorldWide Telescope`_. The
 documentation of this package aims to provide a comprehensive reference for
 these data formats.
 
-.. _wwt_data_formats: https://wwt-data-formats.readthedocs.io/
+.. _wwt_data_formats: https://github.com/WorldWideTelescope/wwt_data_formats/
 .. _AAS: https://aas.org/
 .. _WorldWide Telescope: http://www.worldwidetelescope.org/home
 
