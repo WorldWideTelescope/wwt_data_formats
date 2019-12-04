@@ -1,6 +1,7 @@
 # WWT Data Formats
 
-<!--pypi-begin--> [wwt_data_formats] is a low-level Python package that
+<!--pypi-begin-->
+[wwt_data_formats] is a low-level Python package that
 interfaces with the various XML serialization formats used by the [AAS]
 [WorldWide Telescope].
 
