@@ -33,7 +33,7 @@ script:
   - python setup.py sdist
   - cd dist && pip install *.tar.gz --verbose && cd ..
   - python setup.py build_ext --inplace
-  - py.test --cov wwt_data_formats wwt_data_formats
+  - pytest --cov wwt_data_formats wwt_data_formats
   - make -C docs html linkcheck
 
 after_success:
