@@ -8,10 +8,12 @@ __all__ = '''
 FileCabinetReader
 '''.split()
 
-from collections import namedtuple
+from collections import namedtuple, OrderedDict
 from xml.etree import ElementTree as etree
 
-FileInfo = namedtuple('FileInfo', 'name offset size')
+from . import stringify_xml_doc
+
+ReaderFileInfo = namedtuple('ReaderFileInfo', 'name offset size')
 
 
 class FileCabinetReader(object):
@@ -37,7 +39,9 @@ class FileCabinetReader(object):
         stream.seek(0)
 
         # It seems safest to figure out the bounds of the header by
-        # searching for the text of the form `HeaderSize="0x000001b2"`
+        # searching for the text of the form `HeaderSize="0x000001b2"`.
+        # TODO: explicit handling if the magic string isn't found or if the
+        # header size is implausible.
 
         header = stream.read(256)
         idx = header.index(b'HeaderSize="')
@@ -64,14 +68,16 @@ class FileCabinetReader(object):
             except Exception as e:
                 raise Exception('malformed Offset or Size in File record in FileCabinet')
 
+            # TODO: handle names with bad characters, implausible offsets and sizes, etc.
+
             if name in self._files:
                 raise Exception('duplicated File record "{}" in FileCabinet'.format(name))
 
-            self._files[name] = FileInfo(name, header_size + rel_offset, size)
+            self._files[name] = ReaderFileInfo(name, header_size + rel_offset, size)
 
 
     def close(self):
-        """Close the underlying stream. Make this object essentially unusable."""
+        """Close the underlying stream, making this object essentially unusable."""
         self._stream.close()
         self._stream = None
 
@@ -95,3 +101,83 @@ class FileCabinetReader(object):
 
         self._stream.seek(info.offset)
         return self._stream.read(info.size)
+
+
+WriterFileInfo = namedtuple('WriterFileInfo', 'name size contents')
+
+
+class FileCabinetWriter(object):
+    """Writer for a simple container format for other files.
+
+    One day, we should support the ability to stream data into a cabinet
+    without having to grossly buffer everything in memory. But today is not
+    that day.
+
+    """
+    _files = None
+
+    def __init__(self):
+        self._files = OrderedDict()
+
+
+    def add_file_with_data(self, name, data):
+        """Add a file whose contents are stored in an in-memory buffer.
+
+        The *data* argument should be a bytes object.
+
+        """
+        if not isinstance(data, bytes):
+            raise ValueError('the data argument must be an instance of the bytes type')
+
+        if name in self._files:
+            raise ValueError('a file named \"{}\" has already been added'.format(name))
+
+        size = len(data)
+        self._files[name] = WriterFileInfo(name, size, data)
+
+
+    def filenames(self):
+        """Return an iterable of the names of the files in this cabinet."""
+        return self._files.keys()
+
+
+    def emit(self, stream):
+        """Write out the contents of this cabinet to the target stream.
+
+        """
+        # Create the header structure.
+
+        SIZE_PLACEHOLDER = '0xZYXWVUTS'
+        cabinet = etree.Element('FileCabinet')
+        cabinet.set('HeaderSize', SIZE_PLACEHOLDER)
+
+        files = etree.SubElement(cabinet, 'Files')
+        offset = 0
+
+        for info in self._files.values():
+            f = etree.SubElement(files, 'File')
+            f.set('Name', info.name)
+            f.set('Size', str(info.size))
+            f.set('Offset', str(offset))
+            offset += info.size
+
+        # Serialize and patch in the actual header size. With a
+        # non-pathological XML serialization, the HeaderSize item will occur
+        # within the first SIZE_REGION bytes while the first filename will
+        # occur beyond the first SIZE_REGION bytes, meaning that we'll be
+        # resistant if someone tries to break us by using a filename that
+        # includes SIZE_PLACEHOLDER.
+
+        SIZE_REGION = 90
+        header = stringify_xml_doc(cabinet, indent=True)
+        header = header.encode('utf-8')
+        size_ascii = '0x{:08x}'.format(len(header)).encode('us-ascii')
+        filled_size = header[:SIZE_REGION].replace(SIZE_PLACEHOLDER.encode('us-ascii'), size_ascii)
+        header = filled_size + header[SIZE_REGION:]
+
+        stream.write(header)
+
+        # The rest is straightforward.
+
+        for info in self._files.values():
+            stream.write(info.contents)
