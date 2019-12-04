@@ -2,6 +2,26 @@
 # Copyright 2019 the AAS WorldWide Telescope project
 # Licensed under the MIT License.
 
+"""An image, possibly tiled, for display in WWT.
+
+For a single bitmapped image:
+
+- base_degrees_per_tile: pixel scale in deg/px
+- base_tile_level: 0
+- tile_levels: 0
+- bottoms_up: False
+- data_set_type: "Sky"
+- projection: "SkyImage"
+- file_type: extension w/ dot, e.g. ".jpg"
+- center_x: RA of center of the TAN projection coordinate system, in deg
+- center_y: dec of center of the TAN projection coordinate system, in deg
+- rotation: east-from-north rotation the coordinate system, in deg.
+- offset_x: leftward shift of image lower-left corner relative to coord sys center, in px; eg width/2 puts center_x in center of image
+- offset_x: downward shift of image lower-left corner relative to coord sys center, in px; eg height/2 puts center_y in center of image
+- sparse: False (?)
+- width_factor: 1 (?)
+
+"""
 from __future__ import absolute_import, division, print_function
 
 __all__ = '''
@@ -85,6 +105,9 @@ class ImageSet(object):
         of WCS headers.
 
         """
+        if headers['CTYPE1'] != 'RA---TAN' or headers['CTYPE2'] != 'DEC--TAN':
+            raise ValueError('WCS coordinates must be in an equatorial/TAN projection')
+
         # Figure out the stuff we need from the headers.
 
         ra_deg = headers['CRVAL1']
@@ -121,8 +144,19 @@ class ImageSet(object):
             scale_x = math.sqrt(cd1_1**2 + cd2_1**2) * cd_sign
             scale_y = math.sqrt(cd1_2**2 + cd2_2**2)
 
-        center_crx = width // 2 - crpix_x
-        center_cry = height // 2 - crpix_y
+        # This is our best effort to make sure that the view centers on the
+        # center of the image.
+
+        try:
+            from astropy.wcs import WCS
+        except:
+            center_ra_deg = ra_deg
+            center_dec_deg = dec_deg
+        else:
+            wcs = WCS(headers)
+            center = wcs.pixel_to_world(height / 2, width / 2)
+            center_ra_deg = center.ra.deg
+            center_dec_deg = center.dec.deg
 
         # Now, assign the fields
 
@@ -131,15 +165,15 @@ class ImageSet(object):
         self.width_factor = 1
         self.center_x = ra_deg
         self.center_y = dec_deg
-        self.offset_x = center_crx * abs(scale_x)
-        self.offset_y = center_cry * scale_y
-        self.base_degrees_per_tile = scale_y
         self.rotation_deg = rot_rad * 180 / math.pi
+        self.offset_x = crpix_x
+        self.offset_y = crpix_y
+        self.base_degrees_per_tile = scale_y
 
         if place is not None:
             place.data_set_type = 'Sky'
-            place.rotation_deg = self.rotation_deg
-            place.ra_hr = ra_deg / 15.
-            place.dec_deg = dec_deg
+            place.rotation_deg = 0.  # I think this is better than propagating the image rotation?
+            place.ra_hr = center_ra_deg / 15.
+            place.dec_deg = center_dec_deg
             # It is hardcoded that in sky mode, zoom_level = height of client FOV * 6.
             place.zoom_level = height * scale_y * fov_factor * 6
