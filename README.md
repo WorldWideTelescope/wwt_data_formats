@@ -61,8 +61,8 @@ well as release listings maintained by
 
 ## Legalities
 
-[wwt_data_formats] is copyright the AAS WorldWide Telescope Team. It is
-licensed under the [MIT License](./LICENSE).
+[wwt_data_formats] is copyright the .NET Foundation. It is licensed under the
+[MIT License](./LICENSE).
 
 
 ## Acknowledgments

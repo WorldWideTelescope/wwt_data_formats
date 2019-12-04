@@ -2,7 +2,7 @@
 
 project = 'wwt_data_formats'
 author = 'The AAS WorldWide Telescope Team'
-copyright = '2019, ' + author
+copyright = '2019 the .NET Foundation'
 
 release = '0.0.1.dev0'  # the full version string; also update ../setup.py
 version = '0.0.1.dev0'  # the "short" version
