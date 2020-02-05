@@ -5,6 +5,10 @@ API Documentation
    :no-inheritance-diagram:
    :no-inherited-members:
 
+.. automodapi:: wwt_data_formats.filecabinet
+   :no-inheritance-diagram:
+   :no-inherited-members:
+
 .. automodapi:: wwt_data_formats.folder
    :no-inheritance-diagram:
    :no-inherited-members:
