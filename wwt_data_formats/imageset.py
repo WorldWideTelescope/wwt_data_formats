@@ -247,21 +247,7 @@ class ImageSet(object):
         crpix_x = headers['CRPIX1'] - 1
         crpix_y = headers['CRPIX2'] - 1
 
-        if 'PC1_1' in headers:
-            scale_x = headers['CDELT1']
-            scale_y = headers['CDELT2']
-            pc1_1 = headers['PC1_1']
-            pc2_2 = headers['PC2_2']
-            pc1_2 = headers.get('PC1_2', 0.0)
-            pc2_1 = headers.get('PC2_1', 0.0)
-
-            if pc1_1 * pc2_2 - pc1_2 * pc2_1 < 0:
-                pc_sign = -1
-            else:
-                pc_sign = 1
-
-            rot_rad = math.atan2(-pc_sign * pc1_2, pc2_2)
-        else:
+        if 'CD1_1' in headers:
             cd1_1 = headers['CD1_1']
             cd2_2 = headers['CD2_2']
             cd1_2 = headers.get('CD1_2', 0.0)
@@ -275,6 +261,20 @@ class ImageSet(object):
             rot_rad = math.atan2(-cd_sign * cd1_2, cd2_2)
             scale_x = math.sqrt(cd1_1**2 + cd2_1**2) * cd_sign
             scale_y = math.sqrt(cd1_2**2 + cd2_2**2)
+        else:
+            scale_x = headers['CDELT1']
+            scale_y = headers['CDELT2']
+            pc1_1 = headers.get('PC1_1', 1.0)
+            pc2_2 = headers.get('PC2_2', 1.0)
+            pc1_2 = headers.get('PC1_2', 0.0)
+            pc2_1 = headers.get('PC2_1', 0.0)
+
+            if pc1_1 * pc2_2 - pc1_2 * pc2_1 < 0:
+                pc_sign = -1
+            else:
+                pc_sign = 1
+
+            rot_rad = math.atan2(-pc_sign * pc1_2, pc2_2)
 
         # This is our best effort to make sure that the view centers on the
         # center of the image.
