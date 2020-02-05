@@ -1,3 +1,8 @@
+# Next version (unreleased)
+
+- (nothing logged yet)
+
+
 # 0.0.2 (2020-Feb-05)
 
 - Document the FileCabinet support

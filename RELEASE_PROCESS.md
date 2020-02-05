@@ -19,7 +19,7 @@ These are notes for the `wwt_data_formats` developers about how to create a new 
    one again.
 10. `git tag v${version}`
 11. Update the version number to `${cur_major}.${next_minor}.0.dev0` and add a
-    new separator in `CHANGES.md` along the lines of `${version} (unreleased)`.
+    new separator in `CHANGES.md` along the lines of `Next version (unreleased)`.
     Commit with a message of `Back to development.`
 12. `git push` (with `-f` if history was rewritten) to the PR branch. This had
     *really* better still pass CI.
