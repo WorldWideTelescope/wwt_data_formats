@@ -1,5 +1,7 @@
 # WWT Data Formats
 
+[![PyPI version](https://badge.fury.io/py/wwt-data-formats.svg)](https://badge.fury.io/py/wwt-data-formats)
+
 <!--pypi-begin-->
 [wwt_data_formats] is a low-level Python package that
 interfaces with the various XML serialization formats used by the [AAS]
