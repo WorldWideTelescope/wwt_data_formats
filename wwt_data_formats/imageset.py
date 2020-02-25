@@ -56,18 +56,22 @@ class ImageSet(object):
 
     """
     width_factor = 2
-    """TODO I don't understand this parameters."""
+    """This is a legacy parameter. Leave it at 2."""
 
     base_tile_level = 0
-    """TBD.
+    """The level of the highest (coarsest-resolution) tiling available.
 
-    Should be zero for untiled images.
+    This should be zero except for special circumstances.
 
     """
     tile_levels = 0
-    """TBD.
+    """The number of levels of tiling.
 
-    Should be zero for untiled images.
+    Should be zero for untiled images. An image with ``tile_levels = 1`` has been
+    broken into four tiles, each 256x256 pixels. For ``tile_levels = 2``, there are
+    sixteen tiles, and the padded height of the tiled area is ``256 * 2**2 = 1024``
+    pixels. Image with dimensions of 2048 pixels or smaller do not need to be tiled,
+    so if this parameter is nonzero it will usually be 4 or larger.
 
     """
     base_degrees_per_tile = 0
@@ -75,6 +79,12 @@ class ImageSet(object):
 
     For untiled images, should be the pixel scale: the numer of degrees per
     pixel in the vertical direction. Non-square pixels are not supported.
+
+    For tiled images, this is the height of the image with its dimensions
+    padded out to the next largest power of 2 for tiling purposes. If a square
+    image is 1200 pixels tall and has a height of 0.016 deg, the padded height
+    would be 2048 pixels and this parameter should be set to
+    0.016 * 2048 / 1200 = 0.0273.
 
     """
     file_type = '.png'
@@ -221,6 +231,12 @@ class ImageSet(object):
         Remarks
         -------
 
+        Certain of the ImageSet parameters take on different meanings depending on
+        whether the image in question is a tiled "study" or not. This method will alter
+        its behavior depending on whether the :attr:`tile_levels` attribute is greater
+        than zero. If you are computing coordinates for a tiled study, make sure to set
+        this parameter *before* calling this function.
+
         For the time being, the WCS must be equatorial using the gnomonic
         (``TAN``) projection.
 
@@ -293,14 +309,21 @@ class ImageSet(object):
         # Now, assign the fields
 
         self.data_set_type = 'Sky'
-        self.projection = 'SkyImage'
-        self.width_factor = 1
+        self.width_factor = 2
         self.center_x = ra_deg
         self.center_y = dec_deg
         self.rotation_deg = rot_rad * 180 / math.pi
-        self.offset_x = crpix_x
-        self.offset_y = crpix_y
-        self.base_degrees_per_tile = scale_y
+
+        if self.tile_levels > 0:  # are we tiled?
+            self.projection = 'Tan'
+            self.offset_x = (width / 2 - crpix_x) * abs(scale_x)
+            self.offset_y = (height / 2 - crpix_y) * scale_y
+            self.base_degrees_per_tile = scale_y * 256 * 2**self.tile_levels
+        else:
+            self.projection = 'SkyImage'
+            self.offset_x = crpix_x
+            self.offset_y = crpix_y
+            self.base_degrees_per_tile = scale_y
 
         if place is not None:
             place.data_set_type = 'Sky'
