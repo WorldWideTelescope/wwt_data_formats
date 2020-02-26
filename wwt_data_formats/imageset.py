@@ -4,23 +4,6 @@
 
 """An image, possibly tiled, for display in WWT.
 
-For a single bitmapped image:
-
-- base_degrees_per_tile: pixel scale in deg/px
-- base_tile_level: 0
-- tile_levels: 0
-- bottoms_up: False
-- data_set_type: "Sky"
-- projection: "SkyImage"
-- file_type: extension w/ dot, e.g. ".jpg"
-- center_x: RA of center of the TAN projection coordinate system, in deg
-- center_y: dec of center of the TAN projection coordinate system, in deg
-- rotation: east-from-north rotation the coordinate system, in deg.
-- offset_x: leftward shift of image lower-left corner relative to coord sys center, in px; eg width/2 puts center_x in center of image
-- offset_x: downward shift of image lower-left corner relative to coord sys center, in px; eg height/2 puts center_y in center of image
-- sparse: False (?)
-- width_factor: 1 (?)
-
 """
 from __future__ import absolute_import, division, print_function
 
@@ -97,6 +80,10 @@ class ImageSet(object):
     projection = 'Tan'
     """The type of projection used to place this image on the sky.
 
+    For untiled images, this should be "SkyImage". For tiled images, it should
+    be "Tan". The :meth:`set_position_from_wcs` method will set this value
+    appropriately based on :attr:`tile_levels`.
+
     """
     center_x = 0.0
     """The horizontal location of the center of the image’s projection coordinate
@@ -117,11 +104,15 @@ class ImageSet(object):
     coordinate system.
 
     For untiled sky images, the image is by default positioned such that its
-    lower left lands at the center of the projection coordinate system
-    (namely, ``center_x`` and ``center_y``). The offset is measured in pixels
-    and moves the image leftwards. Therefore, ``offset_x = image_width / 2``
-    places the center of the image at ``center_x``. This parameter is
-    therefore analogous to the WCS keyword ``CRVAL1``.
+    lower left lands at the center of the projection coordinate system (namely,
+    ``center_x`` and ``center_y``). The offset is measured in pixels and moves
+    the image leftwards. Therefore, ``offset_x = image_width / 2`` places the
+    center of the image at ``center_x``. This parameter is therefore analogous
+    to the WCS keyword ``CRVAL1``.
+
+    For tiled sky images, the offset is measured in *degrees*, and a value of
+    zero means that the *center* of the image lands at the center of the
+    projection coordinate system.
 
     """
     offset_y = 0.0
@@ -129,11 +120,15 @@ class ImageSet(object):
     coordinate system.
 
     For untiled sky images, the image is by default positioned such that its
-    lower left lands at the center of the projection coordinate system
-    (namely, ``center_x`` and ``center_y``). The offset is measured in pixels
-    and moves the image downwards. Therefore, ``offset_y = image_height / 2``
-    places the center of the image at ``center_y``. This parameter is
-    therefore analogous to the WCS keyword ``CRVAL2``.
+    lower left lands at the center of the projection coordinate system (namely,
+    ``center_x`` and ``center_y``). The offset is measured in pixels and moves
+    the image downwards. Therefore, ``offset_y = image_height / 2`` places the
+    center of the image at ``center_y``. This parameter is therefore analogous
+    to the WCS keyword ``CRVAL2``.
+
+    For tiled sky images, the offset is measured in *degrees*, and a value of
+    zero means that the *center* of the image lands at the center of the
+    projection coordinate system.
 
     """
     rotation_deg = 0.0
