@@ -16,7 +16,7 @@ file formats. In this package, the corresponding data structure is
 
 The high-level structure of a standard, minimal WTML file to show a single image is:
 
-.. code-block:: xml
+.. code-block::
 
    <Folder ...>
       <Place ...>
