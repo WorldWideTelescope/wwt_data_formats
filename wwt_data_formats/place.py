@@ -39,9 +39,13 @@ class Place(object):
     msr_community_id = None
     msr_component_id = None
     permission = None
+    meta = None
+
+    def __init__(self):
+        self.meta = {}
 
     def to_xml(self):
-        """Seralize this object to XML.
+        """Serialize this object to XML.
 
         Returns
         -------
@@ -78,5 +82,8 @@ class Place(object):
 
         if self.image_set is not None:
             place.append(self.image_set.to_xml())
+
+        for key, value in self.meta.items():
+            place.set('X' + str(key), str(value))
 
         return place
