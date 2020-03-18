@@ -8,16 +8,17 @@ import pytest
 from xml.etree import ElementTree as etree
 
 from . import assert_xml_trees_equal
-from .. import imageset, enums
+from .. import imageset, enums, stringify_xml_doc, write_xml_doc
 
 
 def test_basic_xml():
     expected_str = '''
 <ImageSet BandPass="Gamma" BaseDegreesPerTile="0.1" BaseTileLevel="1"
           BottomsUp="True" CenterX="1.234" CenterY="-0.31415"
-          DataSetType="Planet" FileType=".PNG" Name="Test name"
+          DataSetType="Planet" ElevationModel="False" FileType=".PNG" Generic="False"
+          MeanRadius="0.0" Name="Test name"
           OffsetX="100.1" OffsetY="100.2" Projection="SkyImage"
-          Rotation="5.4321" Sparse="False" TileLevels="4"
+          Rotation="5.4321" Sparse="False" StockSet="False" TileLevels="4"
           Url="http://example.org/{0}" WidthFactor="2">
   <Credits>Escaping &amp; Entities</Credits>
   <CreditsUrl>https://example.org/credits</CreditsUrl>
@@ -58,10 +59,10 @@ def test_wcs_1():
     expected_str = '''
 <ImageSet BandPass="Visible" BaseDegreesPerTile="4.870732233333334e-05"
           BaseTileLevel="0" BottomsUp="False" CenterX="83.633083" CenterY="22.0145"
-          DataSetType="Sky" FileType=".png"
-          OffsetX="1502.8507831457316" OffsetY="1478.8005935660037"
+          DataSetType="Sky" ElevationModel="False" FileType=".png" Generic="False"
+          MeanRadius="0.0" OffsetX="1502.8507831457316" OffsetY="1478.8005935660037"
           Projection="SkyImage" Rotation="-0.29036478519000003" Sparse="True"
-          TileLevels="0" WidthFactor="2">
+          StockSet="False" TileLevels="0" WidthFactor="2">
 </ImageSet>
 '''
     expected_xml = etree.fromstring(expected_str)
@@ -88,3 +89,38 @@ def test_wcs_1():
 
     observed_xml = imgset.to_xml()
     assert_xml_trees_equal(expected_xml, observed_xml)
+
+
+def test_misc_ser():
+    expected_str = '''
+<ImageSet BandPass="Visible" BaseDegreesPerTile="0.0" BaseTileLevel="0"
+          BottomsUp="False" CenterX="0.0" CenterY="0.0" DataSetType="Sky" ElevationModel="False"
+          FileType=".png" Generic="False" MeanRadius="0.0" OffsetX="0.0" OffsetY="0.0" Projection="SkyImage"
+          Rotation="0.0" Sparse="True" StockSet="False" TileLevels="0"
+          Url="http://example.com/unspecified" WidthFactor="2" />
+'''
+    expected_xml = etree.fromstring(expected_str)
+
+    imgset = imageset.ImageSet()
+    imgset.url = 'http://example.com/unspecified'
+
+    observed_xml = imgset.to_xml()
+    assert_xml_trees_equal(expected_xml, observed_xml)
+
+    expected_text = stringify_xml_doc(expected_xml)
+    observed_text = imgset.to_xml_string()
+    assert observed_text == expected_text
+
+    from io import StringIO, BytesIO
+
+    expected_strio = StringIO()
+    observed_strio = StringIO()
+    write_xml_doc(expected_xml, dest_stream=expected_strio, indent=False)
+    imgset.write_xml(observed_strio, indent=False)
+    assert observed_strio.getvalue() == expected_strio.getvalue()
+
+    expected_bio = BytesIO()
+    observed_bio = BytesIO()
+    write_xml_doc(expected_xml, dest_stream=expected_bio, dest_wants_bytes=True)
+    imgset.write_xml(observed_bio, dest_wants_bytes=True)
+    assert observed_bio.getvalue() == expected_bio.getvalue()

@@ -42,6 +42,12 @@ class ImageSet(LockedXmlTraits):
     Either a URL or a URL template. TODO: details
 
     """
+    dem_url = Unicode('').tag(xml=XmlSer.attr('DemUrl'))
+    """The URL of the DEM data.
+
+    Either a URL or a URL template. TODO: details
+
+    """
     width_factor = Int(2).tag(xml=XmlSer.attr('WidthFactor'))
     """This is a legacy parameter. Leave it at 2."""
 
@@ -51,6 +57,9 @@ class ImageSet(LockedXmlTraits):
     This should be zero except for special circumstances.
 
     """
+    quad_tree_map = Unicode('').tag(xml=XmlSer.attr('QuadTreeMap'))
+    """TBD."""
+
     tile_levels = Int(0).tag(xml=XmlSer.attr('TileLevels'))
     """The number of levels of tiling.
 
@@ -151,6 +160,18 @@ class ImageSet(LockedXmlTraits):
     """The bandpass of the image data."""
 
     sparse = Bool(True).tag(xml=XmlSer.attr('Sparse'))
+    """TBD."""
+
+    elevation_model = Bool(False).tag(xml=XmlSer.attr('ElevationModel'))
+    """TBD."""
+
+    stock_set = Bool(False).tag(xml=XmlSer.attr('StockSet'))
+    """TBD."""
+
+    generic = Bool(False).tag(xml=XmlSer.attr('Generic'))
+    """TBD."""
+
+    mean_radius = Float(0.0).tag(xml=XmlSer.attr('MeanRadius'))
     """TBD."""
 
     credits = Unicode('').tag(xml=XmlSer.text_elem('Credits'))

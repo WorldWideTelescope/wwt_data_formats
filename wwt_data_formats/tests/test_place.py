@@ -47,24 +47,24 @@ def test_nesting():
        Opacity="100.0" RA="0.0" Rotation="0.0" ZoomLevel="0.0">
   <BackgroundImageSet>
     <ImageSet BandPass="Visible" BaseDegreesPerTile="0.0" BaseTileLevel="0"
-              BottomsUp="False" CenterX="0.0" CenterY="0.0" DataSetType="Sky"
-              FileType=".png" OffsetX="0.0" OffsetY="0.0" Projection="SkyImage"
-              Rotation="0.0" Sparse="True" TileLevels="0" 
+              BottomsUp="False" CenterX="0.0" CenterY="0.0" DataSetType="Sky" ElevationModel="False"
+              FileType=".png" Generic="False" MeanRadius="0.0" OffsetX="0.0" OffsetY="0.0" Projection="SkyImage"
+              Rotation="0.0" Sparse="True" StockSet="False" TileLevels="0"
               Url="http://example.com/background" WidthFactor="2">
     </ImageSet>
   </BackgroundImageSet>
   <ForegroundImageSet>
     <ImageSet BandPass="Visible" BaseDegreesPerTile="0.0" BaseTileLevel="0"
-              BottomsUp="False" CenterX="0.0" CenterY="0.0" DataSetType="Sky"
-              FileType=".png" OffsetX="0.0" OffsetY="0.0" Projection="SkyImage"
-              Rotation="0.0" Sparse="True" TileLevels="0" 
+              BottomsUp="False" CenterX="0.0" CenterY="0.0" DataSetType="Sky" ElevationModel="False"
+              FileType=".png" Generic="False" MeanRadius="0.0" OffsetX="0.0" OffsetY="0.0" Projection="SkyImage"
+              Rotation="0.0" Sparse="True" StockSet="False" TileLevels="0"
               Url="http://example.com/foreground" WidthFactor="2">
     </ImageSet>
   </ForegroundImageSet>
   <ImageSet BandPass="Visible" BaseDegreesPerTile="0.0" BaseTileLevel="0"
-            BottomsUp="False" CenterX="0.0" CenterY="0.0" DataSetType="Sky"
-            FileType=".png" OffsetX="0.0" OffsetY="0.0" Projection="SkyImage"
-            Rotation="0.0" Sparse="True" TileLevels="0" 
+            BottomsUp="False" CenterX="0.0" CenterY="0.0" DataSetType="Sky" ElevationModel="False"
+            FileType=".png" Generic="False" MeanRadius="0.0" OffsetX="0.0" OffsetY="0.0" Projection="SkyImage"
+            Rotation="0.0" Sparse="True" StockSet="False" TileLevels="0"
             Url="http://example.com/unspecified" WidthFactor="2">
   </ImageSet>
 </Place>

@@ -14,11 +14,27 @@ Constellation
 DataSetType
 FolderType
 ProjectionType
+SerEnum
 '''.split()
 
 from enum import Enum
 
-class Bandpass(Enum):
+
+class SerEnum(Enum):
+    """A helper for enumerations that are serialized and deserialized from text.
+    In some WWT cases, multiple textualizations have historically been used
+    for the same value.
+
+    """
+    @classmethod
+    def from_text(cls, text):
+        """The default implementation here just looks up the appropriate enum instance
+        from its value.
+
+        """
+        return cls(text)
+
+class Bandpass(SerEnum):
     GAMMA = 'Gamma'
     XRAY = 'XRay'
     ULTRAVIOLET = 'Ultraviolet'
@@ -30,7 +46,7 @@ class Bandpass(Enum):
     VISIBLE_NIGHT = 'VisibleNight'
 
 
-class Classification(Enum):
+class Classification(SerEnum):
     UNSPECIFIED = ''
     STAR = 'Star'
     SUPERNOVA = 'Supernova'
@@ -69,7 +85,7 @@ class Classification(Enum):
     GALACTIC = 'Galactic'
     OTHER = 'Other'
 
-class Constellation(Enum):
+class Constellation(SerEnum):
     UNSPECIFIED = ""
     ANDROMEDA = "AND"
     ANTLIA = "ANT"
@@ -162,7 +178,7 @@ class Constellation(Enum):
     VULPECULA = "VUL"
 
 
-class DataSetType(Enum):
+class DataSetType(SerEnum):
     EARTH = 'Earth'
     PLANET = 'Planet'
     SKY = 'Sky'
@@ -171,7 +187,7 @@ class DataSetType(Enum):
     SANDBOX = 'Sandbox'
 
 
-class FolderType(Enum):
+class FolderType(SerEnum):
     UNSPECIFIED = ''
     EARTH = 'Earth'
     PLANET = 'Planet'
@@ -179,7 +195,7 @@ class FolderType(Enum):
     PANORAMA = 'Panorama'
 
 
-class ProjectionType(Enum):
+class ProjectionType(SerEnum):
     MERCATOR = 'Mercator'
     EQUIRECTANGULAR = 'Equirectangular'
     TAN = 'Tan'
@@ -187,3 +203,9 @@ class ProjectionType(Enum):
     SPHERICAL = 'Spherical'
     SKY_IMAGE = 'SkyImage'
     PLOTTED = 'Plotted'
+
+    @classmethod
+    def from_text(cls, text):
+        if text == 'Tangent':
+            return cls.TAN
+        return cls(text)
