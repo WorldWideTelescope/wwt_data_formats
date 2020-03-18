@@ -37,7 +37,6 @@ ImageSet
    .. autosummary::
 
       ~ImageSet.set_position_from_wcs
-      ~ImageSet.to_xml
 
    .. rubric:: Attributes Documentation
 
@@ -66,4 +65,3 @@ ImageSet
    .. rubric:: Methods Documentation
 
    .. automethod:: set_position_from_wcs
-   .. automethod:: to_xml

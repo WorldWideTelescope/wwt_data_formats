@@ -17,7 +17,6 @@ Place
       ~Place.constellation
       ~Place.data_set_type
       ~Place.dec_deg
-      ~Place.description
       ~Place.distance
       ~Place.dome_alt
       ~Place.dome_az
@@ -26,21 +25,13 @@ Place
       ~Place.latitude
       ~Place.longitude
       ~Place.magnitude
-      ~Place.msr_community_id
-      ~Place.msr_component_id
       ~Place.name
       ~Place.opacity
-      ~Place.permission
       ~Place.ra_hr
       ~Place.rotation_deg
       ~Place.thumbnail
+      ~Place.xmeta
       ~Place.zoom_level
-
-   .. rubric:: Methods Summary
-
-   .. autosummary::
-
-      ~Place.to_xml
 
    .. rubric:: Attributes Documentation
 
@@ -51,7 +42,6 @@ Place
    .. autoattribute:: constellation
    .. autoattribute:: data_set_type
    .. autoattribute:: dec_deg
-   .. autoattribute:: description
    .. autoattribute:: distance
    .. autoattribute:: dome_alt
    .. autoattribute:: dome_az
@@ -60,16 +50,10 @@ Place
    .. autoattribute:: latitude
    .. autoattribute:: longitude
    .. autoattribute:: magnitude
-   .. autoattribute:: msr_community_id
-   .. autoattribute:: msr_component_id
    .. autoattribute:: name
    .. autoattribute:: opacity
-   .. autoattribute:: permission
    .. autoattribute:: ra_hr
    .. autoattribute:: rotation_deg
    .. autoattribute:: thumbnail
+   .. autoattribute:: xmeta
    .. autoattribute:: zoom_level
-
-   .. rubric:: Methods Documentation
-
-   .. automethod:: to_xml
