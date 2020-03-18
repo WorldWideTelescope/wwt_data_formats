@@ -15,9 +15,10 @@ def test_basic_xml():
     expected_str = '''
 <ImageSet BandPass="Gamma" BaseDegreesPerTile="0.1" BaseTileLevel="1"
           BottomsUp="True" CenterX="1.234" CenterY="-0.31415"
-          DataSetType="Planet" FileType=".PNG" Name="Test name"
+          DataSetType="Planet" ElevationModel="False" FileType=".PNG" Generic="False"
+          MeanRadius="0.0" Name="Test name"
           OffsetX="100.1" OffsetY="100.2" Projection="SkyImage"
-          Rotation="5.4321" Sparse="False" TileLevels="4"
+          Rotation="5.4321" Sparse="False" StockSet="False" TileLevels="4"
           Url="http://example.org/{0}" WidthFactor="2">
   <Credits>Escaping &amp; Entities</Credits>
   <CreditsUrl>https://example.org/credits</CreditsUrl>
@@ -58,10 +59,10 @@ def test_wcs_1():
     expected_str = '''
 <ImageSet BandPass="Visible" BaseDegreesPerTile="4.870732233333334e-05"
           BaseTileLevel="0" BottomsUp="False" CenterX="83.633083" CenterY="22.0145"
-          DataSetType="Sky" FileType=".png"
-          OffsetX="1502.8507831457316" OffsetY="1478.8005935660037"
+          DataSetType="Sky" ElevationModel="False" FileType=".png" Generic="False"
+          MeanRadius="0.0" OffsetX="1502.8507831457316" OffsetY="1478.8005935660037"
           Projection="SkyImage" Rotation="-0.29036478519000003" Sparse="True"
-          TileLevels="0" WidthFactor="2">
+          StockSet="False" TileLevels="0" WidthFactor="2">
 </ImageSet>
 '''
     expected_xml = etree.fromstring(expected_str)
