@@ -8,7 +8,7 @@ import pytest
 from xml.etree import ElementTree as etree
 
 from . import assert_xml_trees_equal
-from .. import imageset, enums
+from .. import imageset, enums, stringify_xml_doc, write_xml_doc
 
 
 def test_basic_xml():
@@ -89,3 +89,38 @@ def test_wcs_1():
 
     observed_xml = imgset.to_xml()
     assert_xml_trees_equal(expected_xml, observed_xml)
+
+
+def test_misc_ser():
+    expected_str = '''
+<ImageSet BandPass="Visible" BaseDegreesPerTile="0.0" BaseTileLevel="0"
+          BottomsUp="False" CenterX="0.0" CenterY="0.0" DataSetType="Sky" ElevationModel="False"
+          FileType=".png" Generic="False" MeanRadius="0.0" OffsetX="0.0" OffsetY="0.0" Projection="SkyImage"
+          Rotation="0.0" Sparse="True" StockSet="False" TileLevels="0"
+          Url="http://example.com/unspecified" WidthFactor="2" />
+'''
+    expected_xml = etree.fromstring(expected_str)
+
+    imgset = imageset.ImageSet()
+    imgset.url = 'http://example.com/unspecified'
+
+    observed_xml = imgset.to_xml()
+    assert_xml_trees_equal(expected_xml, observed_xml)
+
+    expected_text = stringify_xml_doc(expected_xml)
+    observed_text = imgset.to_xml_string()
+    assert observed_text == expected_text
+
+    from io import StringIO, BytesIO
+
+    expected_strio = StringIO()
+    observed_strio = StringIO()
+    write_xml_doc(expected_xml, dest_stream=expected_strio, indent=False)
+    imgset.write_xml(observed_strio, indent=False)
+    assert observed_strio.getvalue() == expected_strio.getvalue()
+
+    expected_bio = BytesIO()
+    observed_bio = BytesIO()
+    write_xml_doc(expected_xml, dest_stream=expected_bio, dest_wants_bytes=True)
+    imgset.write_xml(observed_bio, dest_wants_bytes=True)
+    assert observed_bio.getvalue() == expected_bio.getvalue()

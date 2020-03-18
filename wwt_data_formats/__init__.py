@@ -433,6 +433,51 @@ class LockedXmlTraits(LockedDownTraits):
         return self._serialize_xml(None)
 
 
+    def write_xml(self, dest_stream, dest_wants_bytes=False, indent=True):
+        """Serialize this object to XML, writing the data to a stream.
+
+        Parameters
+        ----------
+        dest_stream : writeable file-like object or None
+          The destination to which the XML data will be written. If None,
+          standard output is used.
+        dest_wants_bytes : optional bool, default False
+          Whether the destination stream expects to be fed bytes data rather
+          than Unicode. If so, the XML text is encoded into UTF-8 before
+          being written.
+        indent : bool, default True
+          Whether the returned XML text will have user-friendly indentation or not.
+
+        Returns
+        -------
+        None
+
+        """
+        write_xml_doc(
+            self.to_xml(),
+            dest_stream = dest_stream,
+            dest_wants_bytes = dest_wants_bytes,
+            indent = indent,
+        )
+
+
+    def to_xml_string(self, indent=True):
+        """Serialize this object to XML text.
+
+        Parameters
+        ----------
+        indent : optional bool, default True
+          Whether the returned XML text will have user-friendly indentation or not.
+
+        Returns
+        -------
+        xml_text : string
+          A textual serialization of the object as XML.
+
+        """
+        return stringify_xml_doc(self.to_xml(), indent=indent)
+
+
 def indent_xml(elem, level=0):
     """A dumb XML indenter.
 

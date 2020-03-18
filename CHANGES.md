@@ -1,6 +1,9 @@
 # Next version (unreleased)
 
-- No changes as yet
+- Fix roundtripping of imagesets with a non-empty QuadTreeMap, and add a few more
+  attributes on the `<ImageSet>` type.
+- Fix loading of XML files missing attributes that we expected to see.
+- Allow "Tangent" as an alias for "Tan" when deserializing ProjectionType enums.
 
 
 # 0.1.1 (2020-Mar-17)
