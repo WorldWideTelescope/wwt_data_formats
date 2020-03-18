@@ -56,7 +56,7 @@ class Place(LockedXmlTraits):
         Namespace,
         args = (),
         help = 'XML metadata - a namespace object for attaching arbitrary text to serialize',
-    ).tag(pfx_multi_attr = 'X')
+    ).tag(xml=XmlSer.ns_to_attr('X'))
 
     def _tag_name(self):
         return 'Place'

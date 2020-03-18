@@ -95,6 +95,7 @@ class XmlSer(Enum):
     TEXT_ELEM = 'text_elem'
     INNER = 'inner'
     WRAPPED_INNER = 'wrapped_inner'
+    NS_TO_ATTR = 'ns_to_attr'
 
     @classmethod
     def attr(cls, attr):
@@ -111,6 +112,10 @@ class XmlSer(Enum):
     @classmethod
     def wrapped_inner(cls, tag):
         return (cls.WRAPPED_INNER, tag)
+
+    @classmethod
+    def ns_to_attr(cls, prefix):
+        return (cls.NS_TO_ATTR, prefix)
 
 
 def _stringify_trait(trait_spec, value):
@@ -206,6 +211,14 @@ class LockedXmlTraits(LockedDownTraits):
                 wrapper = elem.find(xml_data[0])
                 if wrapper is not None:
                     value = tspec.klass.from_xml(wrapper[0])
+            elif xml_spec == XmlSer.NS_TO_ATTR:
+                if not isinstance(tspec, Instance):
+                    raise RuntimeError('an XML element serialized as NS_TO_ATTR must be of Instance type')
+
+                value = tspec.klass()
+                for aname, avalue in elem.attrib.items():
+                    if aname.startswith(xml_data[0]):
+                        setattr(value, aname[len(xml_data[0]):], avalue)
             else:
                 raise RuntimeError(f'unhandled XML serialization mode {xml_spec}')
 
@@ -247,6 +260,11 @@ class LockedXmlTraits(LockedDownTraits):
         if elem is None:
             elem = etree.Element(self._tag_name())
 
+        # Note that self.traits() generates the traits in alphabetical order,
+        # which is helpful because that means when we serialize to XML the
+        # child elements are created in a deterministic order, which makes it
+        # easier to test the output.
+
         for tname, tspec in self.traits(xml = lambda a: a is not None).items():
             xml_spec, *xml_data = tspec.metadata['xml']
             value = getattr(self, tname)
@@ -285,6 +303,9 @@ class LockedXmlTraits(LockedDownTraits):
                 else:
                     new_sub = value._serialize_xml(None)
                     wrapper.append(new_sub)
+            elif xml_spec == XmlSer.NS_TO_ATTR:
+                for ns_name, ns_value in value.__dict__.items():
+                    elem.set(xml_data[0] + ns_name, str(ns_value))
             else:
                 raise RuntimeError(f'unhandled XML serialization mode {xml_spec}')
 
