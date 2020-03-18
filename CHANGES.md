@@ -1,6 +1,7 @@
-# Next version (unreleased)
+# 0.1.1 (2020-Mar-17)
 
-- No changes logged.
+- Fix `wwt_data_formats.imageset.ImageSet.set_position_from_wcs()` for the new
+  metadata scheme.
 
 
 # 0.1.0 (2020-Mar-17)
