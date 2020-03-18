@@ -197,8 +197,8 @@ class LockedXmlTraits(LockedDownTraits):
         returns a new instance, initialized with data from the XML. Otherwise,
         returns None.
 
-        Remarks
-        -------
+        Notes
+        -----
         This method is architected to enable deserialization of
         :class:`wwt_data_formats.folder.Folder` items. It also helps with the
         implementation of some of the "inner" XML deserialization
@@ -310,8 +310,8 @@ class LockedXmlTraits(LockedDownTraits):
         -------
         The serialized XML element. If it was not None, this is the parameter *elem*.
 
-        Remarks
-        -------
+        Notes
+        -----
         This method is intended to allow two modes of operation. It can either
         create XML trees from scratch, or it can modify existing trees. The
         latter mode makes it possible to work with input data that may have
@@ -414,8 +414,8 @@ class LockedXmlTraits(LockedDownTraits):
         -------
         *self*
 
-        Remarks
-        -------
+        Notes
+        -----
         This method makes it possible to work with input data that may have
         additional contents not defined in the WWT specification -- by
         modifying the existing tree, we can preserve those data.

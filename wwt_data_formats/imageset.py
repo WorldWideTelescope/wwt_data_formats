@@ -193,9 +193,8 @@ class ImageSet(LockedXmlTraits):
         self
           For convenience in chaining function calls.
 
-        Remarks
-        -------
-
+        Notes
+        -----
         Certain of the ImageSet parameters take on different meanings depending on
         whether the image in question is a tiled "study" or not. This method will alter
         its behavior depending on whether the :attr:`tile_levels` attribute is greater
