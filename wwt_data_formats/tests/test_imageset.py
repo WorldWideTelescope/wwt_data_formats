@@ -52,3 +52,39 @@ def test_basic_xml():
 
     observed_xml = imgset.to_xml()
     assert_xml_trees_equal(expected_xml, observed_xml)
+
+
+def test_wcs_1():
+    expected_str = '''
+<ImageSet BandPass="Visible" BaseDegreesPerTile="4.870732233333334e-05"
+          BaseTileLevel="0" BottomsUp="False" CenterX="83.633083" CenterY="22.0145"
+          DataSetType="Sky" FileType=".png"
+          OffsetX="1502.8507831457316" OffsetY="1478.8005935660037"
+          Projection="SkyImage" Rotation="-0.29036478519000003" Sparse="True"
+          TileLevels="0" WidthFactor="2">
+</ImageSet>
+'''
+    expected_xml = etree.fromstring(expected_str)
+
+    imgset = imageset.ImageSet()
+    imgset.set_position_from_wcs(
+        {
+            'CTYPE1': 'RA---TAN',
+            'CTYPE2': 'DEC--TAN',
+            'CRVAL1': 83.633083,
+            'CRVAL2': 22.0145,
+            'PC1_1': 0.9999871586199364,
+            'PC1_2': 0.005067799840785529,
+            'PC2_1': -0.005067799840785529,
+            'PC2_2': 0.9999871586199364,
+            'CRPIX1': 1503.8507831457316,
+            'CRPIX2': 1479.8005935660037,
+            'CDELT1': -4.870732233333334e-05,
+            'CDELT2': 4.870732233333334e-05
+        },
+        3000,
+        3000
+    )
+
+    observed_xml = imgset.to_xml()
+    assert_xml_trees_equal(expected_xml, observed_xml)
