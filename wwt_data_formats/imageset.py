@@ -272,25 +272,25 @@ class ImageSet(LockedXmlTraits):
 
         # Now, assign the fields
 
-        self.data_set_type = 'Sky'
+        self.data_set_type = DataSetType.SKY
         self.width_factor = 2
         self.center_x = ra_deg
         self.center_y = dec_deg
         self.rotation_deg = rot_rad * 180 / math.pi
 
         if self.tile_levels > 0:  # are we tiled?
-            self.projection = 'Tan'
+            self.projection = ProjectionType.TAN
             self.offset_x = (width / 2 - crpix_x) * abs(scale_x)
             self.offset_y = (height / 2 - crpix_y) * scale_y
             self.base_degrees_per_tile = scale_y * 256 * 2**self.tile_levels
         else:
-            self.projection = 'SkyImage'
+            self.projection = ProjectionType.SKY_IMAGE
             self.offset_x = crpix_x
             self.offset_y = crpix_y
             self.base_degrees_per_tile = scale_y
 
         if place is not None:
-            place.data_set_type = 'Sky'
+            place.data_set_type = DataSetType.SKY
             place.rotation_deg = 0.  # I think this is better than propagating the image rotation?
             place.ra_hr = center_ra_deg / 15.
             place.dec_deg = center_dec_deg
