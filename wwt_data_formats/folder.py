@@ -1,5 +1,5 @@
 # -*- mode: python; coding: utf-8 -*-
-# Copyright 2019 the .NET Foundation
+# Copyright 2019-2020 the .NET Foundation
 # Licensed under the MIT License.
 
 from __future__ import absolute_import, division, print_function
@@ -8,56 +8,42 @@ __all__ = '''
 Folder
 '''.split()
 
-from xml.etree import ElementTree as etree
+from traitlets import Bool, Instance, Int, List, Unicode, Union, UseEnum
 
+from . import LockedXmlTraits, XmlSer
+from .enums import FolderType
 
-class Folder(object):
+class Folder(LockedXmlTraits):
     """A grouping of WWT content assets.
 
     Children can be: places (aka "Items"), imagesets, linesets, tours,
     folders, or IThumbnail objects (to be explored).
 
     """
-    children = None
-    name = ''
-    group = 'Explorer'
-    url = None
-    thumbnail = None
-    browseable = True
-    searchable = True
-    type = ''
-    sub_type = ''
-    msr_community_id = 0
-    msr_component_id = 0
-    permission = 0
+    name = Unicode('').tag(xml=XmlSer.attr('Name'))
+    group = Unicode('Explorer').tag(xml=XmlSer.attr('Group'))
+    url = Unicode('').tag(xml=XmlSer.attr('Url'))
+    thumbnail = Unicode('').tag(xml=XmlSer.attr('Thumbnail'))
+    browseable = Bool(True).tag(xml=XmlSer.attr('Browseable'))
+    searchable = Bool(True).tag(xml=XmlSer.attr('Searchable'))
+    type = UseEnum(
+        FolderType,
+        default_value = FolderType.SKY,
+    ).tag(xml=XmlSer.attr('Type'))
+    sub_type = Unicode('').tag(xml=XmlSer.attr('SubType'))
 
-    # ItemsElementName ?
+    children = List(
+        trait = Union([
+            Instance('wwt_data_formats.folder.Folder', args=()),
+            Instance('wwt_data_formats.place.Place', args=()),
+            Instance('wwt_data_formats.imageset.ImageSet', args=()),
+        ]),
+        default_value = ()
+    ).tag(xml=XmlSer.inner_list())
 
-    def __init__(self):
-        self.children = []
+    # todo(?): msr_community_id
+    # todo(?): msr_component_id
+    # todo(?): permission
 
-    def to_xml(self):
-        """Seralize this object to XML.
-
-        Returns
-        -------
-        elem : xml.etree.ElementTree.Element
-          A ``Folder`` XML element serializing the object.
-
-        """
-        folder = etree.Element('Folder')
-        folder.set('Name', self.name)
-        folder.set('Group', self.group)
-        if self.url is not None:
-            folder.set('Url', self.url)
-        if self.thumbnail is not None:
-            folder.set('Thumbnail', self.thumbnail)
-        folder.set('Browseable', str(self.browseable))
-        folder.set('Searchable', str(self.searchable))
-        folder.set('Type', self.type)
-        folder.set('SubType', self.sub_type)
-
-        for c in self.children:
-            folder.append(c.to_xml())
-
-        return folder
+    def _tag_name(self):
+        return 'Folder'

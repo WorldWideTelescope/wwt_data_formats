@@ -1,5 +1,5 @@
 # -*- mode: python; coding: utf-8 -*-
-# Copyright 2019 the .NET Foundation
+# Copyright 2019-2020 the .NET Foundation
 # Licensed under the MIT License.
 
 """An image, possibly tiled, for display in WWT.
@@ -12,42 +12,46 @@ ImageSet
 '''.split()
 
 import math
+from traitlets import Bool, Float, Int, Unicode, UseEnum
 from xml.etree import ElementTree as etree
 
+from . import LockedXmlTraits, XmlSer
+from .enums import Bandpass, DataSetType, ProjectionType
 
-class ImageSet(object):
+
+class ImageSet(LockedXmlTraits):
     """A set of images."""
 
-    data_set_type = 'Sky'
+    data_set_type = UseEnum(DataSetType, default_value=DataSetType.SKY).tag(xml=XmlSer.attr('DataSetType'))
     """The renderer mode to which these data apply.
 
     Possible values are ``"Earth"``, ``"Planet"``, ``"Sky"``, ``"Panorama"``,
     ``"SolarSystem"``, and ``"Sandbox"``.
 
     """
-    name = ''
+    name = Unicode('').tag(xml=XmlSer.attr('Name'))
     """A name used to refer to this imageset.
 
     Various parts of the WWT internals reference imagesets by this name, so
     it should be distinctive.
 
     """
-    url = ''
+    url = Unicode('').tag(xml=XmlSer.attr('Url'))
     """The URL of the image data.
 
     Either a URL or a URL template. TODO: details
 
     """
-    width_factor = 2
+    width_factor = Int(2).tag(xml=XmlSer.attr('WidthFactor'))
     """This is a legacy parameter. Leave it at 2."""
 
-    base_tile_level = 0
+    base_tile_level = Int(0).tag(xml=XmlSer.attr('BaseTileLevel'))
     """The level of the highest (coarsest-resolution) tiling available.
 
     This should be zero except for special circumstances.
 
     """
-    tile_levels = 0
+    tile_levels = Int(0).tag(xml=XmlSer.attr('TileLevels'))
     """The number of levels of tiling.
 
     Should be zero for untiled images. An image with ``tile_levels = 1`` has been
@@ -57,7 +61,7 @@ class ImageSet(object):
     so if this parameter is nonzero it will usually be 4 or larger.
 
     """
-    base_degrees_per_tile = 0
+    base_degrees_per_tile = Float(0.0).tag(xml=XmlSer.attr('BaseDegreesPerTile'))
     """The angular scale of the image.
 
     For untiled images, should be the pixel scale: the numer of degrees per
@@ -70,14 +74,17 @@ class ImageSet(object):
     0.016 * 2048 / 1200 = 0.0273.
 
     """
-    file_type = '.png'
+    file_type = Unicode('.png').tag(xml=XmlSer.attr('FileType'))
     """The extension of the image file(s) in this set, including a leading period.
 
     """
-    bottoms_up = False
+    bottoms_up = Bool(False).tag(xml=XmlSer.attr('BottomsUp'))
     """TBD."""
 
-    projection = 'Tan'
+    projection = UseEnum(
+        ProjectionType,
+        default_value = ProjectionType.SKY_IMAGE
+    ).tag(xml=XmlSer.attr('Projection'))
     """The type of projection used to place this image on the sky.
 
     For untiled images, this should be "SkyImage". For tiled images, it should
@@ -85,21 +92,21 @@ class ImageSet(object):
     appropriately based on :attr:`tile_levels`.
 
     """
-    center_x = 0.0
+    center_x = Float(0.0).tag(xml=XmlSer.attr('CenterX'))
     """The horizontal location of the center of the image’s projection coordinate
     system.
 
     For sky images, this is a right ascension in degrees.
 
     """
-    center_y = 0.0
+    center_y = Float(0.0).tag(xml=XmlSer.attr('CenterY'))
     """The vertical location of the center of the image’s projection coordinate
     system.
 
     For sky images, this is a declination in degrees.
 
     """
-    offset_x = 0.0
+    offset_x = Float(0.0).tag(xml=XmlSer.attr('OffsetX'))
     """The horizontal positioning of the image relative to its projection
     coordinate system.
 
@@ -115,7 +122,7 @@ class ImageSet(object):
     projection coordinate system.
 
     """
-    offset_y = 0.0
+    offset_y = Float(0.0).tag(xml=XmlSer.attr('OffsetY'))
     """The vertical positioning of the image relative to its projection
     coordinate system.
 
@@ -131,72 +138,35 @@ class ImageSet(object):
     projection coordinate system.
 
     """
-    rotation_deg = 0.0
+    rotation_deg = Float(0.0).tag(xml=XmlSer.attr('Rotation'))
     """The rotation of image’s projection coordinate system, in degrees.
 
     For sky images, this is East from North, i.e. counterclockwise.
 
     """
-    band_pass = 'Visible'
+    band_pass = UseEnum(
+        Bandpass,
+        default_value = Bandpass.VISIBLE
+    ).tag(xml=XmlSer.attr('BandPass'))
     """The bandpass of the image data."""
 
-    sparse = True
+    sparse = Bool(True).tag(xml=XmlSer.attr('Sparse'))
     """TBD."""
 
-    credits = None
+    credits = Unicode('').tag(xml=XmlSer.text_elem('Credits'))
     """Textual credits for the image originator."""
 
-    credits_url = ''
+    credits_url = Unicode('').tag(xml=XmlSer.text_elem('CreditsUrl'))
     """A URL giving the source of the image or more information about its creation."""
 
-    thumbnail_url = ''
+    thumbnail_url = Unicode('').tag(xml=XmlSer.text_elem('ThumbnailUrl'))
     """A URL to a standard WWT thumbnail representation of this imageset."""
 
-    description = ''
+    description = Unicode('').tag(xml=XmlSer.text_elem('Description'))
     """A textual description of the imagery."""
 
-    def to_xml(self):
-        """Seralize this object to XML.
-
-        Returns
-        -------
-        elem : xml.etree.ElementTree.Element
-          An ``ImageSet`` XML element serializing the object.
-
-        """
-        imgset = etree.Element('ImageSet')
-        imgset.set('Name', self.name)
-        imgset.set('Url', self.url)
-        imgset.set('WidthFactor', str(self.width_factor))
-        imgset.set('BaseTileLevel', str(self.base_tile_level))
-        imgset.set('TileLevels', str(self.tile_levels))
-        imgset.set('BaseDegreesPerTile', str(self.base_degrees_per_tile))
-        imgset.set('FileType', self.file_type)
-        imgset.set('BottomsUp', str(self.bottoms_up))
-        imgset.set('Projection', self.projection)
-        imgset.set('CenterX', str(self.center_x))
-        imgset.set('CenterY', str(self.center_y))
-        imgset.set('OffsetX', str(self.offset_x))
-        imgset.set('OffsetY', str(self.offset_y))
-        imgset.set('Rotation', str(self.rotation_deg))
-        imgset.set('DataSetType', self.data_set_type)
-        imgset.set('BandPass', self.band_pass)
-        imgset.set('Sparse', str(self.sparse))
-
-        credits = etree.SubElement(imgset, 'Credits')
-        credits.text = self.credits
-
-        credurl = etree.SubElement(imgset, 'CreditsUrl')
-        credurl.text = self.credits_url
-
-        thumburl = etree.SubElement(imgset, 'ThumbnailUrl')
-        thumburl.text = self.thumbnail_url
-
-        desc = etree.SubElement(imgset, 'Description')
-        desc.text = self.description
-
-        return imgset
-
+    def _tag_name(self):
+        return 'ImageSet'
 
     def set_position_from_wcs(self, headers, width, height, place=None, fov_factor=1.7):
         """Set the positional information associated with this imageset to match a set
@@ -223,9 +193,8 @@ class ImageSet(object):
         self
           For convenience in chaining function calls.
 
-        Remarks
-        -------
-
+        Notes
+        -----
         Certain of the ImageSet parameters take on different meanings depending on
         whether the image in question is a tiled "study" or not. This method will alter
         its behavior depending on whether the :attr:`tile_levels` attribute is greater

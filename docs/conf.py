@@ -51,12 +51,19 @@ intersphinx_mapping = {
         'http://docs.astropy.org/en/stable/',
         None
     ),
+
+    'traitlets': (
+        'https://traitlets.readthedocs.io/en/stable/',
+        None
+    ),
 }
 
 numpydoc_show_class_members = False
 
 nitpicky = True
-nitpick_ignore = [('py:class', 'ipywidgets.widgets.domwidget.DOMWidget')]
+nitpick_ignore = [
+    ('py:class', 'traitlets.traitlets.MetaHasTraits'),
+]
 
 default_role = 'obj'
 
