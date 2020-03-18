@@ -172,6 +172,7 @@ class DataSetType(Enum):
 
 
 class FolderType(Enum):
+    UNSPECIFIED = ''
     EARTH = 'Earth'
     PLANET = 'Planet'
     SKY = 'Sky'
