@@ -159,14 +159,9 @@ def _parse_trait(trait_spec, text):
         raise ValueError(f'cannot interpret text {text!r} as a boolean')
 
     if isinstance(trait_spec, UseEnum):
-        # We could do better than a linear search here, but meh.
         if text is None:
             text = ''
-
-        for enum_value in trait_spec.enum_class:
-            if text == enum_value.value:
-                return enum_value
-        raise ValueError(f'unrecognized value {text!r} for enumeration {trait_spec.enum_class}')
+        return trait_spec.enum_class.from_text(text)
 
     raise ValueError(f'internal error: unimplemented parse for trait type {trait_spec}')
 
