@@ -8,7 +8,12 @@
 from __future__ import absolute_import, division, print_function
 
 __all__ = '''
-ImageSet
+Bandpass
+Classification
+Constellation
+DataSetType
+FolderType
+ProjectionType
 '''.split()
 
 from enum import Enum
@@ -164,6 +169,13 @@ class DataSetType(Enum):
     PANORAMA = 'Panorama'
     SOLAR_SYSTEM = 'SolarSystem'
     SANDBOX = 'Sandbox'
+
+
+class FolderType(Enum):
+    EARTH = 'Earth'
+    PLANET = 'Planet'
+    SKY = 'Sky'
+    PANORAMA = 'Panorama'
 
 
 class ProjectionType(Enum):

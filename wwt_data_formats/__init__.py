@@ -16,7 +16,8 @@ XmlSer
 
 from argparse import Namespace
 from enum import Enum
-from traitlets import Bool, Float, HasTraits, Instance, Int, MetaHasTraits, TraitType, Unicode, UseEnum
+from traitlets import (Bool, Float, HasTraits, Instance, Int, List, MetaHasTraits,
+                       TraitType, Unicode, Union, UseEnum)
 from xml.etree import ElementTree as etree
 
 
@@ -96,6 +97,7 @@ class XmlSer(Enum):
     INNER = 'inner'
     WRAPPED_INNER = 'wrapped_inner'
     NS_TO_ATTR = 'ns_to_attr'
+    INNER_LIST = 'inner_list'
 
     @classmethod
     def attr(cls, attr):
@@ -107,6 +109,9 @@ class XmlSer(Enum):
 
     @classmethod
     def inner(cls, tag):
+        # todo: I'd like to avoid the `tag` argument, but right now we need it
+        # to search for a pre-existing element when applying to an existing
+        # XML tree.
         return (cls.INNER, tag)
 
     @classmethod
@@ -116,6 +121,10 @@ class XmlSer(Enum):
     @classmethod
     def ns_to_attr(cls, prefix):
         return (cls.NS_TO_ATTR, prefix)
+
+    @classmethod
+    def inner_list(cls):
+        return (cls.INNER_LIST,)
 
 
 def _stringify_trait(trait_spec, value):
@@ -151,6 +160,9 @@ def _parse_trait(trait_spec, text):
 
     if isinstance(trait_spec, UseEnum):
         # We could do better than a linear search here, but meh.
+        if text is None:
+            text = ''
+
         for enum_value in trait_spec.enum_class:
             if text == enum_value.value:
                 return enum_value
@@ -163,28 +175,40 @@ class LockedXmlTraits(LockedDownTraits):
     """A base class for LockedDownTraits objects that can also be serialized to
     and from XML.
 
+    This is not a fully general XML serialization framework; it is tuned to
+    the needs of the WWT XML serialization formats.
+
     """
     def _tag_name(self):
         raise NotImplementedError()
 
     @classmethod
-    def from_xml(cls, elem):
-        """Deserialize an instance of this class from XML.
+    def _maybe_from_xml(cls, elem):
+        """Possibly deserialize an instance of this class from an XML fragment.
 
         Parameters
         ----------
-        elem : xml.etree.ElementTree.Element
-          An XML element serializing the object.
+        elem : :class:`xml.etree.ElementTree.Element`
+          An XML element.
 
         Returns
         -------
-        An instance of the class, initialized with data from the XML.
+        If the XML element appears to contain a serialized version of this class,
+        returns a new instance, initialized with data from the XML. Otherwise,
+        returns None.
+
+        Remarks
+        -------
+        This method is architected to enable deserialization of
+        :class:`wwt_data_formats.folder.Folder` items. It also helps with the
+        implementation of some of the "inner" XML deserialization
+        implementations.
 
         """
         inst = cls()
 
         if elem.tag != inst._tag_name():
-            raise ValueError('expected <{}> tag but got <{}>'.format(inst._tag_name(), elem.tag))
+            return None
 
         for tname, tspec in inst.traits(xml = lambda a: a is not None).items():
             xml_spec, *xml_data = tspec.metadata['xml']
@@ -201,16 +225,20 @@ class LockedXmlTraits(LockedDownTraits):
                 if not isinstance(tspec, Instance):
                     raise RuntimeError('an XML element serialized as INNER must be of Instance type')
 
-                sub = elem.find(xml_data[0])
-                if sub is not None:
-                    value = tspec.klass.from_xml(sub)
+                for sub in elem:
+                    value = tspec.klass._maybe_from_xml(sub)
+                    if value is not None:
+                        break
             elif xml_spec == XmlSer.WRAPPED_INNER:
                 if not isinstance(tspec, Instance):
                     raise RuntimeError('an XML element serialized as WRAPPED_INNER must be of Instance type')
 
                 wrapper = elem.find(xml_data[0])
                 if wrapper is not None:
-                    value = tspec.klass.from_xml(wrapper[0])
+                    for sub in wrapper:
+                        value = tspec.klass._maybe_from_xml(sub)
+                        if value is not None:
+                            break
             elif xml_spec == XmlSer.NS_TO_ATTR:
                 if not isinstance(tspec, Instance):
                     raise RuntimeError('an XML element serialized as NS_TO_ATTR must be of Instance type')
@@ -219,12 +247,52 @@ class LockedXmlTraits(LockedDownTraits):
                 for aname, avalue in elem.attrib.items():
                     if aname.startswith(xml_data[0]):
                         setattr(value, aname[len(xml_data[0]):], avalue)
+            elif xml_spec == XmlSer.INNER_LIST:
+                if not isinstance(tspec, List):
+                    raise RuntimeError('XML elements serialized as INNER_LIST must be of List type')
+
+                # total hackiness specific for the Folder use case, plus encapsulation breakage:
+                un_spec = tspec._trait
+                if not isinstance(un_spec, Union):
+                    raise RuntimeError('XML elements serialized as INNER_LIST must be of List(Union) type')
+
+                klasses = [t.klass for t in un_spec.trait_types]
+                # end hackiness, maybe.
+
+                value = []
+
+                for sub in elem:
+                    for klass in klasses:
+                        v = klass._maybe_from_xml(sub)
+                        if v is not None:
+                            value.append(v)
+                            break
             else:
                 raise RuntimeError(f'unhandled XML serialization mode {xml_spec}')
 
             if value is not None:
                 setattr(inst, tname, value)
 
+        return inst
+
+
+    @classmethod
+    def from_xml(cls, elem):
+        """Deserialize an instance of this class from XML.
+
+        Parameters
+        ----------
+        elem : xml.etree.ElementTree.Element
+          An XML element serializing the object.
+
+        Returns
+        -------
+        An instance of the class, initialized with data from the XML.
+
+        """
+        inst = cls._maybe_from_xml(elem)
+        if inst is None:
+            raise ValueError(f'expected to get a {cls} instance from <{elem.tag}>, but didn\'t')
         return inst
 
 
@@ -306,6 +374,27 @@ class LockedXmlTraits(LockedDownTraits):
             elif xml_spec == XmlSer.NS_TO_ATTR:
                 for ns_name, ns_value in value.__dict__.items():
                     elem.set(xml_data[0] + ns_name, str(ns_value))
+            elif xml_spec == XmlSer.INNER_LIST:
+                # This is gross. If the list of children gets mutated, in the
+                # current framework we basically have no way to know what
+                # pre-existing XML elements map to our children. The best I
+                # can come up with is that we try to enforce the invariant
+                # that the list of children cannot get mutated.
+                preexisting = bool(len(elem))
+
+                if preexisting and len(elem) != len(value):
+                    raise RuntimeError('serializing flexible list to existing XML data, '
+                                       'but it looks like something changed beneath us')
+
+                for idx, child in enumerate(value):
+                    if preexisting:
+                        if elem[idx].tag != child._tag_name():
+                            raise RuntimeError('serializing flexible list to existing XML data, '
+                                               f'but it looks like child #{i} changed')
+                        child._serialize_xml(elem[idx])
+                    else:
+                        new_sub = child._serialize_xml(None)
+                        elem.append(new_sub)
             else:
                 raise RuntimeError(f'unhandled XML serialization mode {xml_spec}')
 

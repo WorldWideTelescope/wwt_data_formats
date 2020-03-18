@@ -12,8 +12,7 @@ Place
 '''.split()
 
 from argparse import Namespace
-from traitlets import Bool, Float, Int, Instance, Unicode, UseEnum
-from xml.etree import ElementTree as etree
+from traitlets import Float, Instance, Unicode, UseEnum
 
 from . import LockedXmlTraits, XmlSer
 from .enums import Classification, Constellation, DataSetType
