@@ -216,7 +216,8 @@ class LockedXmlTraits(LockedDownTraits):
 
             if xml_spec == XmlSer.ATTRIBUTE:
                 text = elem.attrib.get(xml_data[0])
-                value = _parse_trait(tspec, text)
+                if text is not None:
+                    value = _parse_trait(tspec, text)
             elif xml_spec == XmlSer.TEXT_ELEM:
                 sub = elem.find(xml_data[0])
                 if sub is not None:
