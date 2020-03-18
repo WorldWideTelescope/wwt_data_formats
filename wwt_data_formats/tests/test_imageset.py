@@ -8,7 +8,7 @@ import pytest
 from xml.etree import ElementTree as etree
 
 from . import assert_xml_trees_equal
-from .. import imageset
+from .. import imageset, enums
 
 
 def test_basic_xml():
@@ -21,14 +21,14 @@ def test_basic_xml():
           Url="http://example.org/{0}" WidthFactor="2">
   <Credits>Escaping &amp; Entities</Credits>
   <CreditsUrl>https://example.org/credits</CreditsUrl>
-  <ThumbnailUrl>https://example.org/thumbnail.jpg</ThumbnailUrl>
   <Description>Escaping &lt;entities&gt;</Description>
+  <ThumbnailUrl>https://example.org/thumbnail.jpg</ThumbnailUrl>
 </ImageSet>
 '''
     expected_xml = etree.fromstring(expected_str)
 
     imgset = imageset.ImageSet()
-    imgset.data_set_type = 'Planet'
+    imgset.data_set_type = enums.DataSetType.PLANET
     imgset.name = 'Test name'
     imgset.url = 'http://example.org/{0}'
     imgset.width_factor = 2
@@ -37,13 +37,13 @@ def test_basic_xml():
     imgset.base_degrees_per_tile = 0.1
     imgset.file_type = '.PNG'
     imgset.bottoms_up = True
-    imgset.projection = 'SkyImage'
+    imgset.projection = enums.ProjectionType.SKY_IMAGE
     imgset.center_x = 1.234
     imgset.center_y = -0.31415
     imgset.offset_x = 100.1
     imgset.offset_y = 100.2
     imgset.rotation_deg = 5.4321
-    imgset.band_pass = 'Gamma'
+    imgset.band_pass = enums.Bandpass.GAMMA
     imgset.sparse = False
     imgset.credits = 'Escaping & Entities'
     imgset.credits_url = 'https://example.org/credits'
