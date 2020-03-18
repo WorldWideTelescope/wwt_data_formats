@@ -1,9 +1,12 @@
 # Next version (unreleased)
 
-- Fix roundtripping of imagesets with a non-empty QuadTreeMap, and add a few more
-  attributes on the `<ImageSet>` type.
+- Fix roundtripping of imagesets with a non-empty QuadTreeMap, and add a few
+  more attributes on the `<ImageSet>` type.
 - Fix loading of XML files missing attributes that we expected to see.
-- Allow "Tangent" as an alias for "Tan" when deserializing ProjectionType enums.
+- Allow "Tangent" as an alias for "Tan" when deserializing ProjectionType
+  enums.
+- Add `to_xml_string()` and `write_xml()` convenience methods on the
+  LockedXmlTraits class that's a base class for most of our data types.
 
 
 # 0.1.1 (2020-Mar-17)
