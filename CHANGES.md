@@ -1,6 +1,13 @@
 # Next version (unreleased)
 
-- (nothing logged yet)
+- No changes logged.
+
+
+# 0.1.0 (2020-Mar-17)
+
+- Massive infrastructure rebuild. We now use traitlets and have a framework
+  for XML serialization, rather than a bunch of boilerplate code. We can
+  now deserialize folders and their contents.
 
 
 # 0.0.2 (2020-Feb-05)
