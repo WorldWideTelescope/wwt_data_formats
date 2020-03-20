@@ -1,5 +1,10 @@
 # Next version (unreleased)
 
+- No changes yet
+
+
+# 0.1.2 (2020-Mar-20)
+
 - Fix roundtripping of imagesets with a non-empty QuadTreeMap, and add a few
   more attributes on the `<ImageSet>` type.
 - Fix loading of XML files missing attributes that we expected to see.
