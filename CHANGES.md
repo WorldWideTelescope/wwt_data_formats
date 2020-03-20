@@ -1,3 +1,8 @@
+# Next version (unreleased)
+
+- No changes yet
+
+
 # 0.1.2 (2020-Mar-20)
 
 - Fix roundtripping of imagesets with a non-empty QuadTreeMap, and add a few
