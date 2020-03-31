@@ -29,6 +29,9 @@ class ImageSet(LockedXmlTraits):
     ``"SolarSystem"``, and ``"Sandbox"``.
 
     """
+    reference_frame = Unicode('').tag(xml=XmlSer.attr('ReferenceFrame'))
+    """TBD."""
+
     name = Unicode('').tag(xml=XmlSer.attr('Name'))
     """A name used to refer to this imageset.
 
