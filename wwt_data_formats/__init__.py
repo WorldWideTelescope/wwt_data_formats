@@ -292,6 +292,33 @@ class LockedXmlTraits(LockedDownTraits):
         return inst
 
 
+    @classmethod
+    def from_url(cls, url):
+        """Deserialize an instance of this class from XML downloaded from the
+        specified URL.
+
+        Parameters
+        ----------
+        url : string
+          The URL from which to download the XML.
+
+        Returns
+        -------
+        An instance of the class, initialized with data from the XML.
+
+        """
+        import requests
+        resp = requests.get(url)
+
+        # We have to set this to get requests/Python to ignore the Unicode
+        # Byte Order Marker (BOM) that is present in some WWT data files due
+        # to their Windows origin, when we decode the response into text.
+        resp.encoding = 'utf-8-sig'
+
+        elem = etree.fromstring(resp.text)
+        return cls.from_xml(elem)
+
+
     def _serialize_xml(self, elem):
         """Do the work of serializing this thing to XML.
 

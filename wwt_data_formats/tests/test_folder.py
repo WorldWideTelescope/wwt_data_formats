@@ -13,7 +13,8 @@ from .. import folder, imageset, place
 
 def test_basic_xml():
     expected_str = '''
-<Folder Browseable="True" Group="Explorer" Searchable="True" Type="Sky" />
+<Folder MSRCommunityId="0" MSRComponentId="0" Permission="0"
+        Browseable="True" Group="Explorer" Searchable="True" Type="Sky" />
 '''
     expected_xml = etree.fromstring(expected_str)
     f = folder.Folder()
@@ -28,12 +29,15 @@ def test_basic_xml():
 
 def test_children():
     expected_str = '''
-<Folder Browseable="True" Group="Explorer" Searchable="True" Type="Sky">
-  <Place Angle="0.0" AngularSize="0.0" DataSetType="Earth" Dec="0.0" Distance="0.0"
+<Folder Browseable="True" Group="Explorer" Searchable="True" Type="Sky"
+        MSRCommunityId="0" MSRComponentId="0" Permission="0">
+  <Place MSRCommunityId="0" MSRComponentId="0" Permission="0"
+         Angle="0.0" AngularSize="0.0" DataSetType="Earth" Dec="0.0" Distance="0.0"
          DomeAlt="0.0" DomeAz="0.0" Lat="0.0" Lng="0.0" Magnitude="0.0"
          Opacity="100.0" RA="0.0" Rotation="0.0" ZoomLevel="0.0">
   </Place>
-  <Place Angle="0.0" AngularSize="0.0" DataSetType="Earth" Dec="0.0" Distance="0.0"
+  <Place MSRCommunityId="0" MSRComponentId="0" Permission="0"
+         Angle="0.0" AngularSize="0.0" DataSetType="Earth" Dec="0.0" Distance="0.0"
          DomeAlt="0.0" DomeAz="0.0" Lat="0.0" Lng="0.0" Magnitude="0.0"
          Opacity="100.0" RA="0.0" Rotation="0.0" ZoomLevel="0.0">
   </Place>
@@ -47,3 +51,31 @@ def test_children():
     assert_xml_trees_equal(expected_xml, observed_xml)
 
     f = folder.Folder.from_xml(expected_xml)
+
+
+def test_walk():
+    f0 = folder.Folder()
+    f1 = folder.Folder()
+    pl0 = place.Place()
+    pl1 = place.Place()
+    is0 = imageset.ImageSet()
+
+    f0.children = [pl0, f1]
+    f1.children = [is0, pl1]
+
+    expected = [
+        (0, (), f0),
+        (1, (0, ), pl0),
+        (1, (1, ), f1),
+        (2, (1, 0), is0),
+        (2, (1, 1), pl1),
+    ]
+
+    observed = list(f0.walk(download=False))
+    assert observed == expected
+
+
+def test_from_url():
+    "Note that this test hits the network."
+    url = 'http://www.worldwidetelescope.org/wwtweb/catalog.aspx?W=ExploreRoot'
+    folder.Folder.from_url(url)  # just test that we don't crash

@@ -23,6 +23,10 @@ class Folder(LockedXmlTraits):
     name = Unicode('').tag(xml=XmlSer.attr('Name'))
     group = Unicode('Explorer').tag(xml=XmlSer.attr('Group'))
     url = Unicode('').tag(xml=XmlSer.attr('Url'))
+    """The URL at which the full contents of this folder can be downloaded in WTML
+    format.
+
+    """
     thumbnail = Unicode('').tag(xml=XmlSer.attr('Thumbnail'))
     browseable = Bool(True).tag(xml=XmlSer.attr('Browseable'))
     searchable = Bool(True).tag(xml=XmlSer.attr('Searchable'))
@@ -31,6 +35,14 @@ class Folder(LockedXmlTraits):
         default_value = FolderType.SKY,
     ).tag(xml=XmlSer.attr('Type'))
     sub_type = Unicode('').tag(xml=XmlSer.attr('SubType'))
+    msr_community_id = Int(0).tag(xml=XmlSer.attr('MSRCommunityId'))
+    """The ID number of the WWT Community that this content came from."""
+
+    msr_component_id = Int(0).tag(xml=XmlSer.attr('MSRComponentId'))
+    """The ID number of this content item on the WWT Communities system."""
+
+    permission = Int(0).tag(xml=XmlSer.attr('Permission'))
+    "TBD."
 
     children = List(
         trait = Union([
@@ -41,9 +53,21 @@ class Folder(LockedXmlTraits):
         default_value = ()
     ).tag(xml=XmlSer.inner_list())
 
-    # todo(?): msr_community_id
-    # todo(?): msr_component_id
-    # todo(?): permission
-
     def _tag_name(self):
         return 'Folder'
+
+    def walk(self, download=False):
+        yield (0, (), self)
+
+        for index, child in enumerate(self.children):
+            if isinstance(child, Folder):
+                if not len(child.children) and child.url and download:
+                    url = child.url
+                    child = Folder.from_url(url)
+                    child.url = url
+                    self.children[index] = child
+
+                for depth, path, subchild in child.walk(download=download):
+                    yield (depth + 1, (index,) + path, subchild)
+            else:
+                yield (1, (index,), child)

@@ -12,7 +12,7 @@ Place
 '''.split()
 
 from argparse import Namespace
-from traitlets import Float, Instance, Unicode, UseEnum
+from traitlets import Float, Instance, Int, Unicode, UseEnum
 
 from . import LockedXmlTraits, XmlSer
 from .enums import Classification, Constellation, DataSetType
@@ -51,6 +51,15 @@ class Place(LockedXmlTraits):
     foreground_image_set = Instance(ImageSet, allow_none=True).tag(xml=XmlSer.wrapped_inner('ForegroundImageSet'))
     image_set = Instance(ImageSet, allow_none=True).tag(xml=XmlSer.inner('ImageSet'))
     thumbnail = Unicode('').tag(xml=XmlSer.attr('Thumbnail'))
+    msr_community_id = Int(0).tag(xml=XmlSer.attr('MSRCommunityId'))
+    """The ID number of the WWT Community that this content came from."""
+
+    msr_component_id = Int(0).tag(xml=XmlSer.attr('MSRComponentId'))
+    """The ID number of this content item on the WWT Communities system."""
+
+    permission = Int(0).tag(xml=XmlSer.attr('Permission'))
+    "TBD."
+
     xmeta = Instance(
         Namespace,
         args = (),
