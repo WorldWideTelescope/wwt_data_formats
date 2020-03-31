@@ -186,6 +186,15 @@ class ImageSet(LockedXmlTraits):
     description = Unicode('').tag(xml=XmlSer.text_elem('Description'))
     """A textual description of the imagery."""
 
+    msr_community_id = Int(0).tag(xml=XmlSer.attr('MSRCommunityId'))
+    """The ID number of the WWT Community that this content came from."""
+
+    msr_component_id = Int(0).tag(xml=XmlSer.attr('MSRComponentId'))
+    """The ID number of this content item on the WWT Communities system."""
+
+    permission = Int(0).tag(xml=XmlSer.attr('Permission'))
+    "TBD."
+
     def _tag_name(self):
         return 'ImageSet'
 

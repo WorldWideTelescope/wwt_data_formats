@@ -13,7 +13,8 @@ from .. import enums, imageset, place
 
 def test_basic_xml():
     expected_str = '''
-<Place Angle="0.0" AngularSize="0.0" DataSetType="Earth" Dec="0.0" Distance="0.0"
+<Place MSRCommunityId="0" MSRComponentId="0" Permission="0"
+       Angle="0.0" AngularSize="0.0" DataSetType="Earth" Dec="0.0" Distance="0.0"
        DomeAlt="0.0" DomeAz="0.0" Lat="0.0" Lng="0.0" Magnitude="0.0"
        Opacity="100.0" RA="0.0" Rotation="0.0" ZoomLevel="0.0">
 </Place>
@@ -26,7 +27,8 @@ def test_basic_xml():
 
 def test_xmeta():
     expected_str = '''
-<Place Angle="0.0" AngularSize="0.0" DataSetType="Earth" Dec="0.0" Distance="0.0"
+<Place MSRCommunityId="0" MSRComponentId="0" Permission="0"
+       Angle="0.0" AngularSize="0.0" DataSetType="Earth" Dec="0.0" Distance="0.0"
        DomeAlt="0.0" DomeAz="0.0" Lat="0.0" Lng="0.0" Magnitude="0.0"
        Opacity="100.0" RA="0.0" Rotation="0.0" ZoomLevel="0.0" XExtra1="hello"
        XExtra2="1">
@@ -42,11 +44,13 @@ def test_xmeta():
 
 def test_nesting():
     expected_str = '''
-<Place Angle="0.0" AngularSize="0.0" DataSetType="Earth" Dec="0.0" Distance="0.0"
+<Place MSRCommunityId="0" MSRComponentId="0" Permission="0"
+       Angle="0.0" AngularSize="0.0" DataSetType="Earth" Dec="0.0" Distance="0.0"
        DomeAlt="0.0" DomeAz="0.0" Lat="0.0" Lng="0.0" Magnitude="0.0"
        Opacity="100.0" RA="0.0" Rotation="0.0" ZoomLevel="0.0">
   <BackgroundImageSet>
-    <ImageSet BandPass="Visible" BaseDegreesPerTile="0.0" BaseTileLevel="0"
+    <ImageSet MSRCommunityId="0" MSRComponentId="0" Permission="0"
+              BandPass="Visible" BaseDegreesPerTile="0.0" BaseTileLevel="0"
               BottomsUp="False" CenterX="0.0" CenterY="0.0" DataSetType="Sky" ElevationModel="False"
               FileType=".png" Generic="False" MeanRadius="0.0" OffsetX="0.0" OffsetY="0.0" Projection="SkyImage"
               Rotation="0.0" Sparse="True" StockSet="False" TileLevels="0"
@@ -54,14 +58,16 @@ def test_nesting():
     </ImageSet>
   </BackgroundImageSet>
   <ForegroundImageSet>
-    <ImageSet BandPass="Visible" BaseDegreesPerTile="0.0" BaseTileLevel="0"
+    <ImageSet MSRCommunityId="0" MSRComponentId="0" Permission="0"
+              BandPass="Visible" BaseDegreesPerTile="0.0" BaseTileLevel="0"
               BottomsUp="False" CenterX="0.0" CenterY="0.0" DataSetType="Sky" ElevationModel="False"
               FileType=".png" Generic="False" MeanRadius="0.0" OffsetX="0.0" OffsetY="0.0" Projection="SkyImage"
               Rotation="0.0" Sparse="True" StockSet="False" TileLevels="0"
               Url="http://example.com/foreground" WidthFactor="2">
     </ImageSet>
   </ForegroundImageSet>
-  <ImageSet BandPass="Visible" BaseDegreesPerTile="0.0" BaseTileLevel="0"
+  <ImageSet MSRCommunityId="0" MSRComponentId="0" Permission="0"
+            BandPass="Visible" BaseDegreesPerTile="0.0" BaseTileLevel="0"
             BottomsUp="False" CenterX="0.0" CenterY="0.0" DataSetType="Sky" ElevationModel="False"
             FileType=".png" Generic="False" MeanRadius="0.0" OffsetX="0.0" OffsetY="0.0" Projection="SkyImage"
             Rotation="0.0" Sparse="True" StockSet="False" TileLevels="0"

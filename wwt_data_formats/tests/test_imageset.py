@@ -13,7 +13,8 @@ from .. import imageset, enums, stringify_xml_doc, write_xml_doc
 
 def test_basic_xml():
     expected_str = '''
-<ImageSet BandPass="Gamma" BaseDegreesPerTile="0.1" BaseTileLevel="1"
+<ImageSet MSRCommunityId="0" MSRComponentId="0" Permission="0"
+          BandPass="Gamma" BaseDegreesPerTile="0.1" BaseTileLevel="1"
           BottomsUp="True" CenterX="1.234" CenterY="-0.31415"
           DataSetType="Planet" ElevationModel="False" FileType=".PNG" Generic="False"
           MeanRadius="0.0" Name="Test name"
@@ -57,7 +58,8 @@ def test_basic_xml():
 
 def test_wcs_1():
     expected_str = '''
-<ImageSet BandPass="Visible" BaseDegreesPerTile="4.870732233333334e-05"
+<ImageSet MSRCommunityId="0" MSRComponentId="0" Permission="0"
+          BandPass="Visible" BaseDegreesPerTile="4.870732233333334e-05"
           BaseTileLevel="0" BottomsUp="False" CenterX="83.633083" CenterY="22.0145"
           DataSetType="Sky" ElevationModel="False" FileType=".png" Generic="False"
           MeanRadius="0.0" OffsetX="1502.8507831457316" OffsetY="1478.8005935660037"
@@ -93,7 +95,8 @@ def test_wcs_1():
 
 def test_misc_ser():
     expected_str = '''
-<ImageSet BandPass="Visible" BaseDegreesPerTile="0.0" BaseTileLevel="0"
+<ImageSet MSRCommunityId="0" MSRComponentId="0" Permission="0"
+          BandPass="Visible" BaseDegreesPerTile="0.0" BaseTileLevel="0"
           BottomsUp="False" CenterX="0.0" CenterY="0.0" DataSetType="Sky" ElevationModel="False"
           FileType=".png" Generic="False" MeanRadius="0.0" OffsetX="0.0" OffsetY="0.0" Projection="SkyImage"
           Rotation="0.0" Sparse="True" StockSet="False" TileLevels="0"

@@ -31,6 +31,14 @@ class Folder(LockedXmlTraits):
         default_value = FolderType.SKY,
     ).tag(xml=XmlSer.attr('Type'))
     sub_type = Unicode('').tag(xml=XmlSer.attr('SubType'))
+    msr_community_id = Int(0).tag(xml=XmlSer.attr('MSRCommunityId'))
+    """The ID number of the WWT Community that this content came from."""
+
+    msr_component_id = Int(0).tag(xml=XmlSer.attr('MSRComponentId'))
+    """The ID number of this content item on the WWT Communities system."""
+
+    permission = Int(0).tag(xml=XmlSer.attr('Permission'))
+    "TBD."
 
     children = List(
         trait = Union([
@@ -40,10 +48,6 @@ class Folder(LockedXmlTraits):
         ]),
         default_value = ()
     ).tag(xml=XmlSer.inner_list())
-
-    # todo(?): msr_community_id
-    # todo(?): msr_component_id
-    # todo(?): permission
 
     def _tag_name(self):
         return 'Folder'
