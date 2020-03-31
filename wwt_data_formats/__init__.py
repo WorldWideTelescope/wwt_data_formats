@@ -292,6 +292,27 @@ class LockedXmlTraits(LockedDownTraits):
         return inst
 
 
+    @classmethod
+    def from_url(cls, url):
+        """Deserialize an instance of this class from XML downloaded from the
+        specified URL.
+
+        Parameters
+        ----------
+        url : string
+          The URL from which to download the XML.
+
+        Returns
+        -------
+        An instance of the class, initialized with data from the XML.
+
+        """
+        import requests
+        resp = requests.get(url)
+        elem = etree.fromstring(resp.text)
+        return cls.from_xml(elem)
+
+
     def _serialize_xml(self, elem):
         """Do the work of serializing this thing to XML.
 
