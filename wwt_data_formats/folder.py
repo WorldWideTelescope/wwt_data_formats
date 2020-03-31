@@ -23,6 +23,10 @@ class Folder(LockedXmlTraits):
     name = Unicode('').tag(xml=XmlSer.attr('Name'))
     group = Unicode('Explorer').tag(xml=XmlSer.attr('Group'))
     url = Unicode('').tag(xml=XmlSer.attr('Url'))
+    """The URL at which the full contents of this folder can be downloaded in WTML
+    format.
+
+    """
     thumbnail = Unicode('').tag(xml=XmlSer.attr('Thumbnail'))
     browseable = Bool(True).tag(xml=XmlSer.attr('Browseable'))
     searchable = Bool(True).tag(xml=XmlSer.attr('Searchable'))
@@ -51,3 +55,19 @@ class Folder(LockedXmlTraits):
 
     def _tag_name(self):
         return 'Folder'
+
+    def walk(self, download=False):
+        yield (0, (), self)
+
+        for index, child in enumerate(self.children):
+            if isinstance(child, Folder):
+                if not len(child.children) and child.url and download:
+                    url = child.url
+                    child = Folder.from_url(url)
+                    child.url = url
+                    self.children[index] = child
+
+                for depth, path, subchild in child.walk(download=download):
+                    yield (depth + 1, (index,) + path, subchild)
+            else:
+                yield (1, (index,), child)
