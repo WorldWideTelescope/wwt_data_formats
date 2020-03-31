@@ -95,10 +95,10 @@ def test_wcs_1():
 
 def test_misc_ser():
     expected_str = '''
-<ImageSet MSRCommunityId="0" MSRComponentId="0" Permission="0"
-          BandPass="Visible" BaseDegreesPerTile="0.0" BaseTileLevel="0"
+<ImageSet BandPass="Visible" BaseDegreesPerTile="0.0" BaseTileLevel="0"
           BottomsUp="False" CenterX="0.0" CenterY="0.0" DataSetType="Sky" ElevationModel="False"
-          FileType=".png" Generic="False" MeanRadius="0.0" OffsetX="0.0" OffsetY="0.0" Projection="SkyImage"
+          FileType=".png" Generic="False" MeanRadius="0.0" MSRCommunityId="0" MSRComponentId="0"
+          OffsetX="0.0" OffsetY="0.0" Permission="0" Projection="SkyImage"
           Rotation="0.0" Sparse="True" StockSet="False" TileLevels="0"
           Url="http://example.com/unspecified" WidthFactor="2" />
 '''
