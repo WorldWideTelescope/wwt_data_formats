@@ -51,3 +51,25 @@ def test_children():
     assert_xml_trees_equal(expected_xml, observed_xml)
 
     f = folder.Folder.from_xml(expected_xml)
+
+
+def test_walk():
+    f0 = folder.Folder()
+    f1 = folder.Folder()
+    pl0 = place.Place()
+    pl1 = place.Place()
+    is0 = imageset.ImageSet()
+
+    f0.children = [pl0, f1]
+    f1.children = [is0, pl1]
+
+    expected = [
+        (0, (), f0),
+        (1, (0, ), pl0),
+        (1, (1, ), f1),
+        (2, (1, 0), is0),
+        (2, (1, 1), pl1),
+    ]
+
+    observed = list(f0.walk(download=False))
+    assert observed == expected
