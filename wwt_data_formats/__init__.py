@@ -309,6 +309,12 @@ class LockedXmlTraits(LockedDownTraits):
         """
         import requests
         resp = requests.get(url)
+
+        # We have to set this to get requests/Python to ignore the Unicode
+        # Byte Order Marker (BOM) that is present in some WWT data files due
+        # to their Windows origin, when we decode the response into text.
+        resp.encoding = 'utf-8-sig'
+
         elem = etree.fromstring(resp.text)
         return cls.from_xml(elem)
 

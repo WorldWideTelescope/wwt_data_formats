@@ -73,3 +73,9 @@ def test_walk():
 
     observed = list(f0.walk(download=False))
     assert observed == expected
+
+
+def test_from_url():
+    "Note that this test hits the network."
+    url = 'http://www.worldwidetelescope.org/wwtweb/catalog.aspx?W=ExploreRoot'
+    folder.Folder.from_url(url)  # just test that we don't crash
