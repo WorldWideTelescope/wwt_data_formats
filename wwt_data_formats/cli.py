@@ -32,6 +32,19 @@ def cabinet_getparser(parser):
         help = 'The path to a cabinet file.',
     )
 
+    p = subparsers.add_parser('pack')
+    p.add_argument(
+        'cab_path',
+        metavar = 'PATH',
+        help = 'The path of the cabinet file to create.',
+    )
+    p.add_argument(
+        'input_paths',
+        nargs = '+',
+        metavar = 'PATHS',
+        help = 'Paths to files to put into the cabinet.',
+    )
+
     p = subparsers.add_parser('unpack')
     p.add_argument(
         'path',
@@ -48,6 +61,29 @@ def cabinet_list(settings):
 
         for fn in reader.filenames():
             print(fn)
+
+
+def cabinet_pack(settings):
+    from .filecabinet import FileCabinetWriter
+    import os.path
+
+    writer = FileCabinetWriter()
+
+    for fn in settings.input_paths:
+        with open(fn, 'rb') as f:
+            data = f.read()
+
+        # TODO: smarter splitting
+        pieces = fn.split(os.path.sep)
+
+        for p in pieces:
+            if p in ('.', '..', ''):
+                die(f'illegal input path "{fn}": must be relative with no ".", ".." components')
+
+        writer.add_file_with_data('\\'.join(pieces), data)
+
+    with open(settings.cab_path, 'wb') as f_out:
+        writer.emit(f_out)
 
 
 def cabinet_unpack(settings):
@@ -76,6 +112,8 @@ def cabinet_impl(settings):
 
     if settings.cabinet_command == 'list':
         return cabinet_list(settings)
+    elif settings.cabinet_command == 'pack':
+        return cabinet_pack(settings)
     elif settings.cabinet_command == 'unpack':
         return cabinet_unpack(settings)
     else:
