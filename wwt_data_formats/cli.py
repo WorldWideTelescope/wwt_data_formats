@@ -32,6 +32,13 @@ def cabinet_getparser(parser):
         help = 'The path to a cabinet file.',
     )
 
+    p = subparsers.add_parser('unpack')
+    p.add_argument(
+        'path',
+        metavar = 'PATH',
+        help = 'The path to a cabinet file.',
+    )
+
 
 def cabinet_list(settings):
     from .filecabinet import FileCabinetReader
@@ -43,6 +50,25 @@ def cabinet_list(settings):
             print(fn)
 
 
+def cabinet_unpack(settings):
+    from .filecabinet import FileCabinetReader
+    from os import makedirs
+    from os.path import join
+
+    with open(settings.path, 'rb') as f_in:
+        reader =  FileCabinetReader(f_in)
+
+        for fn in reader.filenames():
+            data = reader.read_file(fn)
+            pieces = fn.split('\\')  # paths are Windows-style
+
+            if len(pieces) > 1:
+                makedirs(join(*pieces[:-1]), exist_ok=True)
+
+            with open(join(*pieces), 'wb') as f_out:
+                f_out.write(data)
+
+
 def cabinet_impl(settings):
     if settings.cabinet_command is None:
         print('Run the "cabinet" command with `--help` for help on its subcommands')
@@ -50,6 +76,8 @@ def cabinet_impl(settings):
 
     if settings.cabinet_command == 'list':
         return cabinet_list(settings)
+    elif settings.cabinet_command == 'unpack':
+        return cabinet_unpack(settings)
     else:
         die('unrecognized "cabinet" subcommand ' + settings.cabinet_command)
 
