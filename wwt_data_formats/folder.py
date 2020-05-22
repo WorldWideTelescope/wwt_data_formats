@@ -6,9 +6,15 @@ from __future__ import absolute_import, division, print_function
 
 __all__ = '''
 Folder
+fetch_folder_tree
+walk_cached_folder_tree
 '''.split()
 
+import os.path
+import re
+import requests
 from traitlets import Bool, Instance, Int, List, Unicode, Union, UseEnum
+from xml.etree import ElementTree as etree
 
 from . import LockedXmlTraits, XmlSer
 from .enums import FolderType
@@ -71,3 +77,82 @@ class Folder(LockedXmlTraits):
                     yield (depth + 1, (index,) + path, subchild)
             else:
                 yield (1, (index,), child)
+
+
+def _sanitize_name(name):
+    s = re.sub('[^-_a-zA-Z0-9]+', '_', name)
+    s = re.sub('^_+', '', s)
+    s = re.sub('_+$', '', s)
+    return s
+
+
+def fetch_folder_tree(root_url, root_cache_path, on_fetch=None):
+    done_urls = set()
+
+    def get_folder(url):
+        if url in done_urls:
+            return None, None
+
+        on_fetch(url)
+        resp = requests.get(url)
+        resp.encoding = 'utf-8-sig'  # see LockedXmlTraits.from_urL()
+        elem = etree.fromstring(resp.text)
+        done_urls.add(url)
+        return resp.text, Folder.from_xml(elem)
+
+    root_text, root_folder = get_folder(root_url)
+    with open(os.path.join(root_cache_path, 'index.wtml'), 'wt') as f:
+        f.write(root_text)
+
+    def walk(cur_folder, cur_cache_path):
+        for index, child in enumerate(cur_folder.children):
+            if not isinstance(child, Folder):
+                continue
+
+            text = None
+            subdir_base = f'{index:03d}_{_sanitize_name(child.name)}'
+            child_cache_path = os.path.join(cur_cache_path, subdir_base)
+
+            if not len(child.children) and child.url:
+                text, child = get_folder(child.url)
+                if child is None:
+                    continue
+
+                os.makedirs(child_cache_path, exist_ok=True)
+                with open(os.path.join(child_cache_path, 'index.wtml'), 'wt') as f:
+                    f.write(text)
+
+            walk(child, child_cache_path)
+
+    walk(root_folder, root_cache_path)
+
+
+def walk_cached_folder_tree(root_cache_path):
+    seen_urls = set()
+
+    root_folder = Folder.from_file(os.path.join(root_cache_path, 'index.wtml'))
+
+    def walk(cur_treepath, cur_folder, cur_cache_path):
+        yield (cur_treepath, cur_folder)
+
+        for index, child in enumerate(cur_folder.children):
+            child_treepath = cur_treepath + (index,)
+
+            if not isinstance(child, Folder):
+                yield (child_treepath, child)
+            else:
+                subdir_base = f'{index:03d}_{_sanitize_name(child.name)}'
+                child_cache_path = os.path.join(cur_cache_path, subdir_base)
+
+                if not len(child.children) and child.url:
+                    if child.url in seen_urls:
+                        continue
+
+                    seen_urls.add(child.url)
+                    child = Folder.from_file(os.path.join(child_cache_path, 'index.wtml'))
+
+                for sub_treepath, sub_child in walk(child_treepath, child, child_cache_path):
+                    yield (sub_treepath, sub_child)
+
+    for info in walk((), root_folder, root_cache_path):
+        yield info

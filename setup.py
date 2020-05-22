@@ -1,5 +1,5 @@
 # -*- mode: python; coding: utf-8 -*-
-# Copyright 2019 the .NET Foundation
+# Copyright 2019-2020 the .NET Foundation
 # Licensed under the MIT License
 
 from __future__ import absolute_import, division, print_function
@@ -61,6 +61,12 @@ setup_args = dict(
         'wwt_data_formats.tests',
     ],
     include_package_data = True,
+
+    entry_points = {
+        'console_scripts': [
+            'wwtdatatool=wwt_data_formats.cli:entrypoint',
+        ],
+    },
 
     install_requires = [
         'traitlets',
