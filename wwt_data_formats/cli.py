@@ -20,6 +20,40 @@ def warn(msg):
     print('warning:', msg, file=sys.stderr)
 
 
+# "cabinet" subcommand
+
+def cabinet_getparser(parser):
+    subparsers = parser.add_subparsers(dest='cabinet_command')
+
+    p = subparsers.add_parser('list')
+    p.add_argument(
+        'path',
+        metavar = 'PATH',
+        help = 'The path to a cabinet file.',
+    )
+
+
+def cabinet_list(settings):
+    from .filecabinet import FileCabinetReader
+
+    with open(settings.path, 'rb') as f:
+        reader =  FileCabinetReader(f)
+
+        for fn in reader.filenames():
+            print(fn)
+
+
+def cabinet_impl(settings):
+    if settings.cabinet_command is None:
+        print('Run the "cabinet" command with `--help` for help on its subcommands')
+        return
+
+    if settings.cabinet_command == 'list':
+        return cabinet_list(settings)
+    else:
+        die('unrecognized "cabinet" subcommand ' + settings.cabinet_command)
+
+
 # "fetch-tree" subcommand
 
 def fetch_tree_getparser(parser):
