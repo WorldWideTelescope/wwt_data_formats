@@ -68,3 +68,21 @@ class Place(LockedXmlTraits):
 
     def _tag_name(self):
         return 'Place'
+
+    def as_imageset(self):
+        """Return an ImageSet for this place if one is defined.
+
+        Returns
+        -------
+        Either :class:`wwt_data_formats.imageset.ImageSet` or None.
+
+        Remarks
+        -------
+        If the :attr:`foreground_image_set` of this :class:`Place` is not
+        None, it is returned. Otherwise, if its :attr:`image_Set` is not
+        None, that is returned. Otherwise, None is returned.
+
+        """
+        if self.foreground_image_set is not None:
+            return self.foreground_image_set
+        return self.image_set

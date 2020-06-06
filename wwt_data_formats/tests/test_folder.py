@@ -4,6 +4,9 @@
 
 from __future__ import absolute_import, division, print_function
 
+from mock import Mock
+import shutil
+import tempfile
 import pytest
 from xml.etree import ElementTree as etree
 
@@ -11,12 +14,62 @@ from . import assert_xml_trees_equal
 from .. import folder, imageset, place
 
 
-def test_basic_xml():
-    expected_str = '''
+@pytest.fixture
+def tempdir():
+    d = tempfile.mkdtemp()
+    yield d
+    shutil.rmtree(d)
+
+
+BASIC_XML_STRING = '''
 <Folder MSRCommunityId="0" MSRComponentId="0" Permission="0"
         Browseable="True" Group="Explorer" Searchable="True" Type="Sky" />
 '''
-    expected_xml = etree.fromstring(expected_str)
+
+ROOT_XML_STRING = '''
+<Folder MSRCommunityId="0" MSRComponentId="0" Permission="0"
+        Browseable="True" Group="Explorer" Searchable="True" Type="Sky">
+    <Folder Url="http://example.com/child1.wtml" />
+    <Place MSRCommunityId="0" MSRComponentId="0" Permission="0"
+        Angle="0.0" AngularSize="0.0" DataSetType="Earth" Dec="0.0" Distance="0.0"
+        DomeAlt="0.0" DomeAz="0.0" Lat="0.0" Lng="0.0" Magnitude="0.0"
+        Opacity="100.0" RA="0.0" Rotation="0.0" ZoomLevel="0.0">
+    </Place>
+</Folder>
+'''
+
+CHILD1_XML_STRING = '''
+<Folder Name="Child1" MSRCommunityId="0" MSRComponentId="0" Permission="0"
+        Browseable="True" Group="Explorer" Searchable="True" Type="Sky">
+    <Place MSRCommunityId="0" MSRComponentId="0" Permission="0"
+        Angle="0.0" AngularSize="0.0" DataSetType="Earth" Dec="0.0" Distance="0.0"
+        DomeAlt="0.0" DomeAz="0.0" Lat="0.0" Lng="0.0" Magnitude="0.0"
+        Opacity="100.0" RA="0.0" Rotation="0.0" ZoomLevel="0.0">
+    </Place>
+</Folder>
+'''
+
+def fake_request_session_send(request, **kwargs):
+    rv = Mock()
+
+    if request.url == 'http://example.com/root.wtml':
+        rv.text = ROOT_XML_STRING
+    elif request.url == 'http://example.com/child1.wtml':
+        rv.text = CHILD1_XML_STRING
+    else:
+        raise Exception(f'unexpected URL to fake requests.Session.send(): {request.url}')
+
+    return rv
+
+
+@pytest.fixture
+def fake_requests(mocker):
+    m = mocker.patch('requests.Session.send')
+    m.side_effect = fake_request_session_send
+
+
+def test_basic_xml():
+    expected_xml = etree.fromstring(BASIC_XML_STRING)
     f = folder.Folder()
     observed_xml = f.to_xml()
     assert_xml_trees_equal(expected_xml, observed_xml)
@@ -79,3 +132,15 @@ def test_from_url():
     "Note that this test hits the network."
     url = 'http://www.worldwidetelescope.org/wwtweb/catalog.aspx?W=ExploreRoot'
     folder.Folder.from_url(url)  # just test that we don't crash
+
+
+def test_fetch_tree(fake_requests, tempdir):
+    "Simple smoke test to see whether it crashes."
+
+    def on_fetch(url):
+        pass
+
+    folder.fetch_folder_tree('http://example.com/root.wtml', tempdir, on_fetch)
+
+    for item in folder.walk_cached_folder_tree(tempdir):
+        pass

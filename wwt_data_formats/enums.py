@@ -198,6 +198,7 @@ class FolderType(SerEnum):
 class ProjectionType(SerEnum):
     MERCATOR = 'Mercator'
     EQUIRECTANGULAR = 'Equirectangular'
+    HEALPIX = 'Healpix'
     TAN = 'Tan'
     TOAST = 'Toast'
     SPHERICAL = 'Spherical'

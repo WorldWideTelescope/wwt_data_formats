@@ -293,6 +293,27 @@ class LockedXmlTraits(LockedDownTraits):
 
 
     @classmethod
+    def from_file(cls, path):
+        """Deserialize an instance of this class an XML file on local disk.
+
+        Parameters
+        ----------
+        path : string
+          The path of the XML file.
+
+        Returns
+        -------
+        An instance of the class, initialized with data from the XML.
+
+        """
+        with open(path, 'rt') as f:
+            text = f.read()
+
+        elem = etree.fromstring(text)
+        return cls.from_xml(elem)
+
+
+    @classmethod
     def from_url(cls, url):
         """Deserialize an instance of this class from XML downloaded from the
         specified URL.
