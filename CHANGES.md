@@ -1,6 +1,12 @@
-# Next version (unreleased)
+# 0.1.3 (2020-Jun-06)
 
-- No changes yet
+- Add a CLI tool, `wwtdatatool`, to provide interfaces to certain low-level
+  operations
+- Add some infrastructure to support walking of trees of folders with on-the-fly
+  downloads as needed.
+- Support the Imageset::reference_frame attribute
+- Support Communities metadata
+- Fix the test suite for Python 3.8
 
 
 # 0.1.2 (2020-Mar-20)
