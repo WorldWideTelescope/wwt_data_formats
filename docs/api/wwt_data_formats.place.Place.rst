@@ -25,13 +25,22 @@ Place
       ~Place.latitude
       ~Place.longitude
       ~Place.magnitude
+      ~Place.msr_community_id
+      ~Place.msr_component_id
       ~Place.name
       ~Place.opacity
+      ~Place.permission
       ~Place.ra_hr
       ~Place.rotation_deg
       ~Place.thumbnail
       ~Place.xmeta
       ~Place.zoom_level
+
+   .. rubric:: Methods Summary
+
+   .. autosummary::
+
+      ~Place.as_imageset
 
    .. rubric:: Attributes Documentation
 
@@ -50,10 +59,17 @@ Place
    .. autoattribute:: latitude
    .. autoattribute:: longitude
    .. autoattribute:: magnitude
+   .. autoattribute:: msr_community_id
+   .. autoattribute:: msr_component_id
    .. autoattribute:: name
    .. autoattribute:: opacity
+   .. autoattribute:: permission
    .. autoattribute:: ra_hr
    .. autoattribute:: rotation_deg
    .. autoattribute:: thumbnail
    .. autoattribute:: xmeta
    .. autoattribute:: zoom_level
+
+   .. rubric:: Methods Documentation
+
+   .. automethod:: as_imageset
