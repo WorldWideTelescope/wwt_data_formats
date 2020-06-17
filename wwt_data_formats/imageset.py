@@ -76,7 +76,7 @@ class ImageSet(LockedXmlTraits):
     base_degrees_per_tile = Float(0.0).tag(xml=XmlSer.attr('BaseDegreesPerTile'))
     """The angular scale of the image.
 
-    For untiled images, should be the pixel scale: the numer of degrees per
+    For untiled images, should be the pixel scale: the number of degrees per
     pixel in the vertical direction. Non-square pixels are not supported.
 
     For tiled images, this is the height of the image with its dimensions
