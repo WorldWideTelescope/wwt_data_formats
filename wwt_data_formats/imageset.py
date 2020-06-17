@@ -76,7 +76,7 @@ class ImageSet(LockedXmlTraits):
     base_degrees_per_tile = Float(0.0).tag(xml=XmlSer.attr('BaseDegreesPerTile'))
     """The angular scale of the image.
 
-    For untiled images, should be the pixel scale: the numer of degrees per
+    For untiled images, should be the pixel scale: the number of degrees per
     pixel in the vertical direction. Non-square pixels are not supported.
 
     For tiled images, this is the height of the image with its dimensions
@@ -331,3 +331,44 @@ class ImageSet(LockedXmlTraits):
             place.zoom_level = height * scale_y * fov_factor * 6
 
         return self
+
+
+    def wcs_headers_from_position(self):
+        """Compute a set of WCS headers for this ImageSet's positional information.
+
+        Returns
+        -------
+        A string-keyed dict-like containing FITS/WCS header keywords such as
+        ``CTYPE1``, ``CRPIX1``, etc.
+
+        Notes
+        -----
+        At the moment, this function only works for ImageSets with a
+        projection type of ``SKY_IMAGE``. Support for other projections
+        *might* be added later, if the need arises..
+
+        """
+        rv = {
+            'CTYPE1': 'RA---TAN',
+            'CTYPE2': 'DEC--TAN',
+            'CRVAL1': self.center_x,
+            'CRVAL2': self.center_y,
+        }
+
+        if self.projection != ProjectionType.SKY_IMAGE:
+            raise NotImplementError('wcs_headers_from_position() only works if projection=SKY_IMAGE')
+
+        rv['CRPIX1'] = self.offset_x + 1
+        rv['CRPIX2'] = self.offset_y + 1
+        rv['CDELT2'] = self.base_degrees_per_tile  # = scale_y, above
+        rv['CDELT1'] = -self.base_degrees_per_tile  # AFAICT, non-square pixels can't be expressed
+
+        c = math.cos(self.rotation_deg * math.pi / 180)
+        s = math.sin(self.rotation_deg * math.pi / 180)
+
+        rv['PC1_1'] = c
+        rv['PC1_2'] = -s
+        rv['PC2_1'] = s
+        rv['PC2_2'] = c
+
+        return rv

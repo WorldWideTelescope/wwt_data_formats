@@ -52,6 +52,11 @@ intersphinx_mapping = {
         None
     ),
 
+    'requests': (
+        'https://requests.readthedocs.io/en/stable/',
+        None
+    ),
+
     'traitlets': (
         'https://traitlets.readthedocs.io/en/stable/',
         None

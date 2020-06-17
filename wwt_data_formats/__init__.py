@@ -98,6 +98,7 @@ class XmlSer(Enum):
     WRAPPED_INNER = 'wrapped_inner'
     NS_TO_ATTR = 'ns_to_attr'
     INNER_LIST = 'inner_list'
+    WRAPPED_INNER_LIST = 'wrapped_inner_list'
 
     @classmethod
     def attr(cls, attr):
@@ -125,6 +126,10 @@ class XmlSer(Enum):
     @classmethod
     def inner_list(cls):
         return (cls.INNER_LIST,)
+
+    @classmethod
+    def wrapped_inner_list(cls, tag):
+        return (cls.WRAPPED_INNER_LIST, tag)
 
 
 def _stringify_trait(trait_spec, value):
@@ -175,7 +180,20 @@ class LockedXmlTraits(LockedDownTraits):
 
     """
     def _tag_name(self):
+        """Return the XML tag name associated with the serialization of this object."""
         raise NotImplementedError()
+
+    def _check_elem_is_this_type(self, elem):
+        """Return whether the XML element represents an instance of this class.
+
+        By default, this function returns True if the elem tag name matches
+        this classes ``_tag_name()``. This filter can be overridden. This
+        function is used by ``_maybe_from_xml()`` when deserializing
+        containers with contents that have flexible types.
+
+        """
+
+        return elem.tag == self._tag_name()
 
     @classmethod
     def _maybe_from_xml(cls, elem):
@@ -202,7 +220,7 @@ class LockedXmlTraits(LockedDownTraits):
         """
         inst = cls()
 
-        if elem.tag != inst._tag_name():
+        if not inst._check_elem_is_this_type(elem):
             return None
 
         for tname, tspec in inst.traits(xml = lambda a: a is not None).items():
@@ -263,6 +281,28 @@ class LockedXmlTraits(LockedDownTraits):
                         if v is not None:
                             value.append(v)
                             break
+            elif xml_spec == XmlSer.WRAPPED_INNER_LIST:
+                # Repeat the INNER_LIST hackiness
+                if not isinstance(tspec, List):
+                    raise RuntimeError('XML elements serialized as WRAPPED_INNER_LIST must be of List type')
+
+                un_spec = tspec._trait
+                if not isinstance(un_spec, Union):
+                    raise RuntimeError('XML elements serialized as WRAPPED_INNER_LIST must be of List(Union) type')
+
+                klasses = [t.klass for t in un_spec.trait_types]
+                # end hackiness, maybe.
+
+                value = []
+
+                wrapper = elem.find(xml_data[0])
+                if wrapper is not None:
+                    for sub in wrapper:
+                        for klass in klasses:
+                            v = klass._maybe_from_xml(sub)
+                            if v is not None:
+                                value.append(v)
+                                break
             else:
                 raise RuntimeError(f'unhandled XML serialization mode {xml_spec}')
 
@@ -293,8 +333,26 @@ class LockedXmlTraits(LockedDownTraits):
 
 
     @classmethod
+    def from_text(cls, text):
+        """Deserialize an instance of this class from XML-formatted text.
+
+        Parameters
+        ----------
+        text : string
+          The XML text.
+
+        Returns
+        -------
+        An instance of the class, initialized with data from the XML.
+
+        """
+        elem = etree.fromstring(text)
+        return cls.from_xml(elem)
+
+
+    @classmethod
     def from_file(cls, path):
-        """Deserialize an instance of this class an XML file on local disk.
+        """Deserialize an instance of this class from an XML file on local disk.
 
         Parameters
         ----------
@@ -309,8 +367,7 @@ class LockedXmlTraits(LockedDownTraits):
         with open(path, 'rt') as f:
             text = f.read()
 
-        elem = etree.fromstring(text)
-        return cls.from_xml(elem)
+        return cls.from_text(text)
 
 
     @classmethod
@@ -439,6 +496,28 @@ class LockedXmlTraits(LockedDownTraits):
                     else:
                         new_sub = child._serialize_xml(None)
                         elem.append(new_sub)
+            elif xml_spec == XmlSer.WRAPPED_INNER_LIST:
+                wrapper = elem.find(xml_data[0])
+
+                if wrapper is None:
+                    preexisting = False
+                    wrapper = etree.SubElement(elem, xml_data[0])
+                else:
+                    preexisting = True
+
+                    if len(wrapper) != len(value):
+                        raise RuntimeError('serializing flexible list to existing XML data, '
+                                           'but it looks like something changed beneath us')
+
+                for idx, child in enumerate(value):
+                    if preexisting:
+                        if wrapper[idx].tag != child._tag_name():
+                            raise RuntimeError('serializing flexible list to existing XML data, '
+                                               f'but it looks like child #{i} changed')
+                        child._serialize_xml(wrapper[idx])
+                    else:
+                        new_sub = child._serialize_xml(None)
+                        wrapper.append(new_sub)
             else:
                 raise RuntimeError(f'unhandled XML serialization mode {xml_spec}')
 

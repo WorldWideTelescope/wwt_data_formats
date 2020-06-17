@@ -1,3 +1,6 @@
+### XXX DOCS SHOULD INCLUDE LINKCHECK BUT IT'S BUSTED ON CURRENT SPHINX (3.1, 2020-Jun-17):
+### https://github.com/sphinx-doc/sphinx/issues/7806
+
 language: c
 
 os:
@@ -18,7 +21,7 @@ notifications:
 env:
   global:
     - CONDA_CHANNELS="conda-forge"
-    - CONDA_DEPENDENCIES="astropy coveralls mock numpydoc pytest-cov pytest-mock sphinx sphinx-automodapi traitlets"
+    - CONDA_DEPENDENCIES="astropy coveralls mock numpydoc pytest-cov pytest-mock requests sphinx sphinx-automodapi traitlets"
     - PIP_DEPENDENCIES="astropy-sphinx-theme"
   matrix:
     - PYTHON_VERSION=3.7
@@ -33,7 +36,7 @@ script:
   - cd dist && pip install *.tar.gz --verbose && cd ..
   - python setup.py build_ext --inplace
   - pytest --cov wwt_data_formats wwt_data_formats
-  - make -C docs html linkcheck
+  - make -C docs html
 
 after_success:
   - coveralls

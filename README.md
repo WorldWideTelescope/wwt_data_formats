@@ -57,10 +57,12 @@ well as release listings maintained by
 
 - [astropy] is not a required dependency, but can be used
 - [pytest] to run the test suite
+- [requests] is always required (in princple it could be optional)
 - [traitlets] is always required
 
 [astropy]: https://www.astropy.org/
 [pytest]: https://docs.pytest.org/
+[requests]: https://requests.readthedocs.io/
 [traitlets]: https://traitlets.readthedocs.io/
 
 

@@ -1,3 +1,8 @@
+# Next
+
+- Clarify that the `requests` package is now always required.
+- Add `wwt_data_formats.layers` for dealing with WWTL layer-export files.
+
 # 0.1.3 (2020-Jun-06)
 
 - Add a CLI tool, `wwtdatatool`, to provide interfaces to certain low-level
