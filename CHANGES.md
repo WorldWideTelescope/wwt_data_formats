@@ -1,3 +1,7 @@
+# Next
+
+- Clarify that the `requests` package is now always required.
+
 # 0.1.3 (2020-Jun-06)
 
 - Add a CLI tool, `wwtdatatool`, to provide interfaces to certain low-level

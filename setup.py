@@ -69,6 +69,7 @@ setup_args = dict(
     },
 
     install_requires = [
+        'requests',
         'traitlets',
     ],
 
