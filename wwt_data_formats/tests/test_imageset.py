@@ -4,6 +4,7 @@
 
 from __future__ import absolute_import, division, print_function
 
+import numpy.testing as nt
 import pytest
 from xml.etree import ElementTree as etree
 
@@ -69,28 +70,37 @@ def test_wcs_1():
 '''
     expected_xml = etree.fromstring(expected_str)
 
+    wcs_keywords = {
+        'CTYPE1': 'RA---TAN',
+        'CTYPE2': 'DEC--TAN',
+        'CRVAL1': 83.633083,
+        'CRVAL2': 22.0145,
+        'PC1_1': 0.9999871586199364,
+        'PC1_2': 0.005067799840785529,
+        'PC2_1': -0.005067799840785529,
+        'PC2_2': 0.9999871586199364,
+        'CRPIX1': 1503.8507831457316,
+        'CRPIX2': 1479.8005935660037,
+        'CDELT1': -4.870732233333334e-05,
+        'CDELT2': 4.870732233333334e-05,
+    }
+
     imgset = imageset.ImageSet()
-    imgset.set_position_from_wcs(
-        {
-            'CTYPE1': 'RA---TAN',
-            'CTYPE2': 'DEC--TAN',
-            'CRVAL1': 83.633083,
-            'CRVAL2': 22.0145,
-            'PC1_1': 0.9999871586199364,
-            'PC1_2': 0.005067799840785529,
-            'PC2_1': -0.005067799840785529,
-            'PC2_2': 0.9999871586199364,
-            'CRPIX1': 1503.8507831457316,
-            'CRPIX2': 1479.8005935660037,
-            'CDELT1': -4.870732233333334e-05,
-            'CDELT2': 4.870732233333334e-05
-        },
-        3000,
-        3000
-    )
+    imgset.set_position_from_wcs(wcs_keywords, 3000, 3000)
 
     observed_xml = imgset.to_xml()
     assert_xml_trees_equal(expected_xml, observed_xml)
+
+    wcs_roundtrip = imgset.wcs_headers_from_position()
+
+    for kw in wcs_roundtrip.keys():
+        expected = wcs_keywords[kw]
+        observed = wcs_roundtrip[kw]
+
+        if kw in ('CTYPE1', 'CTYPE2'):
+            assert expected == observed
+        else:
+            nt.assert_almost_equal(expected, observed)
 
 
 def test_misc_ser():

@@ -361,7 +361,7 @@ class ImageSet(LockedXmlTraits):
         rv['CRPIX1'] = self.offset_x + 1
         rv['CRPIX2'] = self.offset_y + 1
         rv['CDELT2'] = self.base_degrees_per_tile  # = scale_y, above
-        rv['CDELT1'] = self.base_degrees_per_tile  # AFAICT, non-square pixels can't be expressed
+        rv['CDELT1'] = -self.base_degrees_per_tile  # AFAICT, non-square pixels can't be expressed
 
         c = math.cos(self.rotation_deg * math.pi / 180)
         s = math.sin(self.rotation_deg * math.pi / 180)
