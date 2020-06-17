@@ -1,3 +1,5 @@
+# Next
+
 # 0.2.0 (2020-Jun-17)
 
 - Clarify that the `requests` package is now always required.
