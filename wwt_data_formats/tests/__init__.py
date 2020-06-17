@@ -1,6 +1,19 @@
 # -*- mode: python; coding: utf-8 -*-
-# Copyright 2019 the .NET Foundation
+# Copyright 2019-2020 the .NET Foundation
 # Licensed under the MIT License.
+
+__all__ = '''
+assert_xml_trees_equal
+test_path
+'''.split()
+
+import os.path
+
+
+TESTS_DIR = os.path.dirname(os.path.abspath(__file__))
+
+def test_path(*pieces):
+    return os.path.join(TESTS_DIR, *pieces)
 
 
 def _assert_xml_trees_equal(path, e1, e2, care_text_tags):
