@@ -1,4 +1,4 @@
-# Next
+# 0.2.0 (2020-Jun-17)
 
 - Clarify that the `requests` package is now always required.
 - Add `wwt_data_formats.layers` for dealing with WWTL layer-export files.
