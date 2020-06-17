@@ -333,8 +333,26 @@ class LockedXmlTraits(LockedDownTraits):
 
 
     @classmethod
+    def from_text(cls, text):
+        """Deserialize an instance of this class from XML-formatted text.
+
+        Parameters
+        ----------
+        text : string
+          The XML text.
+
+        Returns
+        -------
+        An instance of the class, initialized with data from the XML.
+
+        """
+        elem = etree.fromstring(text)
+        return cls.from_xml(elem)
+
+
+    @classmethod
     def from_file(cls, path):
-        """Deserialize an instance of this class an XML file on local disk.
+        """Deserialize an instance of this class from an XML file on local disk.
 
         Parameters
         ----------
@@ -349,8 +367,7 @@ class LockedXmlTraits(LockedDownTraits):
         with open(path, 'rt') as f:
             text = f.read()
 
-        elem = etree.fromstring(text)
-        return cls.from_xml(elem)
+        return cls.from_text(text)
 
 
     @classmethod

@@ -22,16 +22,86 @@ from __future__ import absolute_import, division, print_function
 __all__ = '''
 ImageSetLayer
 Layer
-LayerContainer
+LayerContainerReader
+LayerContainerXml
 '''.split()
 
 from traitlets import Bool, Float, Instance, List, Unicode, Union
 
 from . import LockedXmlTraits, XmlSer
+from .filecabinet import FileCabinetReader
 from .imageset import ImageSet
 
-class LayerContainer(LockedXmlTraits):
+
+class LayerContainerReader(object):
     """A collection of layers and reference frames."""
+
+    _reader = None
+    _info = None
+
+    def __init__(self, stream):
+        self._reader = FileCabinetReader(stream)
+
+        for fn in self._reader.filenames():
+            if fn.endswith('.wwtxml') and '\\' not in fn:
+                b = self._reader.read_file(fn)
+                text = b.decode('utf-8-sig')
+                self._info = LayerContainerXml.from_text(text)
+
+        if self._info is None:
+            raise Exception('found no ".wwtxml" file in WWTL file cabinet')
+
+
+    def close(self):
+        self._reader.close()
+        self._reader = None
+
+
+    @classmethod
+    def from_file(cls, path):
+        """Deserialize layers from a WWTL "file cabinet" file.
+
+        Parameters
+        ----------
+        path : string
+          The path of the file-cabinet file.
+
+        Returns
+        -------
+        An initialized instance of the class.
+
+        """
+        f = open(path, 'rb')
+        return cls(f)
+
+
+    @property
+    def layers(self):
+        return self._info.layers
+
+
+    def read_layer_file(self, layer, extension):
+        """Read a data file associated with a layer in this container.
+
+        Parameters
+        ----------
+        layer : :class:`Layer`
+            One of the layer objects found in this container.
+        extension : string
+            The file extension of the associated data file, including
+            a leading period. For instance, ".txt".
+
+        Returns
+        -------
+        The contents of the data file as a :class:`bytes` object.
+
+        """
+        fn = self._info.id + '\\' + layer.id + extension
+        return self._reader.read_file(fn)
+
+
+class LayerContainerXml(LockedXmlTraits):
+    """The XML serialization of the layer collection information."""
 
     id = Unicode('').tag(xml=XmlSer.attr('ID'))
     """A UUID-format randomized identifier for this layer collection.
