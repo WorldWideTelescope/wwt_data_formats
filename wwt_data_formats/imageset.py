@@ -341,8 +341,8 @@ class ImageSet(LockedXmlTraits):
         A string-keyed dict-like containing FITS/WCS header keywords such as
         ``CTYPE1``, ``CRPIX1``, etc.
 
-        Remarks
-        -------
+        Notes
+        -----
         At the moment, this function only works for ImageSets with a
         projection type of ``SKY_IMAGE``. Support for other projections
         *might* be added later, if the need arises..

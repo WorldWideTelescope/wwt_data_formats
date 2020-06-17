@@ -76,10 +76,10 @@ class Place(LockedXmlTraits):
         -------
         Either :class:`wwt_data_formats.imageset.ImageSet` or None.
 
-        Remarks
-        -------
+        Notes
+        -----
         If the :attr:`foreground_image_set` of this :class:`Place` is not
-        None, it is returned. Otherwise, if its :attr:`image_Set` is not
+        None, it is returned. Otherwise, if its :attr:`image_set` is not
         None, that is returned. Otherwise, None is returned.
 
         """
