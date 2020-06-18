@@ -17,9 +17,10 @@ from traitlets import Bool, Instance, Int, List, Unicode, Union, UseEnum
 from xml.etree import ElementTree as etree
 
 from . import LockedXmlTraits, XmlSer
+from .abcs import UrlContainer
 from .enums import FolderType
 
-class Folder(LockedXmlTraits):
+class Folder(LockedXmlTraits, UrlContainer):
     """A grouping of WWT content assets.
 
     Children can be: places (aka "Items"), imagesets, linesets, tours,
@@ -77,6 +78,15 @@ class Folder(LockedXmlTraits):
                     yield (depth + 1, (index,) + path, subchild)
             else:
                 yield (1, (index,), child)
+
+    def mutate_urls(self, mutator):
+        if self.url:
+            self.url = mutator(self.url)
+        if self.thumbnail:
+            self.thumbnail = mutator(self.thumbnail)
+
+        for c in self.children:
+            c.mutate_urls(mutator)
 
 
 def _sanitize_name(name):

@@ -14,6 +14,7 @@ write_xml_doc
 XmlSer
 '''.split()
 
+from abc import ABCMeta
 from argparse import Namespace
 from enum import Enum
 from traitlets import (Bool, Float, HasTraits, Instance, Int, List, MetaHasTraits,
@@ -21,7 +22,7 @@ from traitlets import (Bool, Float, HasTraits, Instance, Int, List, MetaHasTrait
 from xml.etree import ElementTree as etree
 
 
-class MetaLockedDownTraits(MetaHasTraits):
+class MetaLockedDownTraits(ABCMeta, MetaHasTraits):
     """A metaclass to help with the LockedDownTraits class. When a class using
     this metaclass is created, a frozenset of all of the traitlets attached to
     the class definition (including those defined by its base classes) is

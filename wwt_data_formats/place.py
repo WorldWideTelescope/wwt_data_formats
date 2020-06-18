@@ -15,10 +15,11 @@ from argparse import Namespace
 from traitlets import Float, Instance, Int, Unicode, UseEnum
 
 from . import LockedXmlTraits, XmlSer
+from .abcs import UrlContainer
 from .enums import Classification, Constellation, DataSetType
 from .imageset import ImageSet
 
-class Place(LockedXmlTraits):
+class Place(LockedXmlTraits, UrlContainer):
     """A place that can be visited."""
 
     data_set_type = UseEnum(
@@ -68,6 +69,19 @@ class Place(LockedXmlTraits):
 
     def _tag_name(self):
         return 'Place'
+
+    def mutate_urls(self, mutator):
+        if self.thumbnail:
+            self.thumbnail = mutator(self.thumbnail)
+
+        if self.background_image_set:
+            self.background_image_set.mutate_urls(mutator)
+
+        if self.foreground_image_set:
+            self.foreground_image_set.mutate_urls(mutator)
+
+        if self.image_set:
+            self.image_set.mutate_urls(mutator)
 
     def as_imageset(self):
         """Return an ImageSet for this place if one is defined.

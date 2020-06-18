@@ -16,10 +16,11 @@ from traitlets import Bool, Float, Int, Unicode, UseEnum
 from xml.etree import ElementTree as etree
 
 from . import LockedXmlTraits, XmlSer
+from .abcs import UrlContainer
 from .enums import Bandpass, DataSetType, ProjectionType
 
 
-class ImageSet(LockedXmlTraits):
+class ImageSet(LockedXmlTraits, UrlContainer):
     """A set of images."""
 
     data_set_type = UseEnum(DataSetType, default_value=DataSetType.SKY).tag(xml=XmlSer.attr('DataSetType'))
@@ -200,6 +201,19 @@ class ImageSet(LockedXmlTraits):
 
     def _tag_name(self):
         return 'ImageSet'
+
+    def mutate_urls(self, mutator):
+        if self.url:
+            self.url = mutator(self.url)
+
+        if self.dem_url:
+            self.dem_url = mutator(self.dem_url)
+
+        if self.credits_url:
+            self.credits_url = mutator(self.credits_url)
+
+        if self.thumbnail_url:
+            self.thumbnail_url = mutator(self.thumbnail_url)
 
     def set_position_from_wcs(self, headers, width, height, place=None, fov_factor=1.7):
         """Set the positional information associated with this imageset to match a set
