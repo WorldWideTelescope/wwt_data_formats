@@ -5,6 +5,10 @@ API Documentation
    :no-inheritance-diagram:
    :no-inherited-members:
 
+.. automodapi:: wwt_data_formats.abcs
+   :no-inheritance-diagram:
+   :no-inherited-members:
+
 .. automodapi:: wwt_data_formats.cli
    :no-inheritance-diagram:
    :no-inherited-members:
