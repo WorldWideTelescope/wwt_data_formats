@@ -5,13 +5,14 @@
 from __future__ import absolute_import, division, print_function
 
 from mock import Mock
+import os.path
 import shutil
 import tempfile
 import pytest
 from xml.etree import ElementTree as etree
 
 from . import assert_xml_trees_equal
-from .. import folder, imageset, place
+from .. import cli, folder, imageset, place
 
 
 @pytest.fixture
@@ -148,19 +149,34 @@ def test_fetch_tree(fake_requests, tempdir):
 
 def test_basic_url_mutation():
     f = folder.Folder()
-    f.url = "../updir/somewhere.wtml"
-    f.mutate_urls(folder.make_absolutizing_url_mutator("https://example.com/subdir/"))
-    assert f.url == "https://example.com/updir/somewhere.wtml"
+    f.url = '../updir/somewhere.wtml'
+    f.mutate_urls(folder.make_absolutizing_url_mutator('https://example.com/subdir/'))
+    assert f.url == 'https://example.com/updir/somewhere.wtml'
 
     from ..place import Place
     from ..imageset import ImageSet
 
     imgset = ImageSet()
-    imgset.url = "image.jpg"
+    imgset.url = 'image.jpg'
     p = Place()
     p.background_image_set = imgset
     f.children.append(p)
-    f.mutate_urls(folder.make_absolutizing_url_mutator("https://example.com/subdir/"))
+    f.mutate_urls(folder.make_absolutizing_url_mutator('https://example.com/subdir/'))
 
-    assert f.url == "https://example.com/updir/somewhere.wtml"
-    assert imgset.url == "https://example.com/subdir/image.jpg"
+    assert f.url == 'https://example.com/updir/somewhere.wtml'
+    assert imgset.url == 'https://example.com/subdir/image.jpg'
+
+
+def test_wtml_rewrite_urls(tempdir):
+    os.chdir(tempdir)
+
+    f = folder.Folder()
+    f.url = '../updir/somewhere.wtml'
+
+    with open('index_rel.wtml', 'wt') as f_out:
+        f.write_xml(f_out)
+
+    cli.entrypoint(['wtml', 'rewrite-urls', 'index_rel.wtml', 'https://example.com/subdir/', 'index.wtml'])
+
+    f = folder.Folder.from_file('index.wtml')
+    assert f.url == 'https://example.com/updir/somewhere.wtml'

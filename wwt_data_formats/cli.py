@@ -196,6 +196,50 @@ def summarize_tree_impl(settings):
                 print(f'{pfx}{index:03d}', 'Place+ImgSet:', item.name, '@', maybe_imgset.url)
 
 
+# "wtml" subcommand
+
+def wtml_getparser(parser):
+    subparsers = parser.add_subparsers(dest='wtml_command')
+
+    p = subparsers.add_parser('rewrite-urls')
+    p.add_argument(
+        'in_path',
+        metavar = 'INPUT-WTML',
+        help = 'The path to the input WTML file.',
+    )
+    p.add_argument(
+        'baseurl',
+        metavar = 'BASE-URL',
+        help = 'The new base URL to use in the file\'s contents',
+    )
+    p.add_argument(
+        'out_path',
+        metavar = 'OUTPUT-WTML',
+        help = 'The path of the rewritten, output WTML file.',
+    )
+
+
+def wtml_rewrite_urls(settings):
+    from .folder import Folder, make_absolutizing_url_mutator
+
+    f = Folder.from_file(settings.in_path)
+    f.mutate_urls(make_absolutizing_url_mutator(settings.baseurl))
+
+    with open(settings.out_path, 'wt') as f_out:
+        f.write_xml(f_out)
+
+
+def wtml_impl(settings):
+    if settings.wtml_command is None:
+        print('Run the "wtml" command with `--help` for help on its subcommands')
+        return
+
+    if settings.wtml_command == 'rewrite-urls':
+        return wtml_rewrite_urls(settings)
+    else:
+        die('unrecognized "wtml" subcommand ' + settings.wtml_command)
+
+
 # The CLI driver:
 
 def entrypoint(args=None):
