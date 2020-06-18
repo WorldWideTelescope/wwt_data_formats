@@ -144,3 +144,23 @@ def test_fetch_tree(fake_requests, tempdir):
 
     for item in folder.walk_cached_folder_tree(tempdir):
         pass
+
+
+def test_basic_url_mutation():
+    f = folder.Folder()
+    f.url = "../updir/somewhere.wtml"
+    f.mutate_urls(folder.make_absolutizing_url_mutator("https://example.com/subdir/"))
+    assert f.url == "https://example.com/updir/somewhere.wtml"
+
+    from ..place import Place
+    from ..imageset import ImageSet
+
+    imgset = ImageSet()
+    imgset.url = "image.jpg"
+    p = Place()
+    p.background_image_set = imgset
+    f.children.append(p)
+    f.mutate_urls(folder.make_absolutizing_url_mutator("https://example.com/subdir/"))
+
+    assert f.url == "https://example.com/updir/somewhere.wtml"
+    assert imgset.url == "https://example.com/subdir/image.jpg"
