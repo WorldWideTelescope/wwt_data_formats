@@ -170,6 +170,30 @@ def print_tree_image_urls_impl(settings):
         print(imgset.url, imgset.name)
 
 
+# "serve" subcommand
+
+def serve_getparser(parser):
+    parser.add_argument(
+        '--port',
+        '-p',
+        metavar = 'PORT',
+        type = int,
+        default = 8080,
+        help = 'The port on which to listen for connections.'
+    )
+    parser.add_argument(
+        'root_dir',
+        metavar = 'PATH',
+        default = '.',
+        help = 'The path to the base directory of the server.',
+    )
+
+
+def serve_impl(settings):
+    from .server import run_server
+    run_server(settings)
+
+
 # "summarize-tree" subcommand
 
 def summarize_tree_getparser(parser):

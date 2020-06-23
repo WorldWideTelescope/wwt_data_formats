@@ -36,3 +36,7 @@ API Documentation
 .. automodapi:: wwt_data_formats.place
    :no-inheritance-diagram:
    :no-inherited-members:
+
+.. automodapi:: wwt_data_formats.server
+   :no-inheritance-diagram:
+   :no-inherited-members:
