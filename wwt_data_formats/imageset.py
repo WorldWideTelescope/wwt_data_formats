@@ -296,12 +296,19 @@ class ImageSet(LockedXmlTraits, UrlContainer):
             pc1_2 = headers.get('PC1_2', 0.0)
             pc2_1 = headers.get('PC2_1', 0.0)
 
-            if pc1_1 * pc2_2 - pc1_2 * pc2_1 < 0:
+            det = pc1_1 * pc2_2 - pc1_2 * pc2_1
+
+            if det < 0:
                 pc_sign = -1
             else:
                 pc_sign = 1
 
             rot_rad = math.atan2(-pc_sign * pc1_2, pc2_2)
+
+            # I am not sure if this is "supposed" to be allowed, but I've seen it.
+            rtdet = math.sqrt(pc_sign * det)
+            scale_x *= rtdet
+            scale_y *= rtdet
 
         # This is our best effort to make sure that the view centers on the
         # center of the image.
