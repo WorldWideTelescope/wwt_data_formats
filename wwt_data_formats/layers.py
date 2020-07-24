@@ -2,7 +2,7 @@
 # Copyright 2020 the .NET Foundation
 # Licensed under the MIT License.
 
-"""Serialized information about graphical "layers" in the WWT enginge.
+"""Serialized information about graphical "layers" in the WWT engine.
 
 Not implemented:
 
@@ -96,8 +96,15 @@ class LayerContainerReader(object):
         The contents of the data file as a :class:`bytes` object.
 
         """
+        # In most examples I've seen, the layer file is in a subdirectory
+        # grouped by the layer's UUID. But in one example (David Weigel
+        # LMC WWTL file, June 2020), it's not in the subdirectory.
+
         fn = self._info.id + '\\' + layer.id + extension
-        return self._reader.read_file(fn)
+
+        if fn in self._reader.filenames():
+            return self._reader.read_file(fn)
+        return self._reader.read_file(layer.id + extension)
 
 
 class LayerContainerXml(LockedXmlTraits):
