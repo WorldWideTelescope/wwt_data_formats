@@ -98,6 +98,12 @@ def cabinet_unpack(settings):
             data = reader.read_file(fn)
             pieces = fn.split('\\')  # paths are Windows-style
 
+            # At least the MakeDataCabinetFile tool creates a file whose
+            # paths all begin with \. We are not gonna treat those as
+            # absolute paths or anything like that.
+            if not len(pieces[0]):
+                pieces = pieces[1:]
+
             if len(pieces) > 1:
                 makedirs(join(*pieces[:-1]), exist_ok=True)
 
