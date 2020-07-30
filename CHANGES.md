@@ -1,9 +1,25 @@
 # Next
 
+# 0.3.0 (2020-Jul-30)
+
+- Add `wwtdatatool serve` to locally serve WTML files with on-the-fly URL
+  rewriting.
+- Add `wwtdatatool wtml rewrite-urls` to allow you to take a WTML file with
+  relative URLs and convert them into absolute ones.
+- `wwtdatatool cabinet unpack`: copy with cabinet files whose paths begin with a
+  leading slash (as in the default WWT installer `datafiles.cabinet` file).
+- In `wwt_data_formats.layers`, support WWTL files where the data assets are not
+  necessarily placed in a subdirectory named for the layer ID (observed in the
+  wild).
+- In `wwt_data_formates.imageset`, copy with WCS PC matrices that have non-unity
+  determinants (also observed in the wild).
+
+
 # 0.2.0 (2020-Jun-17)
 
 - Clarify that the `requests` package is now always required.
 - Add `wwt_data_formats.layers` for dealing with WWTL layer-export files.
+
 
 # 0.1.3 (2020-Jun-06)
 
