@@ -1,3 +1,5 @@
+# Next
+
 # 0.3.0 (2020-Jul-30)
 
 - Add `wwtdatatool serve` to locally serve WTML files with on-the-fly URL
