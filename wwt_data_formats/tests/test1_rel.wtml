@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<Folder Browseable="True" Group="Explorer" Searchable="True"
+        MSRCommunityId="0" MSRComponentId="0" Permission="0"
+        Name="heic0707a" Type="Sky">
+  <Place Angle="0.0" AngularSize="0.0" DataSetType="Sky" Dec="-59.61003589430009"
+         Distance="0.0" DomeAlt="0.0" DomeAz="0.0" Lat="0.0" Lng="0.0"
+         MSRCommunityId="0" MSRComponentId="0" Magnitude="0.0"
+         Name="Star birth in the extreme" Opacity="100.0" Permission="0"
+         RA="10.760949616934319" Rotation="0.0" Thumbnail="thumb.jpg"
+         XLastUpdated="2019-10-07 11:40:22.352760+00:00" ZoomLevel="2.025754174944943">
+    <ForegroundImageSet>
+      <ImageSet BandPass="Visible" BaseDegreesPerTile="0.45442598901514364" BaseTileLevel="0"
+                BottomsUp="False" CenterX="161.120000825" CenterY="-59.5965242562"
+                DataSetType="Sky" ElevationModel="False" FileType=".png" Generic="False"
+                MSRCommunityId="0" MSRComponentId="0" MeanRadius="0.0"
+                Name="Star birth in the extreme" OffsetX="1.3867980621800038e-05"
+                OffsetY="1.3867980621800038e-05" Permission="0" Projection="Tan"
+                Rotation="50.320000000000306" Sparse="True" StockSet="False" TileLevels="7"
+                Url="L{1}X{2}Y{3}.png" WidthFactor="2">
+        <Credits>NASA, ESA, N. Smith (University of California, Berkeley), and The Hubble Heritage Team (STScI/AURA)</Credits>
+        <CreditsUrl>https://www.spacetelescope.org/images/heic0707a/</CreditsUrl>
+        <Description>Hubble's view of the Carina Nebula ...</Description>
+        <ThumbnailUrl>thumb.jpg</ThumbnailUrl>
+      </ImageSet>
+    </ForegroundImageSet>
+  </Place>
+</Folder>
