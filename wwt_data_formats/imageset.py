@@ -16,10 +16,11 @@ from traitlets import Bool, Float, Int, Unicode, UseEnum
 from xml.etree import ElementTree as etree
 
 from . import LockedXmlTraits, XmlSer
+from .abcs import UrlContainer
 from .enums import Bandpass, DataSetType, ProjectionType
 
 
-class ImageSet(LockedXmlTraits):
+class ImageSet(LockedXmlTraits, UrlContainer):
     """A set of images."""
 
     data_set_type = UseEnum(DataSetType, default_value=DataSetType.SKY).tag(xml=XmlSer.attr('DataSetType'))
@@ -201,6 +202,19 @@ class ImageSet(LockedXmlTraits):
     def _tag_name(self):
         return 'ImageSet'
 
+    def mutate_urls(self, mutator):
+        if self.url:
+            self.url = mutator(self.url)
+
+        if self.dem_url:
+            self.dem_url = mutator(self.dem_url)
+
+        if self.credits_url:
+            self.credits_url = mutator(self.credits_url)
+
+        if self.thumbnail_url:
+            self.thumbnail_url = mutator(self.thumbnail_url)
+
     def set_position_from_wcs(self, headers, width, height, place=None, fov_factor=1.7):
         """Set the positional information associated with this imageset to match a set
         of WCS headers.
@@ -282,12 +296,19 @@ class ImageSet(LockedXmlTraits):
             pc1_2 = headers.get('PC1_2', 0.0)
             pc2_1 = headers.get('PC2_1', 0.0)
 
-            if pc1_1 * pc2_2 - pc1_2 * pc2_1 < 0:
+            det = pc1_1 * pc2_2 - pc1_2 * pc2_1
+
+            if det < 0:
                 pc_sign = -1
             else:
                 pc_sign = 1
 
             rot_rad = math.atan2(-pc_sign * pc1_2, pc2_2)
+
+            # I am not sure if this is "supposed" to be allowed, but I've seen it.
+            rtdet = math.sqrt(pc_sign * det)
+            scale_x *= rtdet
+            scale_y *= rtdet
 
         # This is our best effort to make sure that the view centers on the
         # center of the image.

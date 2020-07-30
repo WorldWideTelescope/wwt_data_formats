@@ -98,6 +98,12 @@ def cabinet_unpack(settings):
             data = reader.read_file(fn)
             pieces = fn.split('\\')  # paths are Windows-style
 
+            # At least the MakeDataCabinetFile tool creates a file whose
+            # paths all begin with \. We are not gonna treat those as
+            # absolute paths or anything like that.
+            if not len(pieces[0]):
+                pieces = pieces[1:]
+
             if len(pieces) > 1:
                 makedirs(join(*pieces[:-1]), exist_ok=True)
 
@@ -170,6 +176,30 @@ def print_tree_image_urls_impl(settings):
         print(imgset.url, imgset.name)
 
 
+# "serve" subcommand
+
+def serve_getparser(parser):
+    parser.add_argument(
+        '--port',
+        '-p',
+        metavar = 'PORT',
+        type = int,
+        default = 8080,
+        help = 'The port on which to listen for connections.'
+    )
+    parser.add_argument(
+        'root_dir',
+        metavar = 'PATH',
+        default = '.',
+        help = 'The path to the base directory of the server.',
+    )
+
+
+def serve_impl(settings):
+    from .server import run_server
+    run_server(settings)
+
+
 # "summarize-tree" subcommand
 
 def summarize_tree_getparser(parser):
@@ -194,6 +224,50 @@ def summarize_tree_impl(settings):
             if maybe_imgset is not None:
                 index = treepath[-1]
                 print(f'{pfx}{index:03d}', 'Place+ImgSet:', item.name, '@', maybe_imgset.url)
+
+
+# "wtml" subcommand
+
+def wtml_getparser(parser):
+    subparsers = parser.add_subparsers(dest='wtml_command')
+
+    p = subparsers.add_parser('rewrite-urls')
+    p.add_argument(
+        'in_path',
+        metavar = 'INPUT-WTML',
+        help = 'The path to the input WTML file.',
+    )
+    p.add_argument(
+        'baseurl',
+        metavar = 'BASE-URL',
+        help = 'The new base URL to use in the file\'s contents',
+    )
+    p.add_argument(
+        'out_path',
+        metavar = 'OUTPUT-WTML',
+        help = 'The path of the rewritten, output WTML file.',
+    )
+
+
+def wtml_rewrite_urls(settings):
+    from .folder import Folder, make_absolutizing_url_mutator
+
+    f = Folder.from_file(settings.in_path)
+    f.mutate_urls(make_absolutizing_url_mutator(settings.baseurl))
+
+    with open(settings.out_path, 'wt') as f_out:
+        f.write_xml(f_out)
+
+
+def wtml_impl(settings):
+    if settings.wtml_command is None:
+        print('Run the "wtml" command with `--help` for help on its subcommands')
+        return
+
+    if settings.wtml_command == 'rewrite-urls':
+        return wtml_rewrite_urls(settings)
+    else:
+        die('unrecognized "wtml" subcommand ' + settings.wtml_command)
 
 
 # The CLI driver:

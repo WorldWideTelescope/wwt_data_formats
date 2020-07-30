@@ -7,6 +7,7 @@ from __future__ import absolute_import, division, print_function
 __all__ = '''
 Folder
 fetch_folder_tree
+make_absolutizing_url_mutator
 walk_cached_folder_tree
 '''.split()
 
@@ -17,9 +18,10 @@ from traitlets import Bool, Instance, Int, List, Unicode, Union, UseEnum
 from xml.etree import ElementTree as etree
 
 from . import LockedXmlTraits, XmlSer
+from .abcs import UrlContainer
 from .enums import FolderType
 
-class Folder(LockedXmlTraits):
+class Folder(LockedXmlTraits, UrlContainer):
     """A grouping of WWT content assets.
 
     Children can be: places (aka "Items"), imagesets, linesets, tours,
@@ -77,6 +79,47 @@ class Folder(LockedXmlTraits):
                     yield (depth + 1, (index,) + path, subchild)
             else:
                 yield (1, (index,), child)
+
+    def mutate_urls(self, mutator):
+        if self.url:
+            self.url = mutator(self.url)
+        if self.thumbnail:
+            self.thumbnail = mutator(self.thumbnail)
+
+        for c in self.children:
+            c.mutate_urls(mutator)
+
+
+def make_absolutizing_url_mutator(baseurl):
+    """Return a function that makes relative URLs absolute.
+
+    Parameters
+    ----------
+    baseurl : string, absolute URL
+        The absolute URL with which to combine relative URLs
+
+    Returns
+    -------
+    A mutator function suitable for use with :meth:`wwt_data_formats.abcs.UrlContainer.mutate_urls`.
+
+    Notes
+    -----
+    This function is designed for usage with :meth:`wwt_data_formats.abcs.UrlContainer.mutate_urls`.
+    It returns a mutator function that can be passed to this method. The mutator will take
+    relative URLs and make them absolute by combining them with the *baseurl* argument. Input URLs
+    that are already absolute will be unchanged.
+
+    """
+    from urllib.parse import urljoin, urlsplit
+
+    def mutator(url):
+        if not url:
+            return url
+        if urlsplit(url).netloc:
+            return url  # this URL is absolute
+        return urljoin(baseurl, url)
+
+    return mutator
 
 
 def _sanitize_name(name):
