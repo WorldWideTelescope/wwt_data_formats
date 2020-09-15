@@ -1,4 +1,7 @@
-# Next
+# 0.4.0 (2020-Sep-15)
+
+- Add a bunch of CLI documentation.
+- No code changes.
 
 # 0.3.0 (2020-Jul-30)
 

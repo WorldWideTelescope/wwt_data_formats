@@ -15,15 +15,20 @@ The core data formats documented here are:
 
 - :ref:`Image Sets <image-sets>`
 
+This package also includes a CLI (command-line interface) tool, ``wwtdatatool``,
+that provides some useful ways of working with various WWT data files. See the
+:ref:`cli-reference` for a list of its functionality.
+
 
 Detailed Table of Contents
 ==========================
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
 
    installation
    imagesets
+   cli
    api
 
 
