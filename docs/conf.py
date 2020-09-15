@@ -4,8 +4,8 @@ project = 'wwt_data_formats'
 author = 'The AAS WorldWide Telescope Team'
 copyright = '2019-2020 the .NET Foundation'
 
-release = '0.4.0'  # the full version string; also update ../setup.py
-version = '0.4.0'  # the "short" version
+release = '0.5.0.dev0'  # the full version string; also update ../setup.py
+version = '0.5.0.dev0'  # the "short" version
 
 extensions = [
     'sphinx.ext.autodoc',
