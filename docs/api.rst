@@ -1,5 +1,6 @@
-API Documentation
-=================
+=============
+API Reference
+=============
 
 .. automodapi:: wwt_data_formats
    :no-inheritance-diagram:
