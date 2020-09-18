@@ -1,3 +1,7 @@
+# 0.4.1 (2020-Sep-18)
+
+- Fix the test suite on Windows (hopefully).
+
 # 0.4.0 (2020-Sep-15)
 
 - Add a bunch of CLI documentation.
