@@ -168,6 +168,7 @@ def test_basic_url_mutation():
 
 
 def test_wtml_rewrite_urls(tempdir):
+    prev_dir = os.getcwd()
     os.chdir(tempdir)
 
     f = folder.Folder()
@@ -180,3 +181,6 @@ def test_wtml_rewrite_urls(tempdir):
 
     f = folder.Folder.from_file('index.wtml')
     assert f.url == 'https://example.com/updir/somewhere.wtml'
+
+    # Windows can't remove the temp tree unless we chdir out of it.
+    os.chdir(prev_dir)
