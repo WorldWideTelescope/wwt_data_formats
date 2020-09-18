@@ -11,7 +11,7 @@ def get_long_desc():
     in_preamble = True
     lines = []
 
-    with open('README.md') as f:
+    with open('README.md', 'rt', encoding='utf8') as f:
         for line in f:
             if in_preamble:
                 if line.startswith('<!--pypi-begin-->'):
@@ -87,9 +87,6 @@ setup_args = dict(
         ],
     },
 )
-
-
-# That was fun.
 
 if __name__ == '__main__':
     setup(**setup_args)
