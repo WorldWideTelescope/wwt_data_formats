@@ -28,6 +28,7 @@ def test_writer():
 def test_cli(tempdir):
     "Simple smoke test to see if it runs at all."
 
+    prev_dir = os.getcwd()
     os.chdir(tempdir)
 
     with open('file1.txt', 'wt') as f:
@@ -37,3 +38,6 @@ def test_cli(tempdir):
 
     os.remove('file1.txt')
     cli.entrypoint(['cabinet', 'unpack', 'cabinet.wwtl'])
+
+    # Windows can't remove the temp tree unless we chdir out of it.
+    os.chdir(prev_dir)
