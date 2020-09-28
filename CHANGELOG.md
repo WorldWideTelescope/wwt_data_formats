@@ -1,3 +1,9 @@
+# rc: micro bump
+
+- Convert to Cranko for release automation! And Codecov.io for coverage
+  reporting, and Azure Pipelines for CI.
+- HTTP hacks to try to get the server test to succeed reliably on CI.
+
 # 0.4.1 (2020-Sep-18)
 
 - Fix the test suite on Windows (hopefully).
@@ -6,6 +12,7 @@
 
 - Add a bunch of CLI documentation.
 - No code changes.
+
 
 # 0.3.0 (2020-Jul-30)
 
@@ -18,7 +25,7 @@
 - In `wwt_data_formats.layers`, support WWTL files where the data assets are not
   necessarily placed in a subdirectory named for the layer ID (observed in the
   wild).
-- In `wwt_data_formates.imageset`, copy with WCS PC matrices that have non-unity
+- In `wwt_data_formats.imageset`, copy with WCS PC matrices that have non-unity
   determinants (also observed in the wild).
 
 
