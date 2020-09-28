@@ -94,16 +94,11 @@ jobs:
       source activate-conda.sh
       conda activate build
       set -x
-      \conda install -y coveralls mock numpy pytest-cov pytest-mock
-      pytest --cov wwt_data_formats wwt_data_formats
+      \conda install -y mock numpy pytest-cov pytest-mock
+      pytest --cov-report=xml --cov=wwt_data_formats wwt_data_formats
     displayName: Test with coverage
 
-  - bash: |
-      set -euo pipefail
-      source activate-conda.sh
-      conda activate build
-      set -x
-      coveralls
+  - bash: bash <(curl -s https://codecov.io/bash)
     displayName: Upload coverage results
 
 - job: docs
