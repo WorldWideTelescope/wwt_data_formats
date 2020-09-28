@@ -47,8 +47,10 @@ use a standard workflow with issues and pull requests. All participants in
 
 ## Release History
 
-Releases of [wwt_data_formats] are logged in the file [CHANGELOG.md](./CHANGELOG.md), as
-well as release listings maintained by
+Releases of [wwt_data_formats] are logged in the file
+[CHANGELOG.md](https://github.com/WorldWideTelescope/wwt_data_formats/blob/release/CHANGELOG.md)
+on the `release` branch of this repository, as well as release listings
+maintained by
 [GitHub](https://github.com/WorldWideTelescope/wwt_data_formats/releases) and
 [PyPI](https://pypi.org/project/wwt_data_formats/#history).
 
