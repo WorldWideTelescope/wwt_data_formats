@@ -1,6 +1,8 @@
-# WWT Data Formats
-
+[![Build Status](https://dev.azure.com/aasworldwidetelescope/WWT/_apis/build/status/WorldWideTelescope.wwt_data_formats?branchName=master)](https://dev.azure.com/aasworldwidetelescope/WWT/_build/latest?definitionId=22&branchName=master)
 [![PyPI version](https://badge.fury.io/py/wwt-data-formats.svg)](https://badge.fury.io/py/wwt-data-formats)
+[![codecov](https://codecov.io/gh/WorldWideTelescope/wwt_data_formats/branch/master/graph/badge.svg?token=4no5LD8Sed)](undefined)
+
+# WWT Data Formats
 
 <!--pypi-begin-->
 [wwt_data_formats] is a low-level Python package that
