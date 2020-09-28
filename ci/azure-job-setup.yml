@@ -76,6 +76,10 @@ steps:
         condabin="$CONDA/bin"
       fi
 
+      if [[ $AGENT_OS == Darwin ]] ; then
+        sudo chown -R $USER $CONDA
+      fi
+
       cat >activate-conda.sh <<EOF
       eval "\$($condabin/conda shell.bash hook)"
       conda activate
