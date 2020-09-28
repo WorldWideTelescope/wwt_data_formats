@@ -14,6 +14,8 @@ jobs:
       set -euo pipefail
       $CONDA/bin/conda init bash
       echo "##vso[task.prependpath]$CONDA/bin"
+      ##### 
+      cat $HOME/.bashrc
     displayName: Set up conda (Linux)
 
   - bash: |
@@ -50,6 +52,11 @@ jobs:
 
   - bash: |
       set -xeuo pipefail
+      ####################
+      env
+      cat $HOME/.bashrc
+      exit 1 
+      ####################
       eval "$($CONDA/bin/conda shell.bash hook)"
       conda activate
       conda config --add channels conda-forge
