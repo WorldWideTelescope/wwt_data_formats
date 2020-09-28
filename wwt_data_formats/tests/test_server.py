@@ -13,6 +13,7 @@ from threading import Thread
 from . import test_path
 from .. import folder, server
 
+TIMEOUT = 120
 
 class TestServer(object):
     @classmethod
@@ -23,13 +24,29 @@ class TestServer(object):
         settings.port = cls.server_port
         settings.root_dir = test_path()
 
+        # Note: there can be a race condition between server startup and the
+        # execution of the tests. There doesn't seem to be any mechanism to
+        # enable the tests to rigorously wait for the server to be fully started
+        # up.
         cls.thread = Thread(target=lambda: server.run_server(settings))
         cls.thread.setDaemon(True)
         cls.thread.start()
 
+        # In an attempt to help mitigate the above issue, set up requests to
+        # retry requests if they fail.
+        from requests.adapters import HTTPAdapter
+        from requests.packages.urllib3.util.retry import Retry
+        retry_strategy = Retry(
+            total=10,
+        )
+        adapter = HTTPAdapter(max_retries=retry_strategy)
+        cls.session = requests.Session()
+        cls.session.mount("https://", adapter)
+        cls.session.mount("http://", adapter)
+
     def test_wtml_rewrite(self):
         base_url = 'http://localhost:{}/'.format(self.server_port)
-        f = folder.Folder.from_url(base_url + 'test1.wtml')
+        f = folder.Folder.from_url(base_url + 'test1.wtml', timeout=TIMEOUT, session=self.session)
         assert f.children[0].thumbnail == base_url + 'thumb.jpg'
 
 

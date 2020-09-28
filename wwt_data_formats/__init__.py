@@ -372,22 +372,29 @@ class LockedXmlTraits(LockedDownTraits):
 
 
     @classmethod
-    def from_url(cls, url):
+    def from_url(cls, url, session=None, **kwargs):
         """Deserialize an instance of this class from XML downloaded from the
         specified URL.
 
         Parameters
         ----------
         url : string
-          The URL from which to download the XML.
+            The URL from which to download the XML.
+        session : ``requests`` session or None (the default)
+            The HTTP communications session to use.
+        kwargs
+            Extra arguments to pass to ``requests.get``.
 
         Returns
         -------
         An instance of the class, initialized with data from the XML.
 
         """
-        import requests
-        resp = requests.get(url)
+        if session is None:
+            import requests
+            session = requests
+
+        resp = session.get(url, **kwargs)
 
         # We have to set this to get requests/Python to ignore the Unicode
         # Byte Order Marker (BOM) that is present in some WWT data files due
