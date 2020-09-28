@@ -10,7 +10,10 @@ jobs:
 
   - checkout: self
 
-  - bash: echo "##vso[task.prependpath]$CONDA/bin"
+  - bash: |
+      set -euo pipefail
+      $CONDA/bin/conda init bash
+      echo "##vso[task.prependpath]$CONDA/bin"
     displayName: Set up conda (Linux)
 
   - bash: |
