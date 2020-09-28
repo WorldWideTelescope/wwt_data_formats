@@ -60,7 +60,7 @@ jobs:
         set -x
         \conda create -y -n build setuptools pip python="$PYTHON_SERIES"
         conda activate build
-        pip install $PIPELINE_WORKSPACE/sdist/*.tar.gz
+        pip install $BASH_WORKSPACE/sdist/*.tar.gz
       displayName: Install from sdist
 
     - bash: |
@@ -86,7 +86,7 @@ jobs:
       set -x
       \conda create -y -n build setuptools pip
       conda activate build
-      pip install $PIPELINE_WORKSPACE/sdist/*.tar.gz
+      pip install $BASH_WORKSPACE/sdist/*.tar.gz
     displayName: Install from sdist
 
   - bash: |
@@ -112,7 +112,7 @@ jobs:
       set -x
       \conda create -y -n build setuptools pip
       conda activate build
-      pip install $PIPELINE_WORKSPACE/sdist/*.tar.gz
+      pip install $BASH_WORKSPACE/sdist/*.tar.gz
     displayName: Install from sdist
 
   - bash: |
