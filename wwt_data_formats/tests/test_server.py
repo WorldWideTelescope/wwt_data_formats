@@ -9,6 +9,7 @@ from http.server import HTTPServer
 import pytest
 import requests
 from threading import Thread
+from time import sleep
 
 from . import test_path
 from .. import folder, server
@@ -33,7 +34,9 @@ class TestServer(object):
         cls.thread.start()
 
         # In an attempt to help mitigate the above issue, set up requests to
-        # retry requests if they fail.
+        # retry requests if they fail. This is hardly expected to help since if
+        # the server isn't yet running, the failures and retries will occur
+        # instantly, but it's not bad to have an example of the pattern anyway.
         from requests.adapters import HTTPAdapter
         from requests.packages.urllib3.util.retry import Retry
         retry_strategy = Retry(
@@ -46,7 +49,15 @@ class TestServer(object):
 
     def test_wtml_rewrite(self):
         base_url = 'http://localhost:{}/'.format(self.server_port)
-        f = folder.Folder.from_url(base_url + 'test1.wtml', timeout=TIMEOUT, session=self.session)
+
+        # More race condition mitigation
+        for attempt in range(10):
+            try:
+                f = folder.Folder.from_url(base_url + 'test1.wtml', timeout=TIMEOUT, session=self.session)
+                break
+            except requests.ConnectionError:
+                sleep(5)
+
         assert f.children[0].thumbnail == base_url + 'thumb.jpg'
 
 
