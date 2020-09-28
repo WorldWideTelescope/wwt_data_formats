@@ -68,10 +68,25 @@ steps:
 - ${{ if parameters.setupBuild }}:
   - bash: |
       set -euo pipefail
-      eval "$($CONDA/bin/conda shell.bash hook)"
-      set -x
+
+      if [[ $AGENT_OS == Windows_NT ]] ; then
+        CONDA=$(echo "$CONDA" | sed -e 's|\\|\/|g' -e 's|^\([A-Za-z]\)\:/\(.*\)|/\L\1\E/\2|')
+        condabin="$CONDA/Scripts"
+      else
+        condabin="$CONDA/bin"
+      fi
+
+      cat >activate-conda.sh <<EOF
+      eval "\$($condabin/conda shell.bash hook)"
       conda activate
-      conda config --add conda-forge
+      EOF
+    displayName: Set up Conda activation
+
+  - bash: |
+      set -euo pipefail
+      source activate-conda.sh
+      set -x
+      conda config --add channels conda-forge
     displayName: Activate conda-forge
 
 - ${{ if parameters.setupGit }}:

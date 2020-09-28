@@ -56,8 +56,8 @@ jobs:
   - bash: |
       set -euo pipefail
       eval "$($CONDA/bin/conda shell.bash hook)"
-      set -x
       conda activate
+      set -x
       python setup.py sdist
       tar tzf dist/*.tar.gz |sort
     displayName: Create sdist
