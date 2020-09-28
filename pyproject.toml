@@ -1,0 +1,4 @@
+[tool.cranko]
+extra_python_rewrite_files = [
+  "docs/conf.py"
+]
