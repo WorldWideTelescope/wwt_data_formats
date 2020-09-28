@@ -33,8 +33,8 @@ project homepage].
 
 
 setup_args = dict(
-    name = 'wwt_data_formats',
-    version = '0.5.0.dev0',  # also update docs/conf.py
+    name = 'wwt_data_formats',  # cranko project-name
+    version = '0.dev0',  # cranko project-version
     description = 'Low-level interface to AAS WorldWide Telescope data formats',
     long_description = get_long_desc(),
     long_description_content_type = 'text/markdown',

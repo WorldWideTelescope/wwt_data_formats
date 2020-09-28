@@ -1,0 +1,6 @@
+[[project]]
+qnames = [
+    'wwt_data_formats',
+    'pypa',
+]
+version = '0.4.1'
