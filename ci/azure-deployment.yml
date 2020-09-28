@@ -9,7 +9,7 @@ parameters:
   - name: isRelease
     type: boolean
     default: false
-  
+
 jobs:
 
 - ${{ if parameters.isMainDev }}:
@@ -47,7 +47,7 @@ jobs:
     steps:
     - template: azure-job-setup.yml
       parameters:
-        setupCrank: true
+        setupCranko: true
         setupGit: true
     - bash: |
         set -xeou pipefail
@@ -55,3 +55,27 @@ jobs:
       displayName: Create GitHub releases
       env:
         GITHUB_TOKEN: $(GITHUB_TOKEN)
+
+  - job: python_publish
+    pool:
+      vmImage: ubuntu-20.04
+    variables:
+    - group: Deployment Credentials
+    steps:
+    - template: azure-job-setup.yml
+      parameters:
+        setupBuild: true
+        setupCranko: true
+    - bash: |
+        set -euo pipefail
+        source activate-conda.sh
+        conda activate build
+        set -x
+        cranko python install-token
+
+        if cranko show if-release --exit-code wwt_data_formats ; then
+          twine upload $BASH_WORKSPACE/sdist/*.tar.gz
+        fi
+      displayName: Create GitHub releases
+      env:
+        PYPI_TOKEN: $(PYPI_TOKEN)

@@ -98,6 +98,14 @@ jobs:
       pytest --cov wwt_data_formats wwt_data_formats
     displayName: Test with coverage
 
+  - bash: |
+      set -euo pipefail
+      source activate-conda.sh
+      conda activate build
+      set -x
+      coveralls
+    displayName: Upload coverage results
+
 - job: docs
   pool:
     vmImage: ubuntu-20.04
