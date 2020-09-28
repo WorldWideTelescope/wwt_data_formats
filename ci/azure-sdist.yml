@@ -12,14 +12,6 @@ jobs:
 
   - bash: |
       set -euo pipefail
-      $CONDA/bin/conda init bash
-      echo "##vso[task.prependpath]$CONDA/bin"
-      ##### 
-      cat $HOME/.bashrc
-    displayName: Set up conda (Linux)
-
-  - bash: |
-      set -euo pipefail
       d="$(mktemp -d /tmp/cranko.XXXXXX)"
       cd "$d"
       curl --proto '=https' --tlsv1.2 -sSf https://pkgw.github.io/cranko/fetch-latest.sh | sh
@@ -52,13 +44,7 @@ jobs:
 
   - bash: |
       set -xeuo pipefail
-      ####################
-      env
-      cat $HOME/.bashrc
-      exit 1 
-      ####################
       eval "$($CONDA/bin/conda shell.bash hook)"
-      conda activate
       conda config --add channels conda-forge
       conda install -y \
         requests \
@@ -67,6 +53,7 @@ jobs:
 
   - bash: |
       set -xeuo pipefail
+      eval "$($CONDA/bin/conda shell.bash hook)"
       python setup.py sdist
       tar tzf dist/*.tar.gz |sort
     displayName: Create sdist
