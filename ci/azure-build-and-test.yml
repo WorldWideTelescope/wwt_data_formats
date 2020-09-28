@@ -58,7 +58,71 @@ jobs:
         set -euo pipefail
         source activate-conda.sh
         set -x
-        conda create -y -n build setuptools pip python="$PYTHON_SERIES"
+        \conda create -y -n build setuptools pip python="$PYTHON_SERIES"
         conda activate build
         pip install $PIPELINE_WORKSPACE/sdist/*.tar.gz
       displayName: Install from sdist
+
+    - bash: |
+        set -euo pipefail
+        source activate-conda.sh
+        conda activate build
+        set -x
+        \conda install -y mock pytest-mock
+        pytest wwt_data_formats
+      displayName: Test
+
+- job: coverage
+  pool:
+    vmImage: ubuntu-20.04
+  steps:
+  - template: azure-job-setup.yml
+    parameters:
+      setupBuild: true
+
+  - bash: |
+      set -euo pipefail
+      source activate-conda.sh
+      set -x
+      \conda create -y -n build setuptools pip python="$PYTHON_SERIES"
+      conda activate build
+      pip install $PIPELINE_WORKSPACE/sdist/*.tar.gz
+    displayName: Install from sdist
+
+  - bash: |
+      set -euo pipefail
+      source activate-conda.sh
+      conda activate build
+      set -x
+      \conda install -y coveralls mock pytest-cov pytest-mock
+      pytest --cov wwt_data_formats wwt_data_formats
+    displayName: Test with coverage
+
+- job: docs
+  pool:
+    vmImage: ubuntu-20.04
+  steps:
+  - template: azure-job-setup.yml
+    parameters:
+      setupBuild: true
+
+  - bash: |
+      set -euo pipefail
+      source activate-conda.sh
+      set -x
+      \conda create -y -n build setuptools pip python="$PYTHON_SERIES"
+      conda activate build
+      pip install $PIPELINE_WORKSPACE/sdist/*.tar.gz
+    displayName: Install from sdist
+
+  - bash: |
+      set -euo pipefail
+      source activate-conda.sh
+      conda activate build
+      set -x
+      \conda install -y astropy numpydoc sphinx spinx-automodapi
+      pip install astropy-sphinx-theme
+      cd docs
+      make html
+      make linkcheck
+    displayName: Build docs
