@@ -50,6 +50,7 @@ jobs:
 
   - bash: |
       set -xeuo pipefail
+      eval "$($CONDA/bin/conda shell.bash hook)"
       conda activate
       conda config --add channels conda-forge
       conda install -y \
