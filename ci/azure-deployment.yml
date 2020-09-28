@@ -69,13 +69,14 @@ jobs:
     - bash: |
         set -euo pipefail
         source activate-conda.sh
-        conda activate build
         set -x
         cranko python install-token
 
-        if cranko show if-release --exit-code wwt_data_formats ; then
+        # If we ever become a monorepo, we'll need to figure out how to make sure
+        # that we only upload the proper packages.
+        if cranko show if-released --exit-code wwt_data_formats ; then
           twine upload $BASH_WORKSPACE/sdist/*.tar.gz
         fi
-      displayName: Create GitHub releases
+      displayName: Publish PyPI releases
       env:
         PYPI_TOKEN: $(PYPI_TOKEN)
