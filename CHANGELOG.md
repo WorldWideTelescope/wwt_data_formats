@@ -1,6 +1,13 @@
 # rc: micro bump
 
+- Still no code changes from 0.4.2-0.4.3. Attempting to fix automated upload to
+  PyPI.
+
+
+# wwt_data_formats 0.4.3 (2020-09-28)
+
 - No code changes from 0.4.2. Attempting to fix automated upload to PyPI.
+
 
 # wwt_data_formats 0.4.2 (2020-09-28)
 
@@ -8,9 +15,11 @@
   reporting, and Azure Pipelines for CI.
 - HTTP hacks to try to get the server test to succeed reliably on CI.
 
+
 # 0.4.1 (2020-Sep-18)
 
 - Fix the test suite on Windows (hopefully).
+
 
 # 0.4.0 (2020-Sep-15)
 
