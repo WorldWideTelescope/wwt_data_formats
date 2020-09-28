@@ -68,7 +68,7 @@ jobs:
         source activate-conda.sh
         conda activate build
         set -x
-        \conda install -y mock pytest-mock
+        \conda install -y mock numpy pytest-mock
         pytest wwt_data_formats
       displayName: Test
 
@@ -84,7 +84,7 @@ jobs:
       set -euo pipefail
       source activate-conda.sh
       set -x
-      \conda create -y -n build setuptools pip python="$PYTHON_SERIES"
+      \conda create -y -n build setuptools pip
       conda activate build
       pip install $PIPELINE_WORKSPACE/sdist/*.tar.gz
     displayName: Install from sdist
@@ -94,7 +94,7 @@ jobs:
       source activate-conda.sh
       conda activate build
       set -x
-      \conda install -y coveralls mock pytest-cov pytest-mock
+      \conda install -y coveralls mock numpy pytest-cov pytest-mock
       pytest --cov wwt_data_formats wwt_data_formats
     displayName: Test with coverage
 
@@ -110,7 +110,7 @@ jobs:
       set -euo pipefail
       source activate-conda.sh
       set -x
-      \conda create -y -n build setuptools pip python="$PYTHON_SERIES"
+      \conda create -y -n build setuptools pip
       conda activate build
       pip install $PIPELINE_WORKSPACE/sdist/*.tar.gz
     displayName: Install from sdist
@@ -120,7 +120,7 @@ jobs:
       source activate-conda.sh
       conda activate build
       set -x
-      \conda install -y astropy numpydoc sphinx spinx-automodapi
+      \conda install -y astropy numpydoc sphinx sphinx-automodapi
       pip install astropy-sphinx-theme
       cd docs
       make html

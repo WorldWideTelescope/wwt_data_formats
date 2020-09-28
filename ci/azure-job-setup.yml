@@ -45,7 +45,7 @@ steps:
 # work around https://github.com/microsoft/azure-pipelines-tasks/issues/10653
 # also note that `set -x` messes up `task.setvariable`
 - bash: |
-    set -euo pipefail
+    set -xeuo pipefail
 
     PIPELINE_WORKSPACE="$(Pipeline.Workspace)"
     ARTIFACT_STAGING="$(Build.ArtifactStagingDirectory)"
@@ -55,6 +55,7 @@ steps:
       ARTIFACT_STAGING=$(echo "$ARTIFACT_STAGING" | sed -e 's|\\|\/|g' -e 's|^\([A-Za-z]\)\:/\(.*\)|/\L\1\E/\2|')
     fi
 
+    set +x
     echo "##vso[task.setvariable variable=PIPELINE_WORKSPACE;]$PIPELINE_WORKSPACE"
     echo "##vso[task.setvariable variable=ARTIFACT_STAGING;]$ARTIFACT_STAGING"
   displayName: Ensure bash-friendly variable names
