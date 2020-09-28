@@ -66,22 +66,12 @@ steps:
   displayName: Restore release commit
 
 - ${{ if parameters.setupBuild }}:
-  - bash: echo "##vso[task.prependpath]$CONDA/bin"
-    displayName: Set up conda (Linux)
-    condition: and(succeeded(), eq(variables['Agent.OS'], 'Linux'))
-
   - bash: |
       set -euo pipefail
-      echo "##vso[task.prependpath]$CONDA/bin"
-      sudo chown -R $USER $CONDA
-    displayName: Set up conda (MacOS)
-    condition: and(succeeded(), eq(variables['Agent.OS'], 'Darwin'))
-
-  - powershell: Write-Host "##vso[task.prependpath]$env:CONDA\Scripts"
-    displayName: Set up conda (Windows)
-    condition: and(succeeded(), eq(variables['Agent.OS'], 'Windows_NT'))
-
-  - bash: conda config --add conda-forge
+      eval "$($CONDA/bin/conda shell.bash hook)"
+      set -x
+      conda activate
+      conda config --add conda-forge
     displayName: Activate conda-forge
 
 - ${{ if parameters.setupGit }}:

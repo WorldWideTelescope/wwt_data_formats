@@ -43,8 +43,10 @@ jobs:
   # alternatives but nothing is official yet.
 
   - bash: |
-      set -xeuo pipefail
+      set -euo pipefail
       eval "$($CONDA/bin/conda shell.bash hook)"
+      set -x
+      conda activate
       conda config --add channels conda-forge
       conda install -y \
         requests \
@@ -52,8 +54,10 @@ jobs:
     displayName: Set up dependencies
 
   - bash: |
-      set -xeuo pipefail
+      set -euo pipefail
       eval "$($CONDA/bin/conda shell.bash hook)"
+      set -x
+      conda activate
       python setup.py sdist
       tar tzf dist/*.tar.gz |sort
     displayName: Create sdist
