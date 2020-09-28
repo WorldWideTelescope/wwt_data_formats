@@ -70,6 +70,8 @@ jobs:
         set -euo pipefail
         source activate-conda.sh
         set -x
+        conda install -y twine
+
         cranko python install-token
 
         # If we ever become a monorepo, we'll need to figure out how to make sure
