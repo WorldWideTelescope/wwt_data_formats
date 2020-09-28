@@ -1,4 +1,4 @@
-# rc: micro bump
+# wwt_data_formats 0.4.2 (2020-09-28)
 
 - Convert to Cranko for release automation! And Codecov.io for coverage
   reporting, and Azure Pipelines for CI.
