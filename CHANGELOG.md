@@ -1,3 +1,7 @@
+# wwt_data_formats 0.4.3 (2020-09-28)
+
+- No code changes from 0.4.2. Attempting to fix automated upload to PyPI.
+
 # wwt_data_formats 0.4.2 (2020-09-28)
 
 - Convert to Cranko for release automation! And Codecov.io for coverage
