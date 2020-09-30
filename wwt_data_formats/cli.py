@@ -145,6 +145,37 @@ def fetch_tree_impl(settings):
     fetch_folder_tree(settings.root_url, '.', on_fetch)
 
 
+# "print-tree-dem-urls" subcommand
+
+def print_tree_dem_urls_getparser(parser):
+    pass
+
+
+def print_tree_dem_urls_impl(settings):
+    from .folder import Folder, walk_cached_folder_tree
+    from .imageset import ImageSet
+    from .place import Place
+
+    done_urls = set()
+
+    for treepath, item in walk_cached_folder_tree('.'):
+        imgset = None
+
+        if isinstance(item, ImageSet):
+            imgset = item
+        elif isinstance(item, Place):
+            imgset = item.as_imageset()
+
+        if imgset is None:
+            continue
+
+        if not imgset.dem_url or imgset.dem_url in done_urls:
+            continue
+
+        done_urls.add(imgset.dem_url)
+        print(imgset.dem_url, imgset.name)
+
+
 # "print-tree-image-urls" subcommand
 
 def print_tree_image_urls_getparser(parser):
