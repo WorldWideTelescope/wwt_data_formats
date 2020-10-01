@@ -1,6 +1,6 @@
-summarize_tree_impl
+tree_print_dem_urls
 ===================
 
 .. currentmodule:: wwt_data_formats.cli
 
-.. autofunction:: summarize_tree_impl
+.. autofunction:: tree_print_dem_urls

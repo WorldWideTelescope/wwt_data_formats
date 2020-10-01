@@ -126,56 +126,6 @@ def cabinet_impl(settings):
         die('unrecognized "cabinet" subcommand ' + settings.cabinet_command)
 
 
-# "fetch-tree" subcommand
-
-def fetch_tree_getparser(parser):
-    parser.add_argument(
-        'root_url',
-        metavar = 'URL',
-        help = 'The URL of the initial WTML file to download.',
-    )
-
-
-def fetch_tree_impl(settings):
-    from .folder import fetch_folder_tree
-
-    def on_fetch(url):
-        print('Fetching', url, '...')
-
-    fetch_folder_tree(settings.root_url, '.', on_fetch)
-
-
-# "print-tree-image-urls" subcommand
-
-def print_tree_image_urls_getparser(parser):
-    pass
-
-
-def print_tree_image_urls_impl(settings):
-    from .folder import Folder, walk_cached_folder_tree
-    from .imageset import ImageSet
-    from .place import Place
-
-    done_urls = set()
-
-    for treepath, item in walk_cached_folder_tree('.'):
-        imgset = None
-
-        if isinstance(item, ImageSet):
-            imgset = item
-        elif isinstance(item, Place):
-            imgset = item.as_imageset()
-
-        if imgset is None:
-            continue
-
-        if imgset.url in done_urls:
-            continue
-
-        done_urls.add(imgset.url)
-        print(imgset.url, imgset.name)
-
-
 # "serve" subcommand
 
 def serve_getparser(parser):
@@ -200,13 +150,101 @@ def serve_impl(settings):
     run_server(settings)
 
 
-# "summarize-tree" subcommand
+# "tree" subcommand
 
-def summarize_tree_getparser(parser):
-    pass
+def tree_getparser(parser):
+    subparsers = parser.add_subparsers(dest='tree_command')
+
+    p = subparsers.add_parser('fetch')
+    p.add_argument(
+        'root_url',
+        metavar = 'URL',
+        help = 'The URL of the initial WTML file to download.',
+    )
+
+    p = subparsers.add_parser('print-dem-urls')
+    p = subparsers.add_parser('print-image-urls')
+    p = subparsers.add_parser('summarize')
 
 
-def summarize_tree_impl(settings):
+def tree_impl(settings):
+    if settings.tree_command is None:
+        print('Run the "tree" command with `--help` for help on its subcommands')
+        return
+
+    if settings.tree_command == 'fetch':
+        return tree_fetch(settings)
+    elif settings.tree_command == 'print-dem-urls':
+        return tree_print_dem_urls(settings)
+    elif settings.tree_command == 'print-image-urls':
+        return tree_print_image_urls(settings)
+    elif settings.tree_command == 'summarize':
+        return tree_summarize(settings)
+    else:
+        die('unrecognized "tree" subcommand ' + settings.tree_command)
+
+
+def tree_fetch(settings):
+    from .folder import fetch_folder_tree
+
+    def on_fetch(url):
+        print('Fetching', url, '...')
+
+    fetch_folder_tree(settings.root_url, '.', on_fetch)
+
+
+def tree_print_dem_urls(settings):
+    from .folder import Folder, walk_cached_folder_tree
+    from .imageset import ImageSet
+    from .place import Place
+
+    done_urls = set()
+
+    for treepath, item in walk_cached_folder_tree('.'):
+        imgset = None
+
+        if isinstance(item, ImageSet):
+            imgset = item
+        elif isinstance(item, Place):
+            imgset = item.as_imageset()
+
+        if imgset is None:
+            continue
+
+        if not imgset.dem_url or imgset.dem_url in done_urls:
+            continue
+
+        done_urls.add(imgset.dem_url)
+        print(imgset.dem_url, imgset.name)
+
+
+def tree_print_image_urls(settings):
+    from .folder import Folder, walk_cached_folder_tree
+    from .imageset import ImageSet
+    from .place import Place
+
+    done_urls = set()
+
+    for treepath, item in walk_cached_folder_tree('.'):
+        imgset = None
+
+        if isinstance(item, ImageSet):
+            imgset = item
+        elif isinstance(item, Place):
+            imgset = item.as_imageset()
+
+        if imgset is None:
+            continue
+
+        for url, tag in zip((imgset.url, imgset.alt_url), ('', ' (alt)')):
+            if not url or url in done_urls:
+                continue
+
+            done_urls.add(url)
+            print(url, imgset.name + tag)
+
+
+def tree_summarize(settings):
     from .folder import Folder, walk_cached_folder_tree
     from .imageset import ImageSet
     from .place import Place

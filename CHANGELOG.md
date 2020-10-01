@@ -1,5 +1,13 @@
 # rc: micro bump
 
+- Wire up the AltUrl property of ImageSets
+- In the CLI, group WTML tree commands under `tree` subcommand
+- Report AltUrls in `tree print-image-urls`
+- Add `tree print-dem-urls`
+
+
+# wwt_data_formats 0.4.4 (2020-09-28)
+
 - Still no code changes from 0.4.2-0.4.3. Attempting to fix automated upload to
   PyPI.
 

@@ -19,12 +19,6 @@ def tempdir():
     shutil.rmtree(d)
 
 
-def test_writer():
-    with pytest.raises(ValueError):
-        fcw = filecabinet.FileCabinetWriter()
-        fcw.add_file_with_data('bad-file-not-bytes', u'This is not bytes.')
-
-
 def test_cli(tempdir):
     "Simple smoke test to see if it runs at all."
 
@@ -32,14 +26,11 @@ def test_cli(tempdir):
 
     try:
         os.chdir(tempdir)
-
-        with open('file1.txt', 'wt') as f:
-            print('Hello world', file=f)
-
-        cli.entrypoint(['cabinet', 'pack', 'cabinet.wwtl', 'file1.txt'])
-
-        os.remove('file1.txt')
-        cli.entrypoint(['cabinet', 'unpack', 'cabinet.wwtl'])
+        cli.entrypoint(['tree', 'fetch',
+            'https://web.wwtassets.org/engine/assets/builtin-image-sets.wtml'])
+        cli.entrypoint(['tree', 'summarize'])
+        cli.entrypoint(['tree', 'print-image-urls'])
+        cli.entrypoint(['tree', 'print-dem-urls'])
     finally:
         # Windows can't remove the temp tree unless we chdir out of it.
         os.chdir(prev_dir)
