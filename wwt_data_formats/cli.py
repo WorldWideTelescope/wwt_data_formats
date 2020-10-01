@@ -200,11 +200,12 @@ def print_tree_image_urls_impl(settings):
         if imgset is None:
             continue
 
-        if imgset.url in done_urls:
-            continue
+        for url, tag in zip((imgset.url, imgset.alt_url), ('', ' (alt)')):
+            if not url or url in done_urls:
+                continue
 
-        done_urls.add(imgset.url)
-        print(imgset.url, imgset.name)
+            done_urls.add(url)
+            print(url, imgset.name + tag)
 
 
 # "serve" subcommand
