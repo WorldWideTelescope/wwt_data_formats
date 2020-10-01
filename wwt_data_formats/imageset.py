@@ -46,6 +46,14 @@ class ImageSet(LockedXmlTraits, UrlContainer):
     Either a URL or a URL template. TODO: details
 
     """
+    alt_url = Unicode('').tag(xml=XmlSer.attr('AltUrl'))
+    """An alternative URL that provided the data.
+
+    If provided and the Windows client attempts to load an imageset using this
+    alternative URL, that imageset will be replaced by this one. This provides a
+    mechanism for superseding old imagesets with improved versions.
+
+    """
     dem_url = Unicode('').tag(xml=XmlSer.attr('DemUrl'))
     """The URL of the DEM data.
 
