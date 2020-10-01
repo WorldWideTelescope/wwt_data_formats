@@ -4,7 +4,7 @@ project = 'wwt_data_formats'
 author = 'The AAS WorldWide Telescope Team'
 copyright = '2019-2020 the .NET Foundation'
 
-release = '0.4.4'  # cranko project-version
+release = '0.4.5'  # cranko project-version
 version = '.'.join(release.split('.')[:2])
 
 extensions = [
