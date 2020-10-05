@@ -75,7 +75,6 @@ setup_args = dict(
 
     extras_require = {
         'test': [
-            'coveralls',
             'mock',
             'pytest-cov',
         ],

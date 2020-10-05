@@ -1,5 +1,10 @@
 # rc: micro bump
 
+- Try to always read and write files with UTF-8 encoding, accepting Windows Byte
+  Order Markers (BOMs) when present.
+
+# wwt_data_formats 0.4.5 (2020-10-01)
+
 - Wire up the AltUrl property of ImageSets
 - In the CLI, group WTML tree commands under `tree` subcommand
 - Report AltUrls in `tree print-image-urls`
