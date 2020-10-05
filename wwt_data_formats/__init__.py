@@ -352,20 +352,23 @@ class LockedXmlTraits(LockedDownTraits):
 
 
     @classmethod
-    def from_file(cls, path):
+    def from_file(cls, path, encoding='utf-8-sig'):
         """Deserialize an instance of this class from an XML file on local disk.
 
         Parameters
         ----------
         path : string
-          The path of the XML file.
+            The path of the XML file.
+        encoding : optional string, default "utf-8-sig"
+            The encoding of the file text. The default value is basically UTF-8 but
+            will ignore Windows Byte Order Markers (BOMs) if present.
 
         Returns
         -------
         An instance of the class, initialized with data from the XML.
 
         """
-        with open(path, 'rt') as f:
+        with open(path, 'rt', encoding=encoding) as f:
             text = f.read()
 
         return cls.from_text(text)
