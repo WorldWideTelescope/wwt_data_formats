@@ -33,7 +33,7 @@ def test_cli(tempdir):
     try:
         os.chdir(tempdir)
 
-        with open('file1.txt', 'wt') as f:
+        with open('file1.txt', 'wt', encoding='utf8') as f:
             print('Hello world', file=f)
 
         cli.entrypoint(['cabinet', 'pack', 'cabinet.wwtl', 'file1.txt'])
