@@ -43,5 +43,5 @@ This can then be written to XML with::
 
     from wwt_data_formats import write_xml_doc
 
-    with open('myfile.wtml', 'w') as f:
+    with open('myfile.wtml', 'wt', encoding='utf8') as f:
         write_xml_doc(f.to_xml(), dest_stream=f)

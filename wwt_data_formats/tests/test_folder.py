@@ -174,7 +174,7 @@ def test_wtml_rewrite_urls(tempdir):
     f = folder.Folder()
     f.url = '../updir/somewhere.wtml'
 
-    with open('index_rel.wtml', 'wt') as f_out:
+    with open('index_rel.wtml', 'wt', encoding='utf8') as f_out:
         f.write_xml(f_out)
 
     cli.entrypoint(['wtml', 'rewrite-urls', 'index_rel.wtml', 'https://example.com/subdir/', 'index.wtml'])

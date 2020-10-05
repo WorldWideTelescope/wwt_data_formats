@@ -138,13 +138,13 @@ def fetch_folder_tree(root_url, root_cache_path, on_fetch=None):
 
         on_fetch(url)
         resp = requests.get(url)
-        resp.encoding = 'utf-8-sig'  # see LockedXmlTraits.from_urL()
+        resp.encoding = 'utf-8-sig'  # see LockedXmlTraits.from_url()
         elem = etree.fromstring(resp.text)
         done_urls.add(url)
         return resp.text, Folder.from_xml(elem)
 
     root_text, root_folder = get_folder(root_url)
-    with open(os.path.join(root_cache_path, 'index.wtml'), 'wt') as f:
+    with open(os.path.join(root_cache_path, 'index.wtml'), 'wt', encoding='utf8') as f:
         f.write(root_text)
 
     def walk(cur_folder, cur_cache_path):
@@ -162,7 +162,7 @@ def fetch_folder_tree(root_url, root_cache_path, on_fetch=None):
                     continue
 
                 os.makedirs(child_cache_path, exist_ok=True)
-                with open(os.path.join(child_cache_path, 'index.wtml'), 'wt') as f:
+                with open(os.path.join(child_cache_path, 'index.wtml'), 'wt', encoding='utf8') as f:
                     f.write(text)
 
             walk(child, child_cache_path)

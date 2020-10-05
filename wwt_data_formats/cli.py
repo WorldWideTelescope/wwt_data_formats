@@ -293,7 +293,7 @@ def wtml_rewrite_urls(settings):
     f = Folder.from_file(settings.in_path)
     f.mutate_urls(make_absolutizing_url_mutator(settings.baseurl))
 
-    with open(settings.out_path, 'wt') as f_out:
+    with open(settings.out_path, 'wt', encoding='utf8') as f_out:
         f.write_xml(f_out)
 
 
