@@ -1,7 +1,14 @@
-# rc: micro bump
+# rc: minor bump
+
+- Add a `wwtdatatool wtml merge` subcommand to ease the creation of "index" WTML
+  files from single-dataset WTMLs.
+
+
+# wwt_data_formats 0.4.6 (2020-10-05)
 
 - Try to always read and write files with UTF-8 encoding, accepting Windows Byte
   Order Markers (BOMs) when present.
+
 
 # wwt_data_formats 0.4.5 (2020-10-01)
 
