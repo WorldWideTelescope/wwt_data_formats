@@ -269,6 +269,29 @@ def tree_summarize(settings):
 def wtml_getparser(parser):
     subparsers = parser.add_subparsers(dest='wtml_command')
 
+    p = subparsers.add_parser('merge')
+    p.add_argument(
+        '--merged-name',
+        default = 'Folder',
+        help = 'The name to give to the merged folder.',
+    )
+    p.add_argument(
+        '--merged-thumb-url',
+        default = '',
+        help = 'The thumbnail URL to give to the merged folder.',
+    )
+    p.add_argument(
+        'in_paths',
+        nargs = '+',
+        metavar = 'IN-WTML-PATH',
+        help = 'The path to the input WTML files.',
+    )
+    p.add_argument(
+        'out_path',
+        metavar = 'OUT-WTML-PATH',
+        help = 'The path to the output WTML file.',
+    )
+
     p = subparsers.add_parser('rewrite-urls')
     p.add_argument(
         'in_path',
@@ -287,6 +310,57 @@ def wtml_getparser(parser):
     )
 
 
+def wtml_impl(settings):
+    if settings.wtml_command is None:
+        print('Run the "wtml" command with `--help` for help on its subcommands')
+        return
+
+    if settings.wtml_command == 'merge':
+        return wtml_merge(settings)
+    elif settings.wtml_command == 'rewrite-urls':
+        return wtml_rewrite_urls(settings)
+    else:
+        die('unrecognized "wtml" subcommand ' + settings.wtml_command)
+
+
+def wtml_merge(settings):
+    from urllib.parse import urljoin, urlsplit
+    from .folder import Folder
+
+    out_folder = Folder()
+    out_folder.name = settings.merged_name
+    out_folder.thumbnail = settings.merged_thumb_url
+
+    rel_base = os.path.dirname(settings.out_path)
+
+    for path in settings.in_paths:
+        in_folder = Folder.from_file(path)
+        cur_base_url = path.replace(os.path.sep, '/')
+
+        def mutator(url):
+            if not url:
+                return url
+            if urlsplit(url).netloc:
+                return url  # this URL is absolute
+
+            # Resolve this relative URL, using the path of the source WTML
+            # as the basis.
+            url = urljoin(cur_base_url, url)
+
+            # Now go back to filesystem-path land, so that we can use relpath to
+            # compute the new path relative to the merged folder file.
+            rel = os.path.relpath(url.replace('/', os.path.sep), rel_base)
+
+            # Finally, re-express that as a URL
+            return rel.replace(os.path.sep, '/')
+
+        in_folder.mutate_urls(mutator)
+        out_folder.children += in_folder.children
+
+    with open(settings.out_path, 'wt', encoding='utf8') as f_out:
+        out_folder.write_xml(f_out)
+
+
 def wtml_rewrite_urls(settings):
     from .folder import Folder, make_absolutizing_url_mutator
 
@@ -295,17 +369,6 @@ def wtml_rewrite_urls(settings):
 
     with open(settings.out_path, 'wt', encoding='utf8') as f_out:
         f.write_xml(f_out)
-
-
-def wtml_impl(settings):
-    if settings.wtml_command is None:
-        print('Run the "wtml" command with `--help` for help on its subcommands')
-        return
-
-    if settings.wtml_command == 'rewrite-urls':
-        return wtml_rewrite_urls(settings)
-    else:
-        die('unrecognized "wtml" subcommand ' + settings.wtml_command)
 
 
 # The CLI driver:
