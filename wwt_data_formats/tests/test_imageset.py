@@ -124,13 +124,7 @@ def test_misc_ser():
     observed_text = imgset.to_xml_string()
     assert observed_text == expected_text
 
-    from io import StringIO, BytesIO
-
-    expected_strio = StringIO()
-    observed_strio = StringIO()
-    write_xml_doc(expected_xml, dest_stream=expected_strio, indent=False)
-    imgset.write_xml(observed_strio, indent=False)
-    assert observed_strio.getvalue() == expected_strio.getvalue()
+    from io import BytesIO
 
     expected_bio = BytesIO()
     observed_bio = BytesIO()
