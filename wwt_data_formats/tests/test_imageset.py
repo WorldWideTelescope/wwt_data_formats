@@ -131,3 +131,4 @@ def test_misc_ser():
     write_xml_doc(expected_xml, dest_stream=expected_bio, dest_wants_bytes=True)
     imgset.write_xml(observed_bio, dest_wants_bytes=True)
     assert observed_bio.getvalue() == expected_bio.getvalue()
+    assert b'encoding=\'UTF-8\'' in observed_bio.getvalue()
