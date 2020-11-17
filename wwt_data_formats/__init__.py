@@ -643,13 +643,19 @@ def indent_xml(elem, level=0):
 
 
 def write_xml_doc(root_element, indent=True, dest_stream=None, dest_wants_bytes=False):
-    """Write out some XML elements, indenting them by default
+    """
+    Write out some XML elements, indenting them by default
 
-    When *indent* is true, the default setting, this function modifies *root_element*.
+    When *indent* is true, the default setting, this function modifies
+    *root_element*.
 
     If *dest_stream* is left unspecified, ``sys.stdout`` is used.
 
+    Due to some subtle cross-platform issues with proper text encoding, do not
+    use this function with a StringIO argument. Instead, use
+    :func:`stringify_xml_doc`.
     """
+
     if dest_stream is None:
         import sys
         dest_stream = sys.stdout
@@ -659,13 +665,20 @@ def write_xml_doc(root_element, indent=True, dest_stream=None, dest_wants_bytes=
 
     doc = etree.ElementTree(root_element)
 
-    # We could in principle auto-detect this with a 0-byte write(), I guess?
-    if dest_wants_bytes:
-        encoding = 'UTF-8'
-    else:
-        encoding = 'Unicode'
+    # If the dest stream accepts text, one can serialize XML into it using
+    # `encoding = "Unicode"`. But it turns out that in this mode, ETree sets the
+    # XML encoding declaration to what `locale.getpreferredencoding()` returns,
+    # which in Windows is CP-1252, which makes WWT unhappy. To ensure proper
+    # UTF-8 output, we need to get at the underlying byte stream.
 
-    doc.write(dest_stream, encoding=encoding, xml_declaration=True)
+    if not dest_wants_bytes:
+        try:
+            dest_stream = dest_stream.buffer
+        except Exception as e:
+            raise Exception('XML output into text I/O requires a destination whose '
+                'underlying bytes I/O can be retrieved') from e
+
+    doc.write(dest_stream, encoding='UTF-8', xml_declaration=True)
 
 
 def stringify_xml_doc(root_element, indent=True):
@@ -674,8 +687,11 @@ def stringify_xml_doc(root_element, indent=True):
     When *indent* is true, the default setting, this function modifies *root_element*.
 
     """
-    from io import StringIO
-    with StringIO() as dest:
-        write_xml_doc(root_element, indent, dest, dest_wants_bytes=False)
-        result = dest.getvalue()
-    return result
+    # We have to serialize into a BytesIO to ensure that we can force the XML
+    # encoding to be UTF-8 even when running on Windows, when the locale
+    # encoding may default to CP-1252.
+    from io import BytesIO
+    with BytesIO() as dest:
+        write_xml_doc(root_element, indent, dest, dest_wants_bytes=True)
+        bytes_result = dest.getvalue()
+    return bytes_result.decode('utf-8')

@@ -8,6 +8,7 @@ __all__ = '''
 Folder
 fetch_folder_tree
 make_absolutizing_url_mutator
+make_filesystem_url_mutator
 walk_cached_folder_tree
 '''.split()
 
@@ -118,6 +119,44 @@ def make_absolutizing_url_mutator(baseurl):
         if urlsplit(url).netloc:
             return url  # this URL is absolute
         return urljoin(baseurl, url)
+
+    return mutator
+
+
+def make_filesystem_url_mutator(basedir):
+    """Return a function that converts relative URLs to filesystem paths.
+
+    Parameters
+    ----------
+    basedir : string, path
+        An absolute path that the relative URLs will be combined with.
+
+    Returns
+    -------
+    A mutator function suitable for use with
+    :meth:`wwt_data_formats.abcs.UrlContainer.mutate_urls`.
+
+    Notes
+    -----
+    This function is designed for usage with
+    :meth:`wwt_data_formats.abcs.UrlContainer.mutate_urls`. It returns a mutator
+    function that can be passed to this method. The mutator will take relative
+    URLs and convert them to filesystem paths by combining them with the
+    *basedir* argument. Input URLs that are absolute will be unchanged.
+
+    """
+    from urllib.parse import unquote, urlsplit
+
+    def mutator(url):
+        if not url:
+            return url
+
+        split = urlsplit(url)
+        if split.netloc:
+            return url  # this URL is absolute
+
+        # TODO: this should work with '..' but pretty much only by luck
+        return os.path.join(basedir, *(unquote(s) for s in split.path.split('/')))
 
     return mutator
 
