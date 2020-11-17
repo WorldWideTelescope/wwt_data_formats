@@ -1,3 +1,11 @@
+# wwt_data_formats 0.6.0 (2020-11-17)
+
+- Add `wwtdatatool wtml rewrite-disk` to transform a "relative" WTML file to one
+  containing on-disk file paths, to ease testing with the Windows desktop app.
+- Fix XML files created on Windows to be sure that they specify UTF-8 encoding,
+  not CP-1252.
+
+
 # wwt_data_formats 0.5.0 (2020-10-12)
 
 - Add a `wwtdatatool wtml merge` subcommand to ease the creation of "index" WTML

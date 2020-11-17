@@ -22,6 +22,15 @@ def tempdir():
     shutil.rmtree(d)
 
 
+@pytest.fixture
+def in_tempdir(tempdir):
+    prev_dir = os.getcwd()
+    os.chdir(tempdir)
+    yield tempdir
+    # Windows can't remove the temp tree unless we chdir out of it.
+    os.chdir(prev_dir)
+
+
 BASIC_XML_STRING = '''
 <Folder MSRCommunityId="0" MSRComponentId="0" Permission="0"
         Browseable="True" Group="Explorer" Searchable="True" Type="Sky" />
@@ -167,10 +176,22 @@ def test_basic_url_mutation():
     assert imgset.url == 'https://example.com/subdir/image.jpg'
 
 
-def test_wtml_rewrite_urls(tempdir):
-    prev_dir = os.getcwd()
-    os.chdir(tempdir)
+def test_wtml_rewrite_disk(in_tempdir):
+    f = folder.Folder()
+    f.url = 'sub%20dir/image.jpg'
 
+    with open('index_rel.wtml', 'wt', encoding='utf8') as f_out:
+        f.write_xml(f_out)
+
+    cli.entrypoint(['wtml', 'rewrite-disk', 'index_rel.wtml', 'index_disk.wtml'])
+
+    f = folder.Folder.from_file('index_disk.wtml')
+    # abspath('') is not necessarily equal to abspath(in_tempdir), due to
+    # symlinks and Windows filename shorterning.
+    assert f.url == os.path.join(os.path.abspath(''), 'sub dir', 'image.jpg')
+
+
+def test_wtml_rewrite_urls(in_tempdir):
     f = folder.Folder()
     f.url = '../updir/somewhere.wtml'
 
@@ -181,6 +202,3 @@ def test_wtml_rewrite_urls(tempdir):
 
     f = folder.Folder.from_file('index.wtml')
     assert f.url == 'https://example.com/updir/somewhere.wtml'
-
-    # Windows can't remove the temp tree unless we chdir out of it.
-    os.chdir(prev_dir)
