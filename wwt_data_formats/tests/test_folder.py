@@ -186,7 +186,7 @@ def test_wtml_rewrite_disk(in_tempdir):
     cli.entrypoint(['wtml', 'rewrite-disk', 'index_rel.wtml', 'index_disk.wtml'])
 
     f = folder.Folder.from_file('index_disk.wtml')
-    assert f.url == os.path.join(in_tempdir, 'sub dir', 'image.jpg')
+    assert f.url == os.path.join(os.path.abspath(in_tempdir), 'sub dir', 'image.jpg')
 
 
 def test_wtml_rewrite_urls(in_tempdir):
