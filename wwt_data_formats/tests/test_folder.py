@@ -186,7 +186,10 @@ def test_wtml_rewrite_disk(in_tempdir):
     cli.entrypoint(['wtml', 'rewrite-disk', 'index_rel.wtml', 'index_disk.wtml'])
 
     f = folder.Folder.from_file('index_disk.wtml')
-    assert f.url == os.path.join(os.path.abspath(in_tempdir), 'sub dir', 'image.jpg')
+    # We need to use realpath() here, not abspath() as used in the CLI, due to
+    # the way that on macOS the tempdir is in /var which is a symlink to
+    # /private/var.
+    assert f.url == os.path.join(os.path.realpath(in_tempdir), 'sub dir', 'image.jpg')
 
 
 def test_wtml_rewrite_urls(in_tempdir):
