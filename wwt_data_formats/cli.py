@@ -292,6 +292,18 @@ def wtml_getparser(parser):
         help = 'The path to the output WTML file.',
     )
 
+    p = subparsers.add_parser('rewrite-disk')
+    p.add_argument(
+        'in_path',
+        metavar = 'INPUT-WTML',
+        help = 'The path to the input WTML file.',
+    )
+    p.add_argument(
+        'out_path',
+        metavar = 'OUTPUT-WTML',
+        help = 'The path of the rewritten, output WTML file.',
+    )
+
     p = subparsers.add_parser('rewrite-urls')
     p.add_argument(
         'in_path',
@@ -317,6 +329,8 @@ def wtml_impl(settings):
 
     if settings.wtml_command == 'merge':
         return wtml_merge(settings)
+    elif settings.wtml_command == 'rewrite-disk':
+        return wtml_rewrite_disk(settings)
     elif settings.wtml_command == 'rewrite-urls':
         return wtml_rewrite_urls(settings)
     else:
@@ -359,6 +373,21 @@ def wtml_merge(settings):
 
     with open(settings.out_path, 'wt', encoding='utf8') as f_out:
         out_folder.write_xml(f_out)
+
+
+def wtml_rewrite_disk(settings):
+    from .folder import Folder, make_filesystem_url_mutator
+
+    # Note that data URLs should be relative to the *source* WTML, which is why
+    # we're basing against in_path, not out_path.
+    rootdir = os.path.abspath(os.path.dirname(settings.in_path))
+    mutator = make_filesystem_url_mutator(rootdir)
+
+    f = Folder.from_file(settings.in_path)
+    f.mutate_urls(mutator)
+
+    with open(settings.out_path, 'wt', encoding='utf8') as f_out:
+        f.write_xml(f_out)
 
 
 def wtml_rewrite_urls(settings):
