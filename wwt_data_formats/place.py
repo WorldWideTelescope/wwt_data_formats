@@ -52,6 +52,15 @@ class Place(LockedXmlTraits, UrlContainer):
     foreground_image_set = Instance(ImageSet, allow_none=True).tag(xml=XmlSer.wrapped_inner('ForegroundImageSet'))
     image_set = Instance(ImageSet, allow_none=True).tag(xml=XmlSer.inner('ImageSet'))
     thumbnail = Unicode('').tag(xml=XmlSer.attr('Thumbnail'))
+
+    description = Unicode('').tag(xml=XmlSer.text_elem('Description'))
+    """
+    A description of the place, using HTML markup.
+
+    This field is not actually used in the stock WWT clients, but it is wired up
+    and loaded from the XML.
+    """
+
     msr_community_id = Int(0).tag(xml=XmlSer.attr('MSRCommunityId'))
     """The ID number of the WWT Community that this content came from."""
 
