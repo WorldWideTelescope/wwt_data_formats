@@ -196,7 +196,13 @@ class ImageSet(LockedXmlTraits, UrlContainer):
     """A URL to a standard WWT thumbnail representation of this imageset."""
 
     description = Unicode('').tag(xml=XmlSer.text_elem('Description'))
-    """A textual description of the imagery."""
+    """
+    A textual description of the imagery.
+
+    This field is referenced a few times in the original WWT documentation, but
+    is not actually implemented. The ``Place.description`` field is at least
+    loaded from the XML.
+    """
 
     msr_community_id = Int(0).tag(xml=XmlSer.attr('MSRCommunityId'))
     """The ID number of the WWT Community that this content came from."""
