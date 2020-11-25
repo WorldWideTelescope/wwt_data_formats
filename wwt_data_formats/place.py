@@ -61,6 +61,25 @@ class Place(LockedXmlTraits, UrlContainer):
     and loaded from the XML.
     """
 
+    annotation = Unicode('').tag(xml=XmlSer.attr('Annotation'))
+    """
+    Annotation metadata for the place.
+
+    This field is only used in the web engine and web client app. The web client
+    app expects this field to contain a comma-separated list of key-value pairs,
+    where each pair is delimited with colons:
+
+    .. code-block::
+
+        key1:val1,key2:val2,key3:val3
+
+    The webclient includes some unfinished support for this field to be used to
+    create circular annotations with YouTube video links. If your WTML file will
+    not be viewed in the webclient, you can use this field to convey arbitrary
+    textual data to the WWT Web Engine JavaScript/TypeScript layer.
+
+    """
+
     msr_community_id = Int(0).tag(xml=XmlSer.attr('MSRCommunityId'))
     """The ID number of the WWT Community that this content came from."""
 
