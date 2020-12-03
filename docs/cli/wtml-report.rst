@@ -9,6 +9,10 @@ exactly one dataset, and prints its metadata out for human vetting.
 
 .. _WTML: https://docs.worldwidetelescope.org/data-guide/1/data-file-formats/collections/
 
+This command requires that the Python package `beautifulsoup4`_ be installed.
+
+.. _beautifulsoup4: https://www.crummy.com/software/BeautifulSoup/
+
 Usage
 =====
 

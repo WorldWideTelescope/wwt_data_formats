@@ -60,11 +60,13 @@ maintained by
 [wwt_data_formats] is a Python package so, yes, Python is required.
 
 - [astropy] is not a required dependency, but can be used
+- [beautifulsoup4] for the `wwtdatatool wtml report` command
 - [pytest] to run the test suite
 - [requests] is always required (in princple it could be optional)
 - [traitlets] is always required
 
 [astropy]: https://www.astropy.org/
+[beautifulsoup4]: https://www.crummy.com/software/BeautifulSoup/
 [pytest]: https://docs.pytest.org/
 [requests]: https://requests.readthedocs.io/
 [traitlets]: https://traitlets.readthedocs.io/
