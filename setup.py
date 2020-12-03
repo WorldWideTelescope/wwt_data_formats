@@ -75,6 +75,7 @@ setup_args = dict(
 
     extras_require = {
         'test': [
+            'beautifulsoup4',
             'mock',
             'pytest-cov',
         ],
