@@ -62,7 +62,7 @@ jobs:
         source activate-conda.sh
         conda activate build
         set -x
-        \conda install -y mock numpy pytest-mock
+        \conda install -y beautifulsoup4 mock numpy pytest-mock
         pytest wwt_data_formats
       displayName: Test
 
@@ -88,7 +88,7 @@ jobs:
       source activate-conda.sh
       conda activate build
       set -x
-      \conda install -y mock numpy pytest-cov pytest-mock
+      \conda install -y astropy beautifulsoup4 mock numpy pytest-cov pytest-mock
       pytest --cov-report=xml --cov=wwt_data_formats wwt_data_formats
     displayName: Test with coverage
 

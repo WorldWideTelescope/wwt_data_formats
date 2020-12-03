@@ -292,6 +292,13 @@ def wtml_getparser(parser):
         help = 'The path to the output WTML file.',
     )
 
+    p = subparsers.add_parser('report')
+    p.add_argument(
+        'path',
+        metavar = 'WTML',
+        help = 'The path to a WTML file.',
+    )
+
     p = subparsers.add_parser('rewrite-disk')
     p.add_argument(
         'in_path',
@@ -329,6 +336,8 @@ def wtml_impl(settings):
 
     if settings.wtml_command == 'merge':
         return wtml_merge(settings)
+    elif settings.wtml_command == 'report':
+        return wtml_report(settings)
     elif settings.wtml_command == 'rewrite-disk':
         return wtml_rewrite_disk(settings)
     elif settings.wtml_command == 'rewrite-urls':
@@ -373,6 +382,189 @@ def wtml_merge(settings):
 
     with open(settings.out_path, 'wt', encoding='utf8') as f_out:
         out_folder.write_xml(f_out)
+
+
+def wtml_report(settings):
+    """
+    Analyze a WTML file, expect to contain a single place/imageset, and report
+    its metadata contents.
+    """
+    from bs4 import BeautifulSoup
+    from datetime import datetime
+    import json
+    import textwrap
+    from .folder import Folder
+    from .imageset import ImageSet
+    from .place import Place
+
+    f = Folder.from_file(settings.path)
+
+    warnings_hack = [0]
+
+    def mywarn(*args, **kwargs):
+        warn(*args, **kwargs)
+        warnings_hack[0] += 1
+
+    if len(f.children) != 1:
+        mywarn(f'expected WTML file to contain exactly one item; found {len(f.children)}')
+
+    if len(f.children) == 0:
+        die('cannot proceed if WTML has zero items')
+
+    pl = f.children[0]
+
+    if isinstance(pl, ImageSet):
+        die('sorry, this program is too dumb to handle top-level imagesets right now. File a bug!')
+    if not isinstance(pl, Place):
+        die(f'the WTML item must be a Place; found: {c}')
+
+    if pl.foreground_image_set is not None:
+        imgset = pl.foreground_image_set
+    else:
+        die('the WTML Place must contain a <ForegroundImageSet> item')
+
+    # Name:
+
+    f_name = f.name
+    p_name = pl.name
+    i_name = imgset.name
+
+    if f_name != p_name:
+        mywarn(f'name of folder ({f_name}) and name of Place ({p_name}) disagree')
+    if f_name != i_name:
+        mywarn(f'name of folder ({f_name}) and name of ImageSet ({i_name}) disagree')
+
+    # Our extended metadata -- needs documentation!
+
+    channel_name = None
+    item_id = None
+    published8601 = None
+
+    if pl.annotation:
+        try:
+            anno_data = json.loads(pl.annotation)
+        except Exception as e:
+            mywarn(f'Place annotation data is not valid JSON; the text is: {pl.annotation!r}')
+        else:
+            channel_name = anno_data.get('channel')
+            item_id = anno_data.get('itemid')
+            published8601 = anno_data.get('publishedUTCISO8601')
+    else:
+        mywarn('Place contains no Annotation metadata')
+
+    if channel_name is None:
+        mywarn('Place Annotation metadata does not contain a channel name')
+        channel_report = '(none specified)'
+    else:
+        channel_report = channel_name
+
+    if item_id is None:
+        mywarn('Place Annotation metadata does not contain an itemid')
+        item_id_report = '(none specified)'
+    else:
+        item_id_report = item_id
+
+    pubdate = None
+
+    if published8601 is not None:
+        try:
+            pubdate = datetime.fromisoformat(published8601)
+        except Error as e:
+            mywarn('publication date in Place Annotation data does not seem to be in ISO8601 format')
+        else:
+            if pubdate.tzinfo is None:
+                mywarn('publication date does not contain timezone information')
+
+    if pubdate is None:
+        mywarn('Place Annotation metadata does not contain a valid publication date')
+        pubdate_report = '(unspecified)'
+    else:
+        pubdate_report = pubdate
+
+    # Text entries
+
+    def process_html(text):
+        parsed = BeautifulSoup(text, 'html.parser')
+        plain_report = textwrap.wrap(
+            parsed.text,
+            break_long_words = False,
+            break_on_hyphens = False,
+        )
+
+        tag_report = []
+
+        for line in parsed.prettify().splitlines():
+            # Determine indent for mo' pretty
+            i = 0
+            while i < len(line) and line[i] == ' ':
+                i += 1
+            indent = line[:i]
+
+            tag_report += textwrap.wrap(
+                line,
+                initial_indent = indent,
+                subsequent_indent = indent,
+                break_long_words = False,
+                break_on_hyphens = False,
+            )
+
+        return plain_report, tag_report
+
+    if not pl.description:
+        mywarn('Place has no Description')
+        desc_plain_report = desc_tag_report = ['(none)']
+    else:
+        desc_plain_report, desc_tag_report = process_html(pl.description)
+
+    if not imgset.credits:
+        mywarn('ImageSet has no credits')
+        credits_plain_report = credits_tag_report = ['(none)']
+    else:
+        credits_plain_report, credits_tag_report = process_html(imgset.credits)
+
+    if not imgset.credits_url:
+        mywarn('ImageSet has no CreditsUrl')
+        credits_url_report = '(none)'
+    else:
+        credits_url_report = imgset.credits_url
+
+    # Finally, report out
+
+    print(f'Filename: {settings.path}')
+    print(f'Title (no HTML allowed): {f_name}')
+    print(f'Source channel: {channel_report}')
+    print(f'Source/credit URL: {credits_url_report}')
+    print(f'Item ID (should be unique within channel): {item_id_report}')
+    print(f'Publication date: {pubdate_report}')
+    print()
+
+    print('Description reduced to plain text:')
+    print()
+    for line in desc_plain_report:
+        print('   ', line)
+    print()
+    print('Full HTML description (check links and tags!):')
+    print()
+    for line in desc_tag_report:
+        print('   ', line)
+    print()
+    print('Credits reduced to plain text:')
+    print()
+    for line in credits_plain_report:
+        print('   ', line)
+    print()
+    print('Full HTML credits (check links and tags!):')
+    print()
+    for line in credits_tag_report:
+        print('   ', line)
+
+    print()
+    n_warnings = warnings_hack[0]
+
+    if n_warnings:
+        print(f'Summary: {n_warnings} were flagged')
+    else:
+        print('Summary: file structure looks OK! Check description and credits HTML.')
 
 
 def wtml_rewrite_disk(settings):

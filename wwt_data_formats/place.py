@@ -52,6 +52,34 @@ class Place(LockedXmlTraits, UrlContainer):
     foreground_image_set = Instance(ImageSet, allow_none=True).tag(xml=XmlSer.wrapped_inner('ForegroundImageSet'))
     image_set = Instance(ImageSet, allow_none=True).tag(xml=XmlSer.inner('ImageSet'))
     thumbnail = Unicode('').tag(xml=XmlSer.attr('Thumbnail'))
+
+    description = Unicode('').tag(xml=XmlSer.text_elem('Description'))
+    """
+    A description of the place, using HTML markup.
+
+    This field is not actually used in the stock WWT clients, but it is wired up
+    and loaded from the XML.
+    """
+
+    annotation = Unicode('').tag(xml=XmlSer.attr('Annotation'))
+    """
+    Annotation metadata for the place.
+
+    This field is only used in the web engine and web client app. The web client
+    app expects this field to contain a comma-separated list of key-value pairs,
+    where each pair is delimited with colons:
+
+    .. code-block::
+
+        key1:val1,key2:val2,key3:val3
+
+    The webclient includes some unfinished support for this field to be used to
+    create circular annotations with YouTube video links. If your WTML file will
+    not be viewed in the webclient, you can use this field to convey arbitrary
+    textual data to the WWT Web Engine JavaScript/TypeScript layer.
+
+    """
+
     msr_community_id = Int(0).tag(xml=XmlSer.attr('MSRCommunityId'))
     """The ID number of the WWT Community that this content came from."""
 

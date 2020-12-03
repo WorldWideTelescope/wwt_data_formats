@@ -12,5 +12,6 @@ CLI Reference
    cli/cabinet-unpack
    cli/serve
    cli/wtml-merge
+   cli/wtml-report
    cli/wtml-rewrite-disk
    cli/wtml-rewrite-urls
