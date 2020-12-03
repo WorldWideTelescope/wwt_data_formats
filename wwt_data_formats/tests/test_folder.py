@@ -179,6 +179,7 @@ def test_basic_url_mutation():
 def test_wtml_report():
     """Dumb smoketest."""
     cli.entrypoint(['wtml', 'report', test_path('test1_rel.wtml')])
+    cli.entrypoint(['wtml', 'report', test_path('report_rel.wtml')])
 
 
 def test_wtml_rewrite_disk(in_tempdir):
