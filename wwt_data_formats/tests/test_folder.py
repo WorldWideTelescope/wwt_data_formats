@@ -11,7 +11,7 @@ import tempfile
 import pytest
 from xml.etree import ElementTree as etree
 
-from . import assert_xml_trees_equal
+from . import assert_xml_trees_equal, test_path
 from .. import cli, folder, imageset, place
 
 
@@ -174,6 +174,12 @@ def test_basic_url_mutation():
 
     assert f.url == 'https://example.com/updir/somewhere.wtml'
     assert imgset.url == 'https://example.com/subdir/image.jpg'
+
+
+def test_wtml_report():
+    """Dumb smoketest."""
+    cli.entrypoint(['wtml', 'report', test_path('test1_rel.wtml')])
+    cli.entrypoint(['wtml', 'report', test_path('report_rel.wtml')])
 
 
 def test_wtml_rewrite_disk(in_tempdir):

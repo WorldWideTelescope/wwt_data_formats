@@ -1,5 +1,18 @@
 # rc: minor bump
 
+- Add a `wwtdatatool wtml report` command to report on the metadata contents
+  of single-dataset WTML files. This is a bit of a hack intended for use in
+  Toasty pipelines, but it might become more general.
+- Improve support for open-ended annotation attributes in datasets.
+  Specifically, add `Annotation` and `Description` in places, and note that
+  `Description` in ImageSets isn't wired up in the apps and so should be
+  avoided.
+- Fix calculation of image centers when setting up WWT metadata based on a
+  WCS data structure. I had the X and Y swapped, like a chump.
+
+
+# wwt_data_formats 0.6.0 (2020-11-17)
+
 - Add `wwtdatatool wtml rewrite-disk` to transform a "relative" WTML file to one
   containing on-disk file paths, to ease testing with the Windows desktop app.
 - Fix XML files created on Windows to be sure that they specify UTF-8 encoding,

@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<Folder Browseable="True" Group="Explorer" MSRCommunityId="0" MSRComponentId="0" Name="The Helix Nebula from CFHT" Permission="0" Searchable="True" Type="Sky">
+  <Place Angle="0.0" AngularSize="0.0" Annotation="{&quot;channel&quot;: &quot;apod&quot;, &quot;itemid&quot;: &quot;ap201124&quot;, &quot;publishedUTCISO8601&quot;: &quot;2020-11-24T00:00:00+00:00&quot;}" DataSetType="Sky" Dec="-20.831625760459005" Distance="0.0" DomeAlt="0.0" DomeAz="0.0" Lat="0.0" Lng="0.0" Magnitude="0.0" MSRCommunityId="0" MSRComponentId="0" Name="The Helix Nebula from CFHT" Opacity="100.0" Permission="0" RA="22.49602257139234" Rotation="0.0" Thumbnail="thumb.jpg" ZoomLevel="6.920858314824214">
+    <Description>Will our Sun look like this one day?  The &lt;a href="https://en.wikipedia.org/wiki/Helix_Nebula" &gt;Helix Nebula&lt;/a&gt; ...</Description>
+    <ForegroundImageSet>
+      <ImageSet BandPass="Visible" BaseDegreesPerTile="1.351750765693903" BaseTileLevel="0" BottomsUp="False" CenterX="337.341075461" CenterY="-20.5828979404" DataSetType="Sky" ElevationModel="False" FileType=".png" Generic="False" MeanRadius="0.0" MSRCommunityId="0" MSRComponentId="0" Name="The Helix Nebula from CFHT" OffsetX="-0.09291908454402585" OffsetY="-0.24869660174200472" Permission="0" Projection="Tan" Rotation="0.030274935470192596" Sparse="True" StockSet="False" TileLevels="4" Url="L{1}X{2}Y{3}.png" WidthFactor="2">
+        <ThumbnailUrl>thumb.jpg</ThumbnailUrl>
+      </ImageSet>
+    </ForegroundImageSet>
+  </Place>
+</Folder>

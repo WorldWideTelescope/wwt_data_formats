@@ -621,9 +621,9 @@ def indent_xml(elem, level=0):
 
     We create XML files using xml.etree.ElementTree, which is careful about
     spacing and so by default creates ugly files with no linewraps or
-    indentation. This function is copied from `ElementLib
-    <http://effbot.org/zone/element-lib.htm#prettyprint>`_ and implements
-    basic, sensible indentation using "tail" text.
+    indentation. This function is copied from ElementLib (formerly found at
+    ``http://effbot.org/zone/element-lib.htm#prettyprint``, currently offline)
+    and implements basic, sensible indentation using "tail" text.
 
     """
     i = "\n" + level * "  "
