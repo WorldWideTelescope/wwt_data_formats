@@ -1,5 +1,10 @@
 # rc: minor bump
 
+- Add a `wwtdatatool preview` command, as suggested by @astrofrog.
+
+
+# wwt_data_formats 0.7.0 (2020-12-03)
+
 - Add a `wwtdatatool wtml report` command to report on the metadata contents
   of single-dataset WTML files. This is a bit of a hack intended for use in
   Toasty pipelines, but it might become more general.
