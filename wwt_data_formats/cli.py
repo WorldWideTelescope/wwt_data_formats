@@ -126,6 +126,21 @@ def cabinet_impl(settings):
         die('unrecognized "cabinet" subcommand ' + settings.cabinet_command)
 
 
+# "preview" subcommand
+
+def preview_getparser(parser):
+    parser.add_argument(
+        'wtml_path',
+        metavar = 'PATH',
+        help = 'The path to the WTML file to preview.',
+    )
+
+
+def preview_impl(settings):
+    from .server import preview_wtml
+    preview_wtml(settings.wtml_path)
+
+
 # "serve" subcommand
 
 def serve_getparser(parser):

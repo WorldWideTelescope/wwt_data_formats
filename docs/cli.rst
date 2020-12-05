@@ -10,6 +10,7 @@ CLI Reference
    cli/cabinet-list
    cli/cabinet-pack
    cli/cabinet-unpack
+   cli/preview
    cli/serve
    cli/wtml-merge
    cli/wtml-report
