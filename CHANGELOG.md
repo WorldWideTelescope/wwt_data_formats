@@ -1,3 +1,8 @@
+# wwt_data_formats 0.8.0 (2020-12-05)
+
+- Add a `wwtdatatool preview` command, as suggested by @astrofrog.
+
+
 # wwt_data_formats 0.7.0 (2020-12-03)
 
 - Add a `wwtdatatool wtml report` command to report on the metadata contents

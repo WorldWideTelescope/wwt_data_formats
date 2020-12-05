@@ -23,12 +23,15 @@ production server. (You can do this with ``wwtdatatool wtml rewrite-urls``.)
 from __future__ import absolute_import, division, print_function
 
 __all__ = '''
+preview_wtml
 run_server
 '''.split()
 
 from functools import partial
 import http.server
 import os.path
+from urllib.parse import quote as urlquote
+import webbrowser
 
 from .folder import Folder, make_absolutizing_url_mutator
 
@@ -126,6 +129,38 @@ def run_server(settings):
             print('    (none)')
 
         print()
+
+        try:
+            httpd.serve_forever()
+        except KeyboardInterrupt:
+            print()
+            print('(interrupted)')
+
+
+def preview_wtml(wtml_path):
+    """
+    Run a server for a local WTML file and open it in a web browser.
+
+    """
+    root_dir = os.path.dirname(wtml_path)
+    server_path = os.path.basename(wtml_path.replace('_rel.wtml', '.wtml'))
+    server_address = ('', 0)
+    handler_factory = partial(WWTRequestHandler, directory=root_dir)
+
+    with HTTPServerClass(server_address, handler_factory) as httpd:
+        # Hack: the WWT JS engine special-cases 'localhost' and '127.0.0.1' so
+        # that it doesn't start trying to proxy them if URLs result in 404s,
+        # which is a common occurrence when working on tiled images. So ignore
+        # the auto-detected server name and use one of those.
+        server_name = '127.0.0.1'  # httpd.server_name
+        wtml_url = f'http://{server_name}:{httpd.server_port}/{urlquote(server_path)}'
+        webclient_url = 'https://worldwidetelescope.org/webclient/?wtml=' + urlquote(wtml_url)
+
+        # By the time the browser opens and the webclient loads up, our server
+        # should be up and running.
+        print('file is being served as:', wtml_url)
+        print('opening it in the WWT webclient ...')
+        webbrowser.open(webclient_url, new=1, autoraise=True)
 
         try:
             httpd.serve_forever()
