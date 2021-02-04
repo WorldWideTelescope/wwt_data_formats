@@ -5,23 +5,9 @@
 from __future__ import absolute_import, division, print_function
 
 import os.path
-import shutil
-import tempfile
-import pytest
 
 from .. import cli, folder
-from . import test_path
-
-
-@pytest.fixture
-def work_in_tempdir():
-    prev_dir = os.getcwd()
-    d = tempfile.mkdtemp()
-    os.chdir(d)
-    yield d
-    # Windows can't remove the temp tree unless we chdir out of it.
-    os.chdir(prev_dir)
-    shutil.rmtree(d)
+from . import test_path, work_in_tempdir
 
 
 def test_merge_cli(work_in_tempdir):

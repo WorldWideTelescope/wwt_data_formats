@@ -1,13 +1,18 @@
 # -*- mode: python; coding: utf-8 -*-
-# Copyright 2019-2020 the .NET Foundation
+# Copyright 2019-2021 the .NET Foundation
 # Licensed under the MIT License.
 
 __all__ = '''
 assert_xml_trees_equal
+tempdir
 test_path
+work_in_tempdir
 '''.split()
 
 import os.path
+import pytest
+import shutil
+import tempfile
 
 
 TESTS_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -44,3 +49,21 @@ def _assert_xml_trees_equal(path, e1, e2, care_text_tags):
 
 def assert_xml_trees_equal(e1, e2, care_text_tags=()):
     _assert_xml_trees_equal('(root)', e1, e2, care_text_tags)
+
+
+@pytest.fixture
+def tempdir():
+    d = tempfile.mkdtemp()
+    yield d
+    shutil.rmtree(d)
+
+
+@pytest.fixture
+def work_in_tempdir():
+    prev_dir = os.getcwd()
+    d = tempfile.mkdtemp()
+    os.chdir(d)
+    yield d
+    # Windows can't remove the temp tree unless we chdir out of it.
+    os.chdir(prev_dir)
+    shutil.rmtree(d)
