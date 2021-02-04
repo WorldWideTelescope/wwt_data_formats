@@ -16,3 +16,4 @@ CLI Reference
    cli/wtml-report
    cli/wtml-rewrite-disk
    cli/wtml-rewrite-urls
+   cli/wtml-transfer-astrometry

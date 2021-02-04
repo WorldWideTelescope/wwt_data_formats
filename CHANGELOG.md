@@ -1,3 +1,10 @@
+# wwt_data_formats 0.9.0 (2021-02-04)
+
+- Add `wwtdatatool wtml transfer-astrometry` for helping transfer refined
+  astrometry between different WTML variants.
+- Remove CLI foo from the API docs
+
+
 # wwt_data_formats 0.8.0 (2020-12-05)
 
 - Add a `wwtdatatool preview` command, as suggested by @astrofrog.
