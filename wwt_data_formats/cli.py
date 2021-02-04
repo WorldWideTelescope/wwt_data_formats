@@ -10,6 +10,12 @@ import os.path
 import sys
 
 
+__all__ = [
+    'entrypoint',
+    'serve_getparser',
+]
+
+
 # General CLI utilities
 
 def die(msg):
