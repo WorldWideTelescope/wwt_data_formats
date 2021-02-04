@@ -1,5 +1,5 @@
 # -*- mode: python; coding: utf-8 -*-
-# Copyright 2020 the .NET Foundation
+# Copyright 2020-2021 the .NET Foundation
 # Licensed under the MIT License.
 
 """Entrypoint for the "wwtdatatool" command-line interface.
