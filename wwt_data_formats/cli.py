@@ -1,5 +1,5 @@
 # -*- mode: python; coding: utf-8 -*-
-# Copyright 2020 the .NET Foundation
+# Copyright 2020-2021 the .NET Foundation
 # Licensed under the MIT License.
 
 """Entrypoint for the "wwtdatatool" command-line interface.
@@ -8,6 +8,12 @@
 import argparse
 import os.path
 import sys
+
+
+__all__ = [
+    'entrypoint',
+    'serve_getparser',
+]
 
 
 # General CLI utilities
@@ -343,6 +349,19 @@ def wtml_getparser(parser):
         help = 'The path of the rewritten, output WTML file.',
     )
 
+    p = subparsers.add_parser('transfer-astrometry')
+    p.add_argument(
+        'in_path',
+        metavar = 'INPUT-WTML',
+        help = 'The path to the input WTML file with refined astrometric solutions.',
+    )
+    p.add_argument(
+        'update_paths',
+        nargs = '+',
+        metavar = 'UPDATE-WTML',
+        help = 'Paths of WTML files to update with data from the input file.',
+    )
+
 
 def wtml_impl(settings):
     if settings.wtml_command is None:
@@ -357,6 +376,8 @@ def wtml_impl(settings):
         return wtml_rewrite_disk(settings)
     elif settings.wtml_command == 'rewrite-urls':
         return wtml_rewrite_urls(settings)
+    elif settings.wtml_command == 'transfer-astrometry':
+        return wtml_transfer_astrometry(settings)
     else:
         die('unrecognized "wtml" subcommand ' + settings.wtml_command)
 
@@ -605,6 +626,127 @@ def wtml_rewrite_urls(settings):
 
     with open(settings.out_path, 'wt', encoding='utf8') as f_out:
         f.write_xml(f_out)
+
+
+def wtml_transfer_astrometry(settings):
+    from .folder import Folder
+    from .imageset import ImageSet
+    from .place import Place
+
+    # Tables of preferred entries ...
+
+    places = {}
+    imagesets = {}
+
+    def add_imageset(imgset):
+        if imgset is None:
+            return  # convenience for Place handling
+
+        if imgset.name in imagesets:
+            print('note: imageset name "%s" appears repeatedly in input file "%s"' % (imgset.name, settings.in_path))
+        else:
+            imagesets[imgset.name] = imgset
+
+    def add_place(place):
+        if place.name in places:
+            print('note: place name "%s" appears repeatedly in input file "%s"' % (place.name, settings.in_path))
+        else:
+            places[place.name] = place
+
+        add_imageset(place.image_set)
+        add_imageset(place.background_image_set)
+        add_imageset(place.foreground_image_set)
+
+    IMAGESET_ASTROMETRIC_ATTRS = [
+        'data_set_type',
+        'width_factor',
+        'reference_frame',
+        'base_degrees_per_tile',
+        'projection',
+        'center_x',
+        'center_y',
+        'offset_x',
+        'offset_y',
+        'rotation_deg',
+    ]
+
+    PLACE_ASTROMETRIC_ATTRS = [
+        'data_set_type',
+        'ra_hr',
+        'dec_deg',
+        'latitude',
+        'longitude',
+        'distance',
+        'angular_size',
+        'zoom_level',
+        'rotation_deg',
+        'angle',
+        'dome_alt',
+        'dome_az'
+    ]
+
+    def update_imageset(imgset):
+        if imgset is None:
+            return 0
+
+        ref = imagesets.get(imgset.name)
+        if ref is None:
+            return 0
+
+        for att in IMAGESET_ASTROMETRIC_ATTRS:
+            setattr(imgset, att, getattr(ref, att))
+
+        return 1
+
+    def update_place(place):
+        n_updates = 0
+
+        ref = places.get(place.name)
+        if ref is not None:
+            for att in PLACE_ASTROMETRIC_ATTRS:
+                setattr(place, att, getattr(ref, att))
+
+            n_updates += 1
+
+        n_updates += update_imageset(place.image_set)
+        n_updates += update_imageset(place.background_image_set)
+        n_updates += update_imageset(place.foreground_image_set)
+        return n_updates
+
+    # Load up the preferred data
+
+    in_folder = Folder.from_file(settings.in_path)
+
+    for depth, path, item in in_folder.walk(download=False):
+        if isinstance(item, Place):
+            add_place(item)
+        elif isinstance(item, ImageSet):
+            add_imageset(item)
+
+    # Now update everything
+
+    n_updated_files = 0
+
+    for update_path in settings.update_paths:
+        folder = Folder.from_file(update_path)
+        n_updates = 0
+
+        for depth, path, item in folder.walk(download=False):
+            if isinstance(item, Place):
+                n_updates += update_place(item)
+            elif isinstance(item, ImageSet):
+                n_updates += update_imageset(item)
+
+        print('%s: updated %d items' % (update_path, n_updates))
+
+        if n_updates > 0:
+            n_updated_files += 1
+
+            with open(update_path, 'wt', encoding='utf8') as f_out:
+                folder.write_xml(f_out)
+
+    print()
+    print('Updated %d WTML files.' % n_updated_files)
 
 
 # The CLI driver:

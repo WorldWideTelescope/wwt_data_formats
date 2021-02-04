@@ -10,13 +10,7 @@ import tempfile
 import pytest
 
 from .. import cli, filecabinet
-
-
-@pytest.fixture
-def tempdir():
-    d = tempfile.mkdtemp()
-    yield d
-    shutil.rmtree(d)
+from . import tempdir
 
 
 def test_cli(tempdir):
