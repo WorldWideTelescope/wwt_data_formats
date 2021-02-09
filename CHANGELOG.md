@@ -1,3 +1,9 @@
+# wwt_data_formats 0.9.1 (2021-02-09)
+
+- Start supporting glob arguments on Windows. It turns out that you have
+  to implement this manually.
+
+
 # wwt_data_formats 0.9.0 (2021-02-04)
 
 - Add `wwtdatatool wtml transfer-astrometry` for helping transfer refined
