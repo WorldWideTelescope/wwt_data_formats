@@ -11,6 +11,8 @@ import sys
 
 
 __all__ = [
+    'GLOB_PATHS_INTERNALLY',
+    'EnsureGlobsExpandedAction',
     'entrypoint',
     'serve_getparser',
 ]
@@ -24,6 +26,45 @@ def die(msg):
 
 def warn(msg):
     print('warning:', msg, file=sys.stderr)
+
+GLOB_PATHS_INTERNALLY = (os.name == 'nt')  # non-Windows has reasonable shells
+
+class EnsureGlobsExpandedAction(argparse.Action):
+    """
+    An action to handle globbing for path-list arguments on Windows.
+
+    If the CLI program is being run from the Windows command prompt, there is no
+    expansion of globs by the shell. It turns out that to get globbing behavior,
+    we have to manually implement it ourselves. This class helps make this
+    convenient. It can be used as a ``action=`` keyword argument to
+    ``ArgumentParser.add_argument()`` and, on Windows, will process argument
+    text to apply globs. This argument should generally be used on arguments
+    with a ``nargs='+'`` cardinality.
+    """
+    def __call__(self, parser, namespace, values, option_string=None):
+        setattr(namespace, self.dest, self.expand_globs(values))
+
+    def expand_globs(self, path_args):
+        if not GLOB_PATHS_INTERNALLY:
+            return path_args
+
+        import glob
+
+        result = []
+
+        for p in path_args:
+            if not glob.has_magic(p):
+                result.append(p)
+            else:
+                matches = glob.glob(p, recursive=True)
+
+                if matches:
+                    result += matches
+                else:
+                    # Unix-like behavior: unmatched glob expression is passed on through
+                    result.append(p)
+
+        return result
 
 
 # "cabinet" subcommand
@@ -47,6 +88,7 @@ def cabinet_getparser(parser):
     p.add_argument(
         'input_paths',
         nargs = '+',
+        action = EnsureGlobsExpandedAction,
         metavar = 'PATHS',
         help = 'Paths to files to put into the cabinet.',
     )
@@ -304,6 +346,7 @@ def wtml_getparser(parser):
     p.add_argument(
         'in_paths',
         nargs = '+',
+        action = EnsureGlobsExpandedAction,
         metavar = 'IN-WTML-PATH',
         help = 'The path to the input WTML files.',
     )
@@ -358,6 +401,7 @@ def wtml_getparser(parser):
     p.add_argument(
         'update_paths',
         nargs = '+',
+        action = EnsureGlobsExpandedAction,
         metavar = 'UPDATE-WTML',
         help = 'Paths of WTML files to update with data from the input file.',
     )

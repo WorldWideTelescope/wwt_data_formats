@@ -10,13 +10,7 @@ import tempfile
 import pytest
 
 from .. import cli, filecabinet
-
-
-@pytest.fixture
-def tempdir():
-    d = tempfile.mkdtemp()
-    yield d
-    shutil.rmtree(d)
+from . import work_in_tempdir
 
 
 def test_writer():
@@ -25,21 +19,43 @@ def test_writer():
         fcw.add_file_with_data('bad-file-not-bytes', u'This is not bytes.')
 
 
-def test_cli(tempdir):
+def test_cli(work_in_tempdir):
     "Simple smoke test to see if it runs at all."
 
-    prev_dir = os.getcwd()
+    with open('file1.txt', 'wt', encoding='utf8') as f:
+        print('Hello world', file=f)
 
-    try:
-        os.chdir(tempdir)
+    cli.entrypoint(['cabinet', 'pack', 'cabinet.wwtl', 'file1.txt'])
 
-        with open('file1.txt', 'wt', encoding='utf8') as f:
-            print('Hello world', file=f)
+    os.remove('file1.txt')
+    cli.entrypoint(['cabinet', 'unpack', 'cabinet.wwtl'])
 
-        cli.entrypoint(['cabinet', 'pack', 'cabinet.wwtl', 'file1.txt'])
 
-        os.remove('file1.txt')
-        cli.entrypoint(['cabinet', 'unpack', 'cabinet.wwtl'])
-    finally:
-        # Windows can't remove the temp tree unless we chdir out of it.
-        os.chdir(prev_dir)
+def test_pack_globs(work_in_tempdir):
+    """
+    This doesn't quite belong here -- test that we properly glob filenames when
+    run through the shell. This is something to worry about on Windows, when
+    running in the basic command prompt.
+    """
+    cli.GLOB_PATHS_INTERNALLY = True
+
+    with open('file1.txt', 'wt', encoding='utf8') as f:
+        print('Hello world', file=f)
+
+    with open('file2.txt', 'wt', encoding='utf8') as f:
+        print('Hello again', file=f)
+
+    cli.entrypoint(['cabinet', 'pack', 'cabinet1.wwtl', 'file?.txt'])
+    cli.entrypoint(['cabinet', 'pack', 'cabinet2.wwtl', '?ile*.txt'])
+
+    with open('cabinet1.wwtl', 'rb') as f:
+        data1 = f.read()
+
+    with open('cabinet2.wwtl', 'rb') as f:
+        data2 = f.read()
+
+    assert data1 == data2
+
+    # Globby paths yield OSError, "invalid argument", on Windows.
+    with pytest.raises((FileNotFoundError, OSError)):
+        cli.entrypoint(['cabinet', 'pack', 'cabinet1.wwtl', '*unmatched*.txt'])
