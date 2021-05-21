@@ -175,7 +175,8 @@ def fetch_folder_tree(root_url, root_cache_path, on_fetch=None):
         if url in done_urls:
             return None, None
 
-        on_fetch(url)
+        if on_fetch is not None:
+            on_fetch(url)
         resp = requests.get(url)
         resp.encoding = 'utf-8-sig'  # see LockedXmlTraits.from_url()
         elem = etree.fromstring(resp.text)
