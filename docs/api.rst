@@ -18,7 +18,7 @@ API Reference
 
 .. automodapi:: wwt_data_formats.cli
    :no-inheritance-diagram:
-   :inherited-members:
+   :no-inherited-members:
 
 .. automodapi:: wwt_data_formats.enums
    :no-inheritance-diagram:
