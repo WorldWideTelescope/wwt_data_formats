@@ -67,7 +67,17 @@ numpydoc_show_class_members = False
 
 nitpicky = True
 nitpick_ignore = [
+    # Traitlets stuff that we have to ignore. This is all due to our need to
+    # turn on :inherited-members: in api.rst due to a sphinx-automodapi bug (see
+    # comment in api.rst).
+    ('py:attr', 'class_init'),
+    ('py:attr', 'name'),
+    ('py:attr', 'this_class'),
+    ('py:class', 'traitlets.traitlets.HasDescriptors'),
+    ('py:class', 'traitlets.traitlets.MetaHasDescriptors'),
     ('py:class', 'traitlets.traitlets.MetaHasTraits'),
+    ('py:obj', 'handler'),
+    ('py:obj', 'remove'),
 ]
 
 default_role = 'obj'

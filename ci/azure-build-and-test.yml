@@ -117,7 +117,7 @@ jobs:
       source activate-conda.sh
       conda activate build
       set -x
-      \conda install -y astropy numpydoc sphinx sphinx-automodapi
+      \conda install -y astropy graphviz numpydoc sphinx sphinx-automodapi
       pip install astropy-sphinx-theme
       cd docs
       make html

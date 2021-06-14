@@ -1,5 +1,13 @@
 # rc: micro bump
 
+- Work around an issue in the documentation toolchain that caused
+  many class fields to be lost in the final output (@pkgw, #35)
+- Fix `fetch_folder_tree` to not crash in the (default) case where
+  `on_fetch = None` (@Carifio24, #34)
+
+
+# wwt_data_formats 0.9.1 (2021-02-09)
+
 - Start supporting glob arguments on Windows. It turns out that you have
   to implement this manually.
 
