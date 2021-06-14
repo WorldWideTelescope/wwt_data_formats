@@ -19,12 +19,6 @@ ProjectionType
       ~ProjectionType.TAN
       ~ProjectionType.TOAST
 
-   .. rubric:: Methods Summary
-
-   .. autosummary::
-
-      ~ProjectionType.from_text
-
    .. rubric:: Attributes Documentation
 
    .. autoattribute:: EQUIRECTANGULAR
@@ -35,7 +29,3 @@ ProjectionType
    .. autoattribute:: SPHERICAL
    .. autoattribute:: TAN
    .. autoattribute:: TOAST
-
-   .. rubric:: Methods Documentation
-
-   .. automethod:: from_text

@@ -12,8 +12,10 @@ EnsureGlobsExpandedAction
 
       ~EnsureGlobsExpandedAction.__call__
       ~EnsureGlobsExpandedAction.expand_globs
+      ~EnsureGlobsExpandedAction.format_usage
 
    .. rubric:: Methods Documentation
 
    .. automethod:: __call__
    .. automethod:: expand_globs
+   .. automethod:: format_usage
