@@ -21,7 +21,15 @@ from .enums import Bandpass, DataSetType, ProjectionType
 
 
 class ImageSet(LockedXmlTraits, UrlContainer):
-    """A set of images."""
+    """
+    A WWT imagery dataset.
+
+    Instances of this class express WWT imagery datasets and their spatial
+    positioning. Imagesets are exposed to the WWT engine through their XML
+    serialization in a WTML :class:`~wwt_data_formats.folder.Folder`. The engine
+    can be instructed to load such a folder, making its imagesets available for
+    rendering.
+    """
 
     data_set_type = UseEnum(DataSetType, default_value=DataSetType.SKY).tag(xml=XmlSer.attr('DataSetType'))
     """The renderer mode to which these data apply.
@@ -43,7 +51,11 @@ class ImageSet(LockedXmlTraits, UrlContainer):
     url = Unicode('').tag(xml=XmlSer.attr('Url'))
     """The URL of the image data.
 
-    Either a URL or a URL template. TODO: details
+    Either a URL or a URL template. URLs that are exposed to the engine should
+    be absolute and use the ``http://`` protocol (the web engine will rewrite
+    them to HTTPS if needed). The ``wwtdatatool`` program that comes with this
+    package provides some helpful utilities to allow data-processing to use relative URLs. TODO: more
+    details.
 
     """
     alt_url = Unicode('').tag(xml=XmlSer.attr('AltUrl'))
@@ -75,32 +87,72 @@ class ImageSet(LockedXmlTraits, UrlContainer):
     tile_levels = Int(0).tag(xml=XmlSer.attr('TileLevels'))
     """The number of levels of tiling.
 
-    Should be zero for untiled images. An image with ``tile_levels = 1`` has been
-    broken into four tiles, each 256x256 pixels. For ``tile_levels = 2``, there are
-    sixteen tiles, and the padded height of the tiled area is ``256 * 2**2 = 1024``
-    pixels. Image with dimensions of 2048 pixels or smaller do not need to be tiled,
-    so if this parameter is nonzero it will usually be 4 or larger.
+    Should be zero for untiled images (``projection =
+    ProjectionType.SkyImage``).
+
+    For tiled images (``projection = ProjectionType.Tan``), an image with
+    ``tile_levels = 1`` has been broken into four tiles, each 256x256 pixels.
+    For ``tile_levels = 2``, there are sixteen tiles, and the padded height of
+    the tiled area is ``256 * 2**2 = 1024`` pixels. Image with dimensions of
+    2048 pixels or smaller do not need to be tiled, so if this parameter is
+    nonzero it will usually be 4 or larger.
 
     """
     base_degrees_per_tile = Float(0.0).tag(xml=XmlSer.attr('BaseDegreesPerTile'))
     """The angular scale of the image.
 
-    For untiled images, should be the pixel scale: the number of degrees per
-    pixel in the vertical direction. Non-square pixels are not supported.
+    For untiled images, this is the pixel scale: the number of degrees per pixel
+    in the vertical direction. Non-square pixels are not supported.
 
-    For tiled images, this is the height of the image with its dimensions
-    padded out to the next largest power of 2 for tiling purposes. If a square
-    image is 1200 pixels tall and has a height of 0.016 deg, the padded height
-    would be 2048 pixels and this parameter should be set to
-    0.016 * 2048 / 1200 = 0.0273.
+    For tiled images, this is the angular height of the image, in degrees, after
+    its dimensions have been padded out to the next largest power of 2 for
+    tiling purposes. If a square image is 1200 pixels tall and has a height of
+    0.016 deg, the padded height would be 2048 pixels and this parameter should
+    be set to 0.016 * 2048 / 1200 = 0.0273.
 
     """
     file_type = Unicode('.png').tag(xml=XmlSer.attr('FileType'))
-    """The extension of the image file(s) in this set, including a leading period.
+    """
+    The extension of the image file(s) in this set, including a leading period.
+
+    A value of ``.tsv`` probably means that this "imageset" actually represents
+    a HiPS progressive catalog, not bitmap imagery.
 
     """
     bottoms_up = Bool(False).tag(xml=XmlSer.attr('BottomsUp'))
-    """TBD."""
+    """
+    The parity of the image's projection on the sky.
+
+    For untiled (``projection = SkyImage``) images, this flag defines the
+    image's parity, which basically sets whether the image needs to be flipped
+    during rendering. This field should be False for typical RGB color images
+    that map onto the sky as if you had taken them with a digital camera. For
+    these images, the first row of image data is at the top of the image at zero
+    rotation. For typical FITS files, on the other hand, the first row of image
+    data is at the bottom of the image, which results in a parity inversion. In
+    these cases, the ``bottoms_up`` flag should be True (hence its name). In the
+    terminology of `Astrometry.Net
+    <https://astroquery.readthedocs.io/en/latest/astrometry_net/astrometry_net.html#parity>`_,
+    ``bottoms_up = False`` corresponds to negative parity, and ``bottoms_up =
+    True`` corresponds to positive parity.
+
+    The effect of setting this flag to True is to effectively flip the image and
+    its coordinate system left-to-right. For a ``bottoms_up = False`` image with
+    :attr:`offset_x`, :attr:`offset_y`, and :attr:`rotation_deg` all zero, the
+    lower-left corner of the image lands at the :attr:`center_x` and
+    :attr:`center_y`, and positive rotations rotate the image counter-clockwise
+    around that origin. If you take the same image and make ``bottoms_up =
+    True``, the image will appear to have been flipped left-to-right, the
+    lower-*right* corner of the image will land at the coordinate center, and
+    positive rotations will rotate it *clockwise* around that origin. In both
+    cases, positive values of :attr:`offset_x` and :attr:`offset_y` move the
+    center of the image closer to the coordinate center, but when ``bottoms_up =
+    False``, this means that the image is moving down and left, and when
+    ``bottoms_up = True`` this means that the image is moving down and right.
+
+    For tiled images (``projection = Tan``), this field must be false. If it is
+    true, the imageset won't render.
+    """
 
     projection = UseEnum(
         ProjectionType,
@@ -114,57 +166,89 @@ class ImageSet(LockedXmlTraits, UrlContainer):
 
     """
     center_x = Float(0.0).tag(xml=XmlSer.attr('CenterX'))
-    """The horizontal location of the center of the image’s projection coordinate
-    system.
+    """The horizontal location of the center of the image’s projection
+    coordinate system.
 
-    For sky images, this is a right ascension in degrees.
+    For sky images, this is a right ascension in degrees. Note that this
+    parameter just helps to define a coordinate system; it does not control how
+    the actual image data are placed onto that coordinate system. The
+    :attr:`offset_x` and :attr:`offset_y` parameters do that.
 
     """
     center_y = Float(0.0).tag(xml=XmlSer.attr('CenterY'))
     """The vertical location of the center of the image’s projection coordinate
     system.
 
-    For sky images, this is a declination in degrees.
+    For sky images, this is a declination in degrees. Note that this parameter
+    just helps to define a coordinate system; it does not control how the actual
+    image data are placed onto that coordinate system. The :attr:`offset_x` and
+    :attr:`offset_y` parameters do that.
 
     """
     offset_x = Float(0.0).tag(xml=XmlSer.attr('OffsetX'))
-    """The horizontal positioning of the image relative to its projection
+    """
+    The horizontal positioning of the image relative to its projection
     coordinate system.
 
-    For untiled sky images, the image is by default positioned such that its
-    lower left lands at the center of the projection coordinate system (namely,
-    ``center_x`` and ``center_y``). The offset is measured in pixels and moves
-    the image leftwards. Therefore, ``offset_x = image_width / 2`` places the
+    For untiled sky images with :attr:`bottoms_up` false, the image is by
+    default positioned such that its lower left corner lands at the center of
+    the projection coordinate system (namely, :attr:`center_x` and
+    :attr:`center_y`). The offset is measured in pixels and moves the image
+    leftwards. Therefore, ``offset_x = image_width / 2`` places the horizontal
     center of the image at ``center_x``. This parameter is therefore analogous
     to the WCS keyword ``CRVAL1``.
+
+    For untiled sky images where :attr:`bottoms_up` is true, the X coordinate
+    system has been mirrored. Therefore when this field is zero, the lower
+    *right* corner of the image will land at the center of the projection
+    coordinate system, and positive values will move the image to the right.
 
     For tiled sky images, the offset is measured in *degrees*, and a value of
     zero means that the *center* of the image lands at the center of the
     projection coordinate system.
+
+    As per the usual practice, offsets are always along the horizontal axis of
+    the image in question, regardless of its :attr:`rotation <rotation_deg>` on
+    the sky.
 
     """
     offset_y = Float(0.0).tag(xml=XmlSer.attr('OffsetY'))
     """The vertical positioning of the image relative to its projection
     coordinate system.
 
-    For untiled sky images, the image is by default positioned such that its
-    lower left lands at the center of the projection coordinate system (namely,
-    ``center_x`` and ``center_y``). The offset is measured in pixels and moves
-    the image downwards. Therefore, ``offset_y = image_height / 2`` places the
+    For untiled sky images with :attr:`bottoms_up` false, the image is by
+    default positioned such that its lower left corner lands at the center of
+    the projection coordinate system (namely, :attr:`center_x` and
+    :attr:`center_y`). The offset is measured in pixels and moves the image
+    downwards. Therefore, ``offset_y = image_height / 2`` places the vertical
     center of the image at ``center_y``. This parameter is therefore analogous
     to the WCS keyword ``CRVAL2``.
+
+    For untiled sky images where :attr:`bottoms_up` is true, the X coordinate
+    system has been mirrored but the Y coordinate system is the same. Therefore
+    when this field is zero, the lower *right* corner of the image will land at
+    the center of the projection coordinate system, but positive values will
+    still move the image downwards.
 
     For tiled sky images, the offset is measured in *degrees*, and a value of
     zero means that the *center* of the image lands at the center of the
     projection coordinate system.
 
+    As per the usual practice, offsets are always along the vertical axis of the
+    image in question, regardless of its :attr:`rotation <rotation_deg>` on the
+    sky.
+
     """
     rotation_deg = Float(0.0).tag(xml=XmlSer.attr('Rotation'))
-    """The rotation of image’s projection coordinate system, in degrees.
-
-    For sky images, this is East from North, i.e. counterclockwise.
-
     """
+    The rotation of image’s projection coordinate system, in degrees.
+
+    For sky images with :attr:`bottoms_up` false, this is East from North, i.e.
+    counterclockwise. If :attr:`bottoms_up` is true (only allowed for untiled
+    images), the image coordinate system is mirrored, and positive rotations
+    rotate the image *clockwise* relative to the sky.
+    """
+
     band_pass = UseEnum(
         Bandpass,
         default_value = Bandpass.VISIBLE
@@ -230,37 +314,35 @@ class ImageSet(LockedXmlTraits, UrlContainer):
             self.thumbnail_url = mutator(self.thumbnail_url)
 
     def set_position_from_wcs(self, headers, width, height, place=None, fov_factor=1.7):
-        """Set the positional information associated with this imageset to match a set
-        of WCS headers.
+        """Set the positional information associated with this imageset to match
+        a set of WCS headers.
 
         Parameters
         ----------
-        headers : :class:`~astropy.io.fits.Header` or string-keyed dict-like
-          A set of FITS-like headers including WCS keywords such as ``CRVAL1``.
-        width : positive integer
-          The width of the image associated with the WCS, in pixels.
-        height : positive integer
-          The height of the image associated with the WCS, in pixels.
-        place : optional :class:`~wwt_data_formats.place.Place`
-          If specified, the centering and zoom level of the :class:`~wwt_data_formats.place.Place`
-          object will be set to match the center and size of this image.
-        fov_factor : optional float
-          If *place* is provided, its zoom level will be set so that the
-          angular height of the client viewport is this factor times the
-          angular height of the image. The default is 1.7.
+        headers : :class:`~astropy.io.fits.Header` or string-keyed dict-like A
+          set of FITS-like headers including WCS keywords such as ``CRVAL1``.
+          width : positive integer The width of the image associated with the
+          WCS, in pixels. height : positive integer The height of the image
+          associated with the WCS, in pixels. place : optional
+          :class:`~wwt_data_formats.place.Place` If specified, the centering and
+          zoom level of the :class:`~wwt_data_formats.place.Place` object will
+          be set to match the center and size of this image. fov_factor :
+          optional float If *place* is provided, its zoom level will be set so
+          that the angular height of the client viewport is this factor times
+          the angular height of the image. The default is 1.7.
 
         Returns
         -------
-        self
-          For convenience in chaining function calls.
+        self For convenience in chaining function calls.
 
         Notes
         -----
-        Certain of the ImageSet parameters take on different meanings depending on
-        whether the image in question is a tiled "study" or not. This method will alter
-        its behavior depending on whether the :attr:`tile_levels` attribute is greater
-        than zero. If you are computing coordinates for a tiled study, make sure to set
-        this parameter *before* calling this function.
+        Certain of the ImageSet parameters take on different meanings depending
+        on whether the image in question is a tiled "study" or not. This method
+        will alter its behavior depending on whether the :attr:`tile_levels`
+        attribute is greater than zero. If you are computing coordinates for a
+        tiled study, make sure to set this parameter *before* calling this
+        function.
 
         For the time being, the WCS must be equatorial using the gnomonic
         (``TAN``) projection.
@@ -276,6 +358,9 @@ class ImageSet(LockedXmlTraits, UrlContainer):
 
         If present ``PC1_2``, ``PC2_1``, ``CD1_2``, and/or ``CD2_1`` are used.
         If absent, they are assumed to be zero.
+
+        This field does *not* change the :attr:`bottoms_up` setting. It probably
+        should, but that will break things!
 
         """
         if headers['CTYPE1'] != 'RA---TAN' or headers['CTYPE2'] != 'DEC--TAN':
@@ -369,7 +454,8 @@ class ImageSet(LockedXmlTraits, UrlContainer):
 
 
     def wcs_headers_from_position(self):
-        """Compute a set of WCS headers for this ImageSet's positional information.
+        """
+        Compute a set of WCS headers for this ImageSet's positional information.
 
         Returns
         -------
@@ -378,11 +464,13 @@ class ImageSet(LockedXmlTraits, UrlContainer):
 
         Notes
         -----
-        At the moment, this function only works for ImageSets with a
-        projection type of ``SKY_IMAGE``. Support for other projections
-        *might* be added later, if the need arises..
-
+        At the moment, this function only works for ImageSets with a projection
+        type of ``SKY_IMAGE``. Support for other projections *might* be added
+        later, if the need arises. Note, however, that tiled images have their
+        sizes adjusted to be powers of 2, and the "actual" size of the source
+        imagery is not necessarily preserved.
         """
+
         rv = {
             'CTYPE1': 'RA---TAN',
             'CTYPE2': 'DEC--TAN',
