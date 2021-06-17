@@ -314,26 +314,41 @@ class ImageSet(LockedXmlTraits, UrlContainer):
             self.thumbnail_url = mutator(self.thumbnail_url)
 
     def set_position_from_wcs(self, headers, width, height, place=None, fov_factor=1.7):
-        """Set the positional information associated with this imageset to match
-        a set of WCS headers.
+        """
+        Set the positional information associated with this imageset to match a
+        set of WCS headers.
 
         Parameters
         ----------
-        headers : :class:`~astropy.io.fits.Header` or string-keyed dict-like A
-          set of FITS-like headers including WCS keywords such as ``CRVAL1``.
-          width : positive integer The width of the image associated with the
-          WCS, in pixels. height : positive integer The height of the image
-          associated with the WCS, in pixels. place : optional
-          :class:`~wwt_data_formats.place.Place` If specified, the centering and
-          zoom level of the :class:`~wwt_data_formats.place.Place` object will
-          be set to match the center and size of this image. fov_factor :
-          optional float If *place* is provided, its zoom level will be set so
-          that the angular height of the client viewport is this factor times
-          the angular height of the image. The default is 1.7.
+        headers : :class:`~astropy.io.fits.Header` or string-keyed dict-like
+
+            A set of FITS-like headers including WCS keywords such as ``CRVAL1``.
+
+        width : positive integer
+
+            The width of the image associated with the WCS, in pixels.
+
+        height : positive integer
+
+            The height of the image associated with the WCS, in pixels.
+
+        place : optional :class:`~wwt_data_formats.place.Place`
+
+            If specified, the centering and zoom level of the
+            :class:`~wwt_data_formats.place.Place` object will be set to match
+            the center and size of this image.
+
+        fov_factor : optional
+
+            If *place* is provided, its zoom level will be set so that the angular
+            height of the client viewport is this factor times the angular height of
+            the image. The default is 1.7.
 
         Returns
         -------
-        self For convenience in chaining function calls.
+        **self**
+
+            For convenience in chaining function calls.
 
         Notes
         -----
@@ -353,16 +368,16 @@ class ImageSet(LockedXmlTraits, UrlContainer):
         - ``CRVAL1`` and ``CRVAL2``
         - ``CRPIX1`` and ``CRPIX2``
         - Either:
-          - ``CDELT1``, ``CDELT2``, ``PC1_1``, and ``PC1_2``; or
-          - ``CD1_1``, ``CD2_2``
+            - ``CDELT1``, ``CDELT2``, ``PC1_1``, and ``PC1_2``; or
+            - ``CD1_1``, ``CD2_2``
 
         If present ``PC1_2``, ``PC2_1``, ``CD1_2``, and/or ``CD2_1`` are used.
         If absent, they are assumed to be zero.
 
         This field does *not* change the :attr:`bottoms_up` setting. It probably
         should, but that will break things!
-
         """
+
         if headers['CTYPE1'] != 'RA---TAN' or headers['CTYPE2'] != 'DEC--TAN':
             raise ValueError('WCS coordinates must be in an equatorial/TAN projection')
 
