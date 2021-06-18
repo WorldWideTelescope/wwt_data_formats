@@ -1,9 +1,10 @@
 # -*- mode: python; coding: utf-8 -*-
-# Copyright 2020 the .NET Foundation
+# Copyright 2020-2021 the .NET Foundation
 # Licensed under the MIT License.
 
 from __future__ import absolute_import, division, print_function
 
+import numpy as np
 import numpy.testing as nt
 import pytest
 from xml.etree import ElementTree as etree
@@ -59,13 +60,14 @@ def test_basic_xml():
 
 def test_wcs_1():
     expected_str = '''
-<ImageSet MSRCommunityId="0" MSRComponentId="0" Permission="0"
-          BandPass="Visible" BaseDegreesPerTile="4.870732233333334e-05"
-          BaseTileLevel="0" BottomsUp="False" CenterX="83.633083" CenterY="22.0145"
-          DataSetType="Sky" ElevationModel="False" FileType=".png" Generic="False"
-          MeanRadius="0.0" OffsetX="1502.8507831457316" OffsetY="1478.8005935660037"
-          Projection="SkyImage" Rotation="-0.29036478519000003" Sparse="True"
-          StockSet="False" TileLevels="0" WidthFactor="2">
+<ImageSet BandPass="Visible" BaseDegreesPerTile="4.870732233333334e-05"
+          BaseTileLevel="0" BottomsUp="True" CenterX="83.633083"
+          CenterY="22.0145" DataSetType="Sky" ElevationModel="False"
+          FileType=".png" Generic="False" MeanRadius="0.0" MSRCommunityId="0"
+          MSRComponentId="0" OffsetX="1503.3507831457316"
+          OffsetY="1479.3005935660037" Permission="0" Projection="SkyImage"
+          Rotation="-179.70963521481" Sparse="True" StockSet="False"
+          TileLevels="0" WidthFactor="2">
 </ImageSet>
 '''
     expected_xml = etree.fromstring(expected_str)
@@ -93,6 +95,26 @@ def test_wcs_1():
 
     wcs_roundtrip = imgset.wcs_headers_from_position()
 
+    # Postprocess CD into PC/CDELT using the usual normalization
+
+    det = wcs_roundtrip['CD1_1'] * wcs_roundtrip['CD2_2'] - wcs_roundtrip['CD1_2'] * wcs_roundtrip['CD2_1']
+    if det < 0:
+        cd_sign = -1
+    else:
+        cd_sign = 1
+
+    wcs_roundtrip['CDELT1'] = np.sqrt(wcs_roundtrip['CD1_1']**2 + wcs_roundtrip['CD1_2']**2) * cd_sign
+    wcs_roundtrip['CDELT2'] = np.sqrt(wcs_roundtrip['CD2_1']**2 + wcs_roundtrip['CD2_2']**2)
+    wcs_roundtrip['PC1_1'] = wcs_roundtrip['CD1_1'] / wcs_roundtrip['CDELT1']
+    wcs_roundtrip['PC1_2'] = wcs_roundtrip['CD1_2'] / wcs_roundtrip['CDELT1']
+    wcs_roundtrip['PC2_1'] = wcs_roundtrip['CD2_1'] / wcs_roundtrip['CDELT2']
+    wcs_roundtrip['PC2_2'] = wcs_roundtrip['CD2_2'] / wcs_roundtrip['CDELT2']
+
+    for hn in 'CD1_1 CD1_2 CD2_1 CD2_2'.split():
+        del wcs_roundtrip[hn]
+
+    # OK, now we can compare again
+
     for kw in wcs_roundtrip.keys():
         expected = wcs_keywords[kw]
         observed = wcs_roundtrip[kw]
@@ -101,6 +123,144 @@ def test_wcs_1():
             assert expected == observed
         else:
             nt.assert_almost_equal(expected, observed)
+
+
+def test_wcs_ok_matrices():
+    base_keywords = {
+        'CTYPE1': 'RA---TAN',
+        'CTYPE2': 'DEC--TAN',
+        'CRVAL1': 0,
+        'CRVAL2': 0,
+        'CRPIX1': 0,
+        'CRPIX2': 0,
+    }
+
+    case1 = {
+        'CD1_1': -0.05,
+        'CD1_2': -0.3,
+        'CD2_1': -0.3,
+        'CD2_2': 0.05,
+    }
+
+    case2 = {
+        'CD1_1': -0.05,
+        'CD1_2': -0.3,
+        'CD2_1': 0.3,
+        'CD2_2': -0.05,
+    }
+
+    for these_kws in (case1, case2):
+        all_kws = dict(base_keywords)
+        all_kws.update(these_kws)
+
+        imgset = imageset.ImageSet()
+        imgset.set_position_from_wcs(all_kws, 1000, 1000)
+        roundtrip_kws = imgset.wcs_headers_from_position()
+
+        # Postprocess if needed
+
+        if 'CDELT1' in these_kws:
+            det = roundtrip_kws['CD1_1'] * roundtrip_kws['CD2_2'] - roundtrip_kws['CD1_2'] * roundtrip_kws['CD2_1']
+            if det < 0:
+                cd_sign = -1
+            else:
+                cd_sign = 1
+
+            roundtrip_kws['CDELT1'] = np.sqrt(roundtrip_kws['CD1_1']**2 + roundtrip_kws['CD1_2']**2) * cd_sign
+            roundtrip_kws['CDELT2'] = np.sqrt(roundtrip_kws['CD2_1']**2 + roundtrip_kws['CD2_2']**2)
+            roundtrip_kws['PC1_1'] = roundtrip_kws['CD1_1'] / roundtrip_kws['CDELT1']
+            roundtrip_kws['PC1_2'] = roundtrip_kws['CD1_2'] / roundtrip_kws['CDELT1']
+            roundtrip_kws['PC2_1'] = roundtrip_kws['CD2_1'] / roundtrip_kws['CDELT2']
+            roundtrip_kws['PC2_2'] = roundtrip_kws['CD2_2'] / roundtrip_kws['CDELT2']
+
+            for hn in 'CD1_1 CD1_2 CD2_1 CD2_2'.split():
+                del roundtrip_kws[hn]
+
+        # OK, now we can compare
+
+        for kw, expected in these_kws.items():
+            observed = roundtrip_kws[kw]
+            nt.assert_almost_equal(expected, observed)
+
+
+def test_wcs_bad_matrices():
+    base_keywords = {
+        'CTYPE1': 'RA---TAN',
+        'CTYPE2': 'DEC--TAN',
+        'CRVAL1': 0,
+        'CRVAL2': 0,
+        'CRPIX1': 0,
+        'CRPIX2': 0,
+    }
+
+    case1 = {
+        'CD1_1': 0.05,
+        'CD1_2': 0.3,
+        'CD2_1': 0.3,
+        'CD2_2': 0.05,
+    }
+
+    case2 = {
+        'CD1_1': -0.05,
+        'CD1_2': -0.3,
+        'CD2_1': -0.3,
+        'CD2_2': -0.05,
+    }
+
+    case3 = {
+        'CD1_1': -0.05,
+        'CD1_2': -0.3,
+        'CD2_1': 0.3,
+        'CD2_2': 0.05,
+    }
+
+    case4 = {
+        'CD1_1': -0.05,
+        'CD1_2': 0.3,
+        'CD2_1': -0.3,
+        'CD2_2': 0.05,
+    }
+
+    for these_kws in (case1, case2, case3, case4):
+        all_kws = dict(base_keywords)
+        all_kws.update(these_kws)
+
+        imgset = imageset.ImageSet()
+
+        with pytest.raises(ValueError):
+            imgset.set_position_from_wcs(all_kws, 1000, 1000)
+
+
+def test_wcs_tiled_topdown():
+    """
+    If you're setting WCS for a tiled image, it must have negative (JPEG,
+    top-down) parity -- bottoms-up tiled images won't render
+
+    """
+    keywords = {
+        'CTYPE1': 'RA---TAN',
+        'CTYPE2': 'DEC--TAN',
+        'CRVAL1': 0,
+        'CRVAL2': 0,
+        'CRPIX1': 0,
+        'CRPIX2': 0,
+        'CD1_1': 0.05,
+        'CD1_2': 0.3,
+        'CD2_1': 0.3,
+        'CD2_2': -0.05,
+    }
+
+    imgset = imageset.ImageSet()
+    imgset.tile_levels = 5
+
+    with pytest.raises(Exception):
+        imgset.set_position_from_wcs(keywords, 1000, 1000)
+
+    # flip parity, as far as CD is concerned ...
+    keywords['CD2_1'] *= -1
+    keywords['CD2_2'] *= -1
+    # This should now work:
+    imgset.set_position_from_wcs(keywords, 1000, 1000)
 
 
 def test_misc_ser():
