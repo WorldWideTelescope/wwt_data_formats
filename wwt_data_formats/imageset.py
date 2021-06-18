@@ -1,10 +1,11 @@
 # -*- mode: python; coding: utf-8 -*-
-# Copyright 2019-2020 the .NET Foundation
+# Copyright 2019-2021 the .NET Foundation
 # Licensed under the MIT License.
 
-"""An image, possibly tiled, for display in WWT.
-
 """
+An image, possibly tiled, for display in WWT.
+"""
+
 from __future__ import absolute_import, division, print_function
 
 __all__ = '''
@@ -314,35 +315,49 @@ class ImageSet(LockedXmlTraits, UrlContainer):
             self.thumbnail_url = mutator(self.thumbnail_url)
 
     def set_position_from_wcs(self, headers, width, height, place=None, fov_factor=1.7):
-        """Set the positional information associated with this imageset to match
-        a set of WCS headers.
+        """
+        Set the positional information associated with this imageset to match a
+        set of WCS headers.
 
         Parameters
         ----------
-        headers : :class:`~astropy.io.fits.Header` or string-keyed dict-like A
-          set of FITS-like headers including WCS keywords such as ``CRVAL1``.
-          width : positive integer The width of the image associated with the
-          WCS, in pixels. height : positive integer The height of the image
-          associated with the WCS, in pixels. place : optional
-          :class:`~wwt_data_formats.place.Place` If specified, the centering and
-          zoom level of the :class:`~wwt_data_formats.place.Place` object will
-          be set to match the center and size of this image. fov_factor :
-          optional float If *place* is provided, its zoom level will be set so
-          that the angular height of the client viewport is this factor times
-          the angular height of the image. The default is 1.7.
+        headers : :class:`~astropy.io.fits.Header` or string-keyed dict-like
+
+            A set of FITS-like headers including WCS keywords such as ``CRVAL1``.
+
+        width : positive integer
+
+            The width of the image associated with the WCS, in pixels.
+
+        height : positive integer
+
+            The height of the image associated with the WCS, in pixels.
+
+        place : optional :class:`~wwt_data_formats.place.Place`
+
+            If specified, the centering and zoom level of the
+            :class:`~wwt_data_formats.place.Place` object will be set to match
+            the center and size of this image.
+
+        fov_factor : optional
+
+            If *place* is provided, its zoom level will be set so that the angular
+            height of the client viewport is this factor times the angular height of
+            the image. The default is 1.7.
 
         Returns
         -------
-        self For convenience in chaining function calls.
+        **self**
+
+            For convenience in chaining function calls.
 
         Notes
         -----
         Certain of the ImageSet parameters take on different meanings depending
         on whether the image in question is a tiled "study" or not. This method
         will alter its behavior depending on whether the :attr:`tile_levels`
-        attribute is greater than zero. If you are computing coordinates for a
-        tiled study, make sure to set this parameter *before* calling this
-        function.
+        attribute is greater than zero. **Make sure that this parameter has
+        acquired its final value before calling this function.**
 
         For the time being, the WCS must be equatorial using the gnomonic
         (``TAN``) projection.
@@ -353,16 +368,25 @@ class ImageSet(LockedXmlTraits, UrlContainer):
         - ``CRVAL1`` and ``CRVAL2``
         - ``CRPIX1`` and ``CRPIX2``
         - Either:
-          - ``CDELT1``, ``CDELT2``, ``PC1_1``, and ``PC1_2``; or
-          - ``CD1_1``, ``CD2_2``
+            - ``CD1_1``, ``CD2_2`` (preferred)
+            - ``CDELT1``, ``CDELT2``, ``PC1_1``, and ``PC1_2``; or
 
         If present ``PC1_2``, ``PC2_1``, ``CD1_2``, and/or ``CD2_1`` are used.
         If absent, they are assumed to be zero.
 
-        This field does *not* change the :attr:`bottoms_up` setting. It probably
-        should, but that will break things!
-
+        This routine assumes that the WCS coordinates have the correct parity
+        for the data that they describe. If these WCS coordinates describe a
+        JPEG-like image, the parity of the coordinates should be negative
+        ("top-down"), which means that the determinant of the CD matrix should
+        have a *positive* sign. If these coordinates describe a FITS-like image,
+        the parity should be positive or "bottoms-up", with a negative
+        determinant of the CD matrix. If the image in question is tiled, the
+        parity must be top-down, in the sense the bottoms-up tiled imagery just
+        won't render in the engine. There are some CD matrices that can't be
+        expressed in WWT's formalism (rotation, scale, parity) and this method
+        will do its best to detect and reject them.
         """
+
         if headers['CTYPE1'] != 'RA---TAN' or headers['CTYPE2'] != 'DEC--TAN':
             raise ValueError('WCS coordinates must be in an equatorial/TAN projection')
 
@@ -370,44 +394,68 @@ class ImageSet(LockedXmlTraits, UrlContainer):
 
         ra_deg = headers['CRVAL1']
         dec_deg = headers['CRVAL2']
-        crpix_x = headers['CRPIX1'] - 1
-        crpix_y = headers['CRPIX2'] - 1
+
+        # In FITS/WCS, pixel coordinates are 1-based and integer pixel
+        # coordinates land on pixel centers. Therefore in standard FITS
+        # orientation, where the "first" pixel is at the lower-left, the
+        # lower-left corner of the image has pixel coordinate (0.5, 0.5). For
+        # the WWT offset parameters, the lower-left corner of the image has
+        # coordinate (0, 0).
+        refpix_x = headers['CRPIX1'] - 0.5
+        refpix_y = headers['CRPIX2'] - 0.5
 
         if 'CD1_1' in headers:
             cd1_1 = headers['CD1_1']
             cd2_2 = headers['CD2_2']
             cd1_2 = headers.get('CD1_2', 0.0)
             cd2_1 = headers.get('CD2_1', 0.0)
-
-            if cd1_1 * cd2_2 - cd1_2 * cd2_1 < 0:
-                cd_sign = -1
-            else:
-                cd_sign = 1
-
-            rot_rad = math.atan2(-cd_sign * cd1_2, cd2_2)
-            scale_x = math.sqrt(cd1_1**2 + cd2_1**2) * cd_sign
-            scale_y = math.sqrt(cd1_2**2 + cd2_2**2)
         else:
-            scale_x = headers['CDELT1']
-            scale_y = headers['CDELT2']
-            pc1_1 = headers.get('PC1_1', 1.0)
-            pc2_2 = headers.get('PC2_2', 1.0)
-            pc1_2 = headers.get('PC1_2', 0.0)
-            pc2_1 = headers.get('PC2_1', 0.0)
+            # older PC/CDELT form -- note that we're using two additional
+            # numbers to express the same information.
+            d1 = headers['CDELT1']
+            d2 = headers['CDELT2']
+            cd1_1 = d1 * headers.get('PC1_1', 1.0)
+            cd2_2 = d2 * headers.get('PC2_2', 1.0)
+            cd1_2 = d1 * headers.get('PC1_2', 0.0)
+            cd2_1 = d2 * headers.get('PC2_1', 0.0)
 
-            det = pc1_1 * pc2_2 - pc1_2 * pc2_1
+        cd_det = cd1_1 * cd2_2 - cd1_2 * cd2_1
 
-            if det < 0:
-                pc_sign = -1
-            else:
-                pc_sign = 1
+        if cd_det < 0:
+            cd_sign = -1
 
-            rot_rad = math.atan2(-pc_sign * pc1_2, pc2_2)
+            if self.tile_levels > 0:
+                raise Exception('WCS for tiled imagery must have top-down/negative/JPEG_like parity')
+        else:
+            cd_sign = 1
 
-            # I am not sure if this is "supposed" to be allowed, but I've seen it.
-            rtdet = math.sqrt(pc_sign * det)
-            scale_x *= rtdet
-            scale_y *= rtdet
+        # Given how WWT implements its rotation coordinates, this expression
+        # turns out to give us the correct value for different rotations and
+        # parities:
+
+        rot_rad = math.atan2(-cd_sign * cd1_2, -cd2_2)
+
+        # We can only express square pixels with a rotation and a potential
+        # parity flip. Do some cross-checks to ensure that the input matrix can
+        # be well-approximated this way. There's probably a smarter
+        # linear-algebra way to do this.
+
+        TOL = 0.05
+
+        if not abs(cd_det) > 0:
+            raise ValueError('determinant of the CD matrix is not positive')
+
+        scale_x = math.sqrt(cd1_1**2 + cd1_2**2)
+        scale_y = math.sqrt(cd2_1**2 + cd2_2**2)
+
+        if abs(scale_x - scale_y) / (scale_x + scale_y) > TOL:
+            raise ValueError('WWT cannot express non-square pixels, which this WCS has')
+
+        if abs((cd1_1 - cd_sign * cd2_2) / cd_det) > TOL:
+            raise ValueError('WWT cannot express this CD matrix (1)')
+
+        if abs((cd2_1 + cd_sign * cd1_2) / cd_det) > TOL:
+            raise ValueError('WWT cannot express this CD matrix (2)')
 
         # This is our best effort to make sure that the view centers on the
         # center of the image.
@@ -419,7 +467,12 @@ class ImageSet(LockedXmlTraits, UrlContainer):
             center_dec_deg = dec_deg
         else:
             wcs = WCS(headers)
-            center = wcs.pixel_to_world(width / 2, height / 2)
+            # The WCS object uses 0-based indices where the integer coordinates
+            # land on pixel centers. Therefore the dead center of the image has
+            # pixel coordinates as below. For instance, in an image 2 pixels
+            # wide, the horizontal center is where the two pixels touch, which
+            # has an X coordinate of 0.5.
+            center = wcs.pixel_to_world((width - 1) / 2, (height - 1) / 2)
             center_ra_deg = center.ra.deg
             center_dec_deg = center.dec.deg
 
@@ -433,14 +486,15 @@ class ImageSet(LockedXmlTraits, UrlContainer):
 
         if self.tile_levels > 0:  # are we tiled?
             self.projection = ProjectionType.TAN
-            self.offset_x = (width / 2 - crpix_x) * abs(scale_x)
-            self.offset_y = (height / 2 - crpix_y) * scale_y
+            self.offset_x = (width / 2 - refpix_x) * scale_x
+            self.offset_y = (height / 2 - refpix_y) * scale_y
             self.base_degrees_per_tile = scale_y * 256 * 2**self.tile_levels
         else:
             self.projection = ProjectionType.SKY_IMAGE
-            self.offset_x = crpix_x
-            self.offset_y = crpix_y
+            self.offset_x = refpix_x
+            self.offset_y = refpix_y
             self.base_degrees_per_tile = scale_y
+            self.bottoms_up = (cd_sign == -1)
 
         if place is not None:
             place.data_set_type = DataSetType.SKY
@@ -481,17 +535,22 @@ class ImageSet(LockedXmlTraits, UrlContainer):
         if self.projection != ProjectionType.SKY_IMAGE:
             raise NotImplementError('wcs_headers_from_position() only works if projection=SKY_IMAGE')
 
-        rv['CRPIX1'] = self.offset_x + 1
-        rv['CRPIX2'] = self.offset_y + 1
-        rv['CDELT2'] = self.base_degrees_per_tile  # = scale_y, above
-        rv['CDELT1'] = -self.base_degrees_per_tile  # AFAICT, non-square pixels can't be expressed
+        rv['CRPIX1'] = self.offset_x + 0.5
+        rv['CRPIX2'] = self.offset_y + 0.5
 
-        c = math.cos(self.rotation_deg * math.pi / 180)
-        s = math.sin(self.rotation_deg * math.pi / 180)
+        # The WWT rotation angle is 180 degrees away from the usual angle
+        # that you would use for a rotation matrix, which is why we negate
+        # these trig values:
+        c = -math.cos(self.rotation_deg * math.pi / 180)
+        s = -math.sin(self.rotation_deg * math.pi / 180)
+        parity = -1 if self.bottoms_up else 1
 
-        rv['PC1_1'] = c
-        rv['PC1_2'] = -s
-        rv['PC2_1'] = s
-        rv['PC2_2'] = c
+        # | CD1_1 CD1_2 | = scale * | p 0 | * |  cos(theta) sin(theta) |
+        # | CD2_1 CD2_2 |           | 0 1 |   | -sin(theta) cos(theta) |
+
+        rv['CD1_1'] = c * self.base_degrees_per_tile * parity
+        rv['CD1_2'] = s * self.base_degrees_per_tile * parity
+        rv['CD2_1'] = -s * self.base_degrees_per_tile
+        rv['CD2_2'] = c * self.base_degrees_per_tile
 
         return rv
