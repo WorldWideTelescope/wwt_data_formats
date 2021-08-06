@@ -67,7 +67,7 @@ jobs:
         setupBuild: true
         setupCranko: true
     - bash: |
-        set -euo pipefail
+        set -eo pipefail  # no -u to work around Conda activation bug (2021 August)
         source activate-conda.sh
         set -x
         conda install -y twine
