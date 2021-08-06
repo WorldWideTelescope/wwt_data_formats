@@ -12,7 +12,8 @@ Images in the AAS WorldWide Telescope can come in a variety of formats:
 
 Such images are described as ``<ImageSet>`` XML fragments in several of the WWT
 file formats. In this package, the corresponding data structure is
-:class:`wwt_data_formats.imageset.ImageSet`.
+:class:`wwt_data_formats.imageset.ImageSet`. Read the class documentation for
+detailed explanations of the different imageset parameters.
 
 The high-level structure of a standard, minimal WTML file to show a single image is:
 

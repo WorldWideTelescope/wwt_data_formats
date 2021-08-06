@@ -1,3 +1,19 @@
+# wwt_data_formats 0.10.0 (2021-08-06)
+
+- This release features major improvements to the WCS handling, especially with
+  regards to image "parity". While the theoretical way to think about parity
+  involves the transformation between the image-pixel coordinate system and the
+  sky coordinate system, the practical way is to compare FITS and JPEG files --
+  the Y=0 row of a FITS file is at the bottom of the image, while it's at the
+  *top* in JPEG files. WCS coordinates can express either parity, but we weren't
+  handling them properly. Until now. Our WCS interfaces now deal with
+  coordinates more carefully and pay attention to the parity options, which are
+  expressed in the "BottomsUp" field of an imageset on the WWT side. This is a
+  **breaking** change in practice because this library's handling of the same
+  WCS input may change substantially depending on whether you're running a
+  version <= 0.9 or not. (#36, #37, @pkgw)
+
+
 # wwt_data_formats 0.9.2 (2021-06-14)
 
 - Work around an issue in the documentation toolchain that caused
