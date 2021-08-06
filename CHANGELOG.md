@@ -1,4 +1,11 @@
-# rc: minor bump
+# rc: micro bump
+
+- No code changes from 0.10.0. There was an issue that broke our automated
+  publication to PyPI (#38, @pkgw). This should now be fixed, so let's issue
+  a new release.
+
+
+# wwt_data_formats 0.10.0 (2021-08-06)
 
 - This release features major improvements to the WCS handling, especially with
   regards to image "parity". While the theoretical way to think about parity
