@@ -227,7 +227,8 @@ class ImageSet(LockedXmlTraits, UrlContainer):
 
     For tiled sky images, the offset is measured in *degrees*, and a value of
     zero means that the *center* of the image lands at the center of the
-    projection coordinate system.
+    projection coordinate system. Increasingly positive values move the image to
+    the right.
 
     As per the usual practice, offsets are always along the horizontal axis of
     the image in question, regardless of its :attr:`rotation <rotation_deg>` on
@@ -254,7 +255,8 @@ class ImageSet(LockedXmlTraits, UrlContainer):
 
     For tiled sky images, the offset is measured in *degrees*, and a value of
     zero means that the *center* of the image lands at the center of the
-    projection coordinate system.
+    projection coordinate system. Increasingly positive values move the image
+    upwards.
 
     As per the usual practice, offsets are always along the vertical axis of the
     image in question, regardless of its :attr:`rotation <rotation_deg>` on the
@@ -508,7 +510,7 @@ class ImageSet(LockedXmlTraits, UrlContainer):
         if self.tile_levels > 0:  # are we tiled?
             self.projection = ProjectionType.TAN
             self.offset_x = (width / 2 - refpix_x) * scale_x
-            self.offset_y = (height / 2 - refpix_y) * scale_y
+            self.offset_y = (refpix_y - height / 2) * scale_y
             self.base_degrees_per_tile = scale_y * 256 * 2**self.tile_levels
         else:
             self.projection = ProjectionType.SKY_IMAGE
