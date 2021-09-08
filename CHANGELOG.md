@@ -1,5 +1,15 @@
 # rc: micro bump
 
+- Fix vertical positioning of tiled images (#40, @pkgw). Building on the bigger
+  WCS changes, we believe that there was a problem in how WCS data were
+  converted into WWT's format for tiled images when there reference pixel was
+  not close to the image center. Empirically this seems to be behaving well with
+  the test cases that triggered the discovery of this issue, but this seems like
+  something that should have been caught sooner — keep an eye out for issues!
+
+
+# wwt_data_formats 0.10.1 (2021-08-06)
+
 - No code changes from 0.10.0. There was an issue that broke our automated
   publication to PyPI (#38, @pkgw). This should now be fixed, so let's issue
   a new release.

@@ -114,12 +114,33 @@ class ImageSet(LockedXmlTraits, UrlContainer):
     """
     file_type = Unicode('.png').tag(xml=XmlSer.attr('FileType'))
     """
-    The extension of the image file(s) in this set, including a leading period.
+    The extension(s) of the image file(s) in this set.
 
-    A value of ``.tsv`` probably means that this "imageset" actually represents
-    a HiPS progressive catalog, not bitmap imagery.
+    In the simplest case, this field will contain an image filetype extension
+    including the leading period, such as ``.jpeg`` or ``.png``. Some datasets
+    in the wild lack the leading period: they have just ``png`` or something
+    similar. The value ``.auto`` is also used in some cases, which can be OK
+    because often WWT doesn't actually use this field for any particular
+    purpose.
 
+    Some datasets, like HiPS imagery, provide multiple filetypes simultaneously.
+    These can be expressed by including several filename extensions separated by
+    spaces. For instance, ``png jpeg fits``. The existing WTML records that
+    support multiple filetypes do not include any leading periods, but clients
+    should be prepared for them to be present.
+
+    Imagesets to be rendered as FITS data *must* have the exact value ``.fits``
+    for this field. If multiple filetypes are specified, the special
+    FITS-rendering machinery will not be invoked. This is true for both single
+    FITS files and tiled FITS imagesets, including HiPS FITS datasets.
+
+    A supported filetype extension of ``tsv`` (or ``.tsv``) means that this
+    "imageset" actually contains a HiPS progressive catalog, not bitmap imagery.
+    Imageset records should not intermix image-type and catalog-type filetypes.
+    (We don't know if there are any examples in the wild of HiPS datasets that
+    claim to contain both kinds of data.)
     """
+
     bottoms_up = Bool(False).tag(xml=XmlSer.attr('BottomsUp'))
     """
     The parity of the image's projection on the sky.
@@ -206,7 +227,8 @@ class ImageSet(LockedXmlTraits, UrlContainer):
 
     For tiled sky images, the offset is measured in *degrees*, and a value of
     zero means that the *center* of the image lands at the center of the
-    projection coordinate system.
+    projection coordinate system. Increasingly positive values move the image to
+    the right.
 
     As per the usual practice, offsets are always along the horizontal axis of
     the image in question, regardless of its :attr:`rotation <rotation_deg>` on
@@ -233,7 +255,8 @@ class ImageSet(LockedXmlTraits, UrlContainer):
 
     For tiled sky images, the offset is measured in *degrees*, and a value of
     zero means that the *center* of the image lands at the center of the
-    projection coordinate system.
+    projection coordinate system. Increasingly positive values move the image
+    upwards.
 
     As per the usual practice, offsets are always along the vertical axis of the
     image in question, regardless of its :attr:`rotation <rotation_deg>` on the
@@ -487,7 +510,7 @@ class ImageSet(LockedXmlTraits, UrlContainer):
         if self.tile_levels > 0:  # are we tiled?
             self.projection = ProjectionType.TAN
             self.offset_x = (width / 2 - refpix_x) * scale_x
-            self.offset_y = (height / 2 - refpix_y) * scale_y
+            self.offset_y = (refpix_y - height / 2) * scale_y
             self.base_degrees_per_tile = scale_y * 256 * 2**self.tile_levels
         else:
             self.projection = ProjectionType.SKY_IMAGE
