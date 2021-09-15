@@ -474,11 +474,13 @@ class ImageSet(LockedXmlTraits, UrlContainer):
         if abs(scale_x - scale_y) / (scale_x + scale_y) > TOL:
             raise ValueError('WWT cannot express non-square pixels, which this WCS has')
 
-        if abs((cd1_1 - cd_sign * cd2_2) / cd_det) > TOL:
-            raise ValueError('WWT cannot express this CD matrix (1)')
+        det_scale = math.sqrt(abs(cd_det))
 
-        if abs((cd2_1 + cd_sign * cd1_2) / cd_det) > TOL:
-            raise ValueError('WWT cannot express this CD matrix (2)')
+        if abs((cd1_1 - cd_sign * cd2_2) / det_scale) > TOL:
+            raise ValueError(f'WWT cannot express this CD matrix (1; {cd1_1} {cd_sign} {cd2_2} {det_scale})')
+
+        if abs((cd2_1 + cd_sign * cd1_2) / det_scale) > TOL:
+            raise ValueError(f'WWT cannot express this CD matrix (2; {cd2_1} {cd_sign} {cd1_2} {det_scale})')
 
         # This is our best effort to make sure that the view centers on the
         # center of the image.
