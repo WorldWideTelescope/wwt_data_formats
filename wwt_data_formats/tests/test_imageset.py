@@ -263,6 +263,29 @@ def test_wcs_tiled_topdown():
     imgset.set_position_from_wcs(keywords, 1000, 1000)
 
 
+def test_wcs_45deg():
+    """
+    We had an issue with tolerance-checking with rotations near 145 degrees.
+    Example: NOIRLab image `noao-abell39hotelling`.
+    """
+
+    keywords = {
+        'CTYPE1': 'RA---TAN',
+        'CTYPE2': 'DEC--TAN',
+        'CRVAL1': 0,
+        'CRVAL2': 0,
+        'CRPIX1': 0,
+        'CRPIX2': 0,
+        'CD1_1': 0.00015024947791364,
+        'CD1_2': 0.00015517263725712,
+        'CD2_1': -0.00015521026392131,
+        'CD2_2': 0.00015021305386212,
+    }
+
+    imgset = imageset.ImageSet()
+    imgset.set_position_from_wcs(keywords, 1000, 1000)
+
+
 def test_misc_ser():
     expected_str = '''
 <ImageSet BandPass="Visible" BaseDegreesPerTile="0.0" BaseTileLevel="0"
