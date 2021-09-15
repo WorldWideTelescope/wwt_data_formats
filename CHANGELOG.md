@@ -1,5 +1,12 @@
 # rc: micro bump
 
+- Fix verification of WCS rotations near 45 degrees (#41, @pkgw). This should
+  allow processing of some astrometry that was being rejected even though it's
+  fine.
+
+
+# wwt_data_formats 0.10.2 (2021-09-08)
+
 - Fix vertical positioning of tiled images (#40, @pkgw). Building on the bigger
   WCS changes, we believe that there was a problem in how WCS data were
   converted into WWT's format for tiled images when there reference pixel was
