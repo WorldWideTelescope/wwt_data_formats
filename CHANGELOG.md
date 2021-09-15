@@ -1,3 +1,10 @@
+# wwt_data_formats 0.10.3 (2021-09-15)
+
+- Fix verification of WCS rotations near 45 degrees (#41, @pkgw). This should
+  allow processing of some astrometry that was being rejected even though it's
+  fine.
+
+
 # wwt_data_formats 0.10.2 (2021-09-08)
 
 - Fix vertical positioning of tiled images (#40, @pkgw). Building on the bigger
