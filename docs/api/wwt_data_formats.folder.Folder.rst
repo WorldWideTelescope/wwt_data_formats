@@ -41,6 +41,7 @@ Folder
       ~Folder.from_xml
       ~Folder.has_trait
       ~Folder.hold_trait_notifications
+      ~Folder.immediate_imagesets
       ~Folder.mutate_urls
       ~Folder.notify_change
       ~Folder.observe
@@ -92,6 +93,7 @@ Folder
    .. automethod:: from_xml
    .. automethod:: has_trait
    .. automethod:: hold_trait_notifications
+   .. automethod:: immediate_imagesets
    .. automethod:: mutate_urls
    .. automethod:: notify_change
    .. automethod:: observe
