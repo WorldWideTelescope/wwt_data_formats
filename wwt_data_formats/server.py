@@ -1,5 +1,5 @@
 # -*- mode: python; coding: utf-8 -*-
-# Copyright 2020 the .NET Foundation
+# Copyright 2020-2021 the .NET Foundation
 # Licensed under the MIT License.
 
 """
@@ -22,10 +22,10 @@ production server. (You can do this with ``wwtdatatool wtml rewrite-urls``.)
 
 from __future__ import absolute_import, division, print_function
 
-__all__ = '''
+__all__ = """
 preview_wtml
 run_server
-'''.split()
+""".split()
 
 from functools import partial
 import http.server
@@ -43,10 +43,13 @@ except ImportError:
 
 class WWTRequestHandler(http.server.SimpleHTTPRequestHandler):
     def end_headers(self):
-        if self.command in ('GET', 'HEAD'):
-            self.send_header('Access-Control-Allow-Headers', 'Content-Disposition,Content-Encoding,Content-Type')
-            self.send_header('Access-Control-Allow-Origin', '*')
-            self.send_header('Access-Control-Allow-Methods', 'GET,HEAD')
+        if self.command in ("GET", "HEAD"):
+            self.send_header(
+                "Access-Control-Allow-Headers",
+                "Content-Disposition,Content-Encoding,Content-Type",
+            )
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.send_header("Access-Control-Allow-Methods", "GET,HEAD")
         return super(WWTRequestHandler, self).end_headers()
 
     def check_special_wtml(self):
@@ -59,21 +62,21 @@ class WWTRequestHandler(http.server.SimpleHTTPRequestHandler):
         """
         path = self.translate_path(self.path)
 
-        if not path.endswith('.wtml'):
+        if not path.endswith(".wtml"):
             return None
 
-        local_wtml_path = path[:-5] + '_rel.wtml'
+        local_wtml_path = path[:-5] + "_rel.wtml"
         if not os.path.exists(local_wtml_path):
             return None
 
-        host = self.headers.get('Host')
+        host = self.headers.get("Host")
         if host is None:
-            host = f'{self.server.server_name}:{self.server.server_port}'
-        baseurl = f'http://{host}{self.path}'
-        self.log_message('special WTML: local %s, baseurl %s', local_wtml_path, baseurl)
+            host = f"{self.server.server_name}:{self.server.server_port}"
+        baseurl = f"http://{host}{self.path}"
+        self.log_message("special WTML: local %s, baseurl %s", local_wtml_path, baseurl)
         f = Folder.from_file(local_wtml_path)
         f.mutate_urls(make_absolutizing_url_mutator(baseurl))
-        resp = f.to_xml_string().encode('utf-8')
+        resp = f.to_xml_string().encode("utf-8")
 
         self.send_response(http.HTTPStatus.OK)
         self.send_header("Content-type", "application/x-wtml")
@@ -102,7 +105,7 @@ def run_server(settings):
     Settings are defined in :func:`wwt_data_formats.cli.serve_getparser`.
 
     """
-    server_address = ('', settings.port)
+    server_address = ("", settings.port)
     handler_factory = partial(WWTRequestHandler, directory=settings.root_dir)
 
     with HTTPServerClass(server_address, handler_factory) as httpd:
@@ -110,23 +113,23 @@ def run_server(settings):
         # that it doesn't start trying to proxy them if URLs result in 404s,
         # which is a common occurrence when working on tiled images. So ignore
         # the auto-detected server name and use one of those.
-        server_name = '127.0.0.1'  # httpd.server_name
+        server_name = "127.0.0.1"  # httpd.server_name
 
-        print(f'listening at: http://{server_name}:{httpd.server_port}/')
+        print(f"listening at: http://{server_name}:{httpd.server_port}/")
         print()
-        print('virtual root-directory WTML files with on-the-fly rewriting:')
+        print("virtual root-directory WTML files with on-the-fly rewriting:")
         print()
 
         seen_any = False
 
         for bn in os.listdir(settings.root_dir):
-            if bn.endswith('_rel.wtml'):
-                virtual = bn[:-9] + '.wtml'
-                print(f'    http://{server_name}:{httpd.server_port}/{virtual}')
+            if bn.endswith("_rel.wtml"):
+                virtual = bn[:-9] + ".wtml"
+                print(f"    http://{server_name}:{httpd.server_port}/{virtual}")
                 seen_any = True
 
         if not seen_any:
-            print('    (none)')
+            print("    (none)")
 
         print()
 
@@ -134,17 +137,16 @@ def run_server(settings):
             httpd.serve_forever()
         except KeyboardInterrupt:
             print()
-            print('(interrupted)')
+            print("(interrupted)")
 
 
 def preview_wtml(wtml_path):
     """
     Run a server for a local WTML file and open it in a web browser.
-
     """
     root_dir = os.path.dirname(wtml_path)
-    server_path = os.path.basename(wtml_path.replace('_rel.wtml', '.wtml'))
-    server_address = ('', 0)
+    server_path = os.path.basename(wtml_path.replace("_rel.wtml", ".wtml"))
+    server_address = ("", 0)
     handler_factory = partial(WWTRequestHandler, directory=root_dir)
 
     with HTTPServerClass(server_address, handler_factory) as httpd:
@@ -166,5 +168,4 @@ def preview_wtml(wtml_path):
             httpd.serve_forever()
         except KeyboardInterrupt:
             print()
-            print('(interrupted)')
-
+            print("(interrupted)")
