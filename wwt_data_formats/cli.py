@@ -178,15 +178,43 @@ def cabinet_impl(settings):
 
 def preview_getparser(parser):
     parser.add_argument(
+        '--browser',
+        '-b',
+        metavar = 'BROWSER-TYPE',
+        help = 'The type of browser to use for the preview (as per Python webbrowser)'
+    )
+    parser.add_argument(
+        '--research',
+        '-r',
+        action = 'store_true',
+        help = 'Preview in the WWT Research App'
+    )
+    parser.add_argument(
+        '--appurl',
+        metavar = 'URL',
+        help = 'The URL of the app to use; useful for development'
+    )
+    parser.add_argument(
         'wtml_path',
         metavar = 'PATH',
-        help = 'The path to the WTML file to preview.',
+        help = 'The path to the WTML file to preview',
     )
 
 
 def preview_impl(settings):
     from .server import preview_wtml
-    preview_wtml(settings.wtml_path)
+
+    app = 'webclient'
+
+    if settings.research:
+        app = 'research'
+
+    preview_wtml(
+        settings.wtml_path,
+        browser = settings.browser,
+        app_type = app,
+        app_url = settings.appurl,
+    )
 
 
 # "serve" subcommand

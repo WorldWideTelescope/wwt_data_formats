@@ -1,4 +1,16 @@
-# rc: micro bump
+# rc: minor bump
+
+- The `wwtdatatool preview` command has gained the `--research` option to open
+  previews in the WWT research app rather than the webclient (#42, @pkgw). This
+  gives us a convenient way to preview tiled FITS files made by [toasty].
+- New Python APIs to support the above:
+  - `wwt_data_formats.folder.folder.immediate_imagesets()` added
+  - `wwt_data_formats.server.preview_wtml()` gained several keyword arguments
+
+[toasty]: https://toasty.readthedocs.io/
+
+
+# wwt_data_formats 0.10.3 (2021-09-15)
 
 - Fix verification of WCS rotations near 45 degrees (#41, @pkgw). This should
   allow processing of some astrometry that was being rejected even though it's
