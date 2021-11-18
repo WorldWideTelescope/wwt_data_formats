@@ -1,5 +1,5 @@
 # -*- mode: python; coding: utf-8 -*-
-# Copyright 2020 the .NET Foundation
+# Copyright 2020-2021 the .NET Foundation
 # Licensed under the MIT License.
 
 """
@@ -22,12 +22,14 @@ production server. (You can do this with ``wwtdatatool wtml rewrite-urls``.)
 
 from __future__ import absolute_import, division, print_function
 
-__all__ = '''
+__all__ = """
 preview_wtml
 run_server
-'''.split()
+""".split()
 
+import base64
 from functools import partial
+import json
 import http.server
 import os.path
 from urllib.parse import quote as urlquote
@@ -43,10 +45,13 @@ except ImportError:
 
 class WWTRequestHandler(http.server.SimpleHTTPRequestHandler):
     def end_headers(self):
-        if self.command in ('GET', 'HEAD'):
-            self.send_header('Access-Control-Allow-Headers', 'Content-Disposition,Content-Encoding,Content-Type')
-            self.send_header('Access-Control-Allow-Origin', '*')
-            self.send_header('Access-Control-Allow-Methods', 'GET,HEAD')
+        if self.command in ("GET", "HEAD"):
+            self.send_header(
+                "Access-Control-Allow-Headers",
+                "Content-Disposition,Content-Encoding,Content-Type",
+            )
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.send_header("Access-Control-Allow-Methods", "GET,HEAD")
         return super(WWTRequestHandler, self).end_headers()
 
     def check_special_wtml(self):
@@ -59,21 +64,21 @@ class WWTRequestHandler(http.server.SimpleHTTPRequestHandler):
         """
         path = self.translate_path(self.path)
 
-        if not path.endswith('.wtml'):
+        if not path.endswith(".wtml"):
             return None
 
-        local_wtml_path = path[:-5] + '_rel.wtml'
+        local_wtml_path = path[:-5] + "_rel.wtml"
         if not os.path.exists(local_wtml_path):
             return None
 
-        host = self.headers.get('Host')
+        host = self.headers.get("Host")
         if host is None:
-            host = f'{self.server.server_name}:{self.server.server_port}'
-        baseurl = f'http://{host}{self.path}'
-        self.log_message('special WTML: local %s, baseurl %s', local_wtml_path, baseurl)
+            host = f"{self.server.server_name}:{self.server.server_port}"
+        baseurl = f"http://{host}{self.path}"
+        self.log_message("special WTML: local %s, baseurl %s", local_wtml_path, baseurl)
         f = Folder.from_file(local_wtml_path)
         f.mutate_urls(make_absolutizing_url_mutator(baseurl))
-        resp = f.to_xml_string().encode('utf-8')
+        resp = f.to_xml_string().encode("utf-8")
 
         self.send_response(http.HTTPStatus.OK)
         self.send_header("Content-type", "application/x-wtml")
@@ -102,7 +107,7 @@ def run_server(settings):
     Settings are defined in :func:`wwt_data_formats.cli.serve_getparser`.
 
     """
-    server_address = ('', settings.port)
+    server_address = ("", settings.port)
     handler_factory = partial(WWTRequestHandler, directory=settings.root_dir)
 
     with HTTPServerClass(server_address, handler_factory) as httpd:
@@ -110,23 +115,23 @@ def run_server(settings):
         # that it doesn't start trying to proxy them if URLs result in 404s,
         # which is a common occurrence when working on tiled images. So ignore
         # the auto-detected server name and use one of those.
-        server_name = '127.0.0.1'  # httpd.server_name
+        server_name = "127.0.0.1"  # httpd.server_name
 
-        print(f'listening at: http://{server_name}:{httpd.server_port}/')
+        print(f"listening at: http://{server_name}:{httpd.server_port}/")
         print()
-        print('virtual root-directory WTML files with on-the-fly rewriting:')
+        print("virtual root-directory WTML files with on-the-fly rewriting:")
         print()
 
         seen_any = False
 
         for bn in os.listdir(settings.root_dir):
-            if bn.endswith('_rel.wtml'):
-                virtual = bn[:-9] + '.wtml'
-                print(f'    http://{server_name}:{httpd.server_port}/{virtual}')
+            if bn.endswith("_rel.wtml"):
+                virtual = bn[:-9] + ".wtml"
+                print(f"    http://{server_name}:{httpd.server_port}/{virtual}")
                 seen_any = True
 
         if not seen_any:
-            print('    (none)')
+            print("    (none)")
 
         print()
 
@@ -134,17 +139,87 @@ def run_server(settings):
             httpd.serve_forever()
         except KeyboardInterrupt:
             print()
-            print('(interrupted)')
+            print("(interrupted)")
 
 
-def preview_wtml(wtml_path):
+def _setup_preview_webclient(app_url, wtml_url, _image_url):
+    if app_url is None:
+        app_url = "https://worldwidetelescope.org/webclient/"
+
+    url = app_url + "?wtml=" + urlquote(wtml_url)
+    return url, "the WWT webclient"
+
+
+def _setup_preview_research(app_url, wtml_url, image_url):
+    if app_url is None:
+        app_url = "https://web.wwtassets.org/research/latest/"
+
+    enc_messages = []
+
+    def msg(**kwargs):
+        s = json.dumps(kwargs)
+        s = base64.b64encode(s.encode("utf-8")).decode("ascii")
+        enc_messages.append(s)
+
+    msg(
+        event="load_image_collection",
+        url=wtml_url,
+    )
+    msg(
+        event="image_layer_create",
+        mode="preloaded",
+        id="image",
+        url=image_url,
+        goto=True,
+    )
+
+    url = app_url + "?script=" + urlquote(",".join(enc_messages))
+    return url, "the WWT research app"
+
+
+def preview_wtml(wtml_path, browser=None, app_type="webclient", app_url=None):
     """
     Run a server for a local WTML file and open it in a web browser.
 
+    Parameters
+    ----------
+    wtml_path : str
+        The path to a local WTML file
+    browser : optional str or None
+        The type of web browser to use to open the WTML preview application, as
+        understood by the :mod:`webbrowser` module. If unspecified,
+        :mod:`webbrowser` will guess a sensible default.
+    app_type : optional str
+        Which kind or application to use to view the WTML file. Allowed values
+        are ``"webclient"`` (the default) for the classic WWT webclient, or
+        ``"research"`` for the WWT research application.
+    app_url : optional str or None
+        The URL to use for the preview app. If ``None`` (the default), the
+        default URL for the specified application is used. Note that this does
+        not supersede the ``app_type`` argument because the form of the query
+        string that is passed to the preview app depends on its type.
+
+    Returns
+    -------
+    None
     """
+
+    if app_type == "webclient":
+        setup = _setup_preview_webclient
+    elif app_type == "research":
+        setup = _setup_preview_research
+    else:
+        raise ValueError("app_type")
+
+    # In some cases (research app preview) we'll need to parse the WTML to
+    # figure out the URL of the image to show. (In an ideal world, we might
+    # add a "show this WTML and add whatever image layers make sense" message,
+    # rather than having to handhold the app here.)
+    fld = Folder.from_file(wtml_path)
+
     root_dir = os.path.dirname(wtml_path)
-    server_path = os.path.basename(wtml_path.replace('_rel.wtml', '.wtml'))
-    server_address = ('', 0)
+    server_path = os.path.basename(wtml_path.replace("_rel.wtml", ".wtml"))
+    server_address = ("", 0)
     handler_factory = partial(WWTRequestHandler, directory=root_dir)
 
     with HTTPServerClass(server_address, handler_factory) as httpd:
@@ -152,19 +227,31 @@ def preview_wtml(wtml_path):
         # that it doesn't start trying to proxy them if URLs result in 404s,
         # which is a common occurrence when working on tiled images. So ignore
         # the auto-detected server name and use one of those.
-        server_name = '127.0.0.1'  # httpd.server_name
-        wtml_url = f'http://{server_name}:{httpd.server_port}/{urlquote(server_path)}'
-        webclient_url = 'https://worldwidetelescope.org/webclient/?wtml=' + urlquote(wtml_url)
+        server_name = "127.0.0.1"  # httpd.server_name
+        wtml_url = f"http://{server_name}:{httpd.server_port}/{urlquote(server_path)}"
 
-        # By the time the browser opens and the webclient loads up, our server
-        # should be up and running.
-        print('file is being served as:', wtml_url)
-        print('opening it in the WWT webclient ...')
-        webbrowser.open(webclient_url, new=1, autoraise=True)
+        # Compute the image URL
+        image_url = None
+
+        fld.mutate_urls(make_absolutizing_url_mutator(wtml_url.rsplit("/", 1)[0]))
+
+        for _index, _kind, imgset in fld.immediate_imagesets():
+            image_url = imgset.url
+            break
+
+        if image_url is None:
+            raise Exception(f"found no imagesets in WTML preview file `{wtml_path}`")
+
+        url, desc = setup(app_url, wtml_url, image_url)
+
+        # By the time the browser opens and the app loads up, our server
+        # *should* be up and running ...
+        print("file is being served as:", wtml_url)
+        print(f"opening it in {desc} ...")
+        webbrowser.get(browser).open(url, new=1, autoraise=True)
 
         try:
             httpd.serve_forever()
         except KeyboardInterrupt:
             print()
-            print('(interrupted)')
-
+            print("(interrupted)")
