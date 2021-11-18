@@ -94,6 +94,53 @@ class Folder(LockedXmlTraits, UrlContainer):
         for c in self.children:
             c.mutate_urls(mutator)
 
+    def immediate_imagesets(self):
+        """
+        Generate a sequence of the imagesets defined in this folder, without
+        recursion into any child folders.
+
+        Returns
+        -------
+        A generator of tuples of ``(child_index, item_type, imageset)``, described below.
+
+        Notes
+        -----
+        In the generated tuples, ``child_index`` is the index number of the item
+        within the folder's :attr:`~Folder.children` array and ``imageset`` is
+        the :class:`~wwt_data_formats.imageset.ImageSet` object contained within
+        the folder. If ``item_type`` is ``None``, that indicates that the
+        imageset corresponds to an imageset child that is defined directly in
+        the folder contents. It may also be a string indicating that the
+        imageset is defined by a different kind of potential folder child.
+        Allowed values are ``"place_imageset"``, ``"place_foreground"``, or
+        ``"place_background"``, for different imagesets that may be contained
+        within a :class:`~wwt_data_formats.place.Place` item in the folder.
+
+        Examples
+        --------
+        Consider a folder that has two children: an imageset, and a place. The
+        place in turn defines both a
+        :attr:`~wwt_data_formats.place.Place.foreground_image_set` and a
+        :attr:`~wwt_data_formats.place.Place.background_image_set`. The
+        generator returned by this function will yield three values: ``(0, None,
+        <ImageSet>)``, ``(1, "place_foreground", <ImageSet>)``, and ``(1,
+        "place_background", <ImageSet>)``.
+        """
+
+        from .imageset import ImageSet
+        from .place import Place
+
+        for index, child in enumerate(self.children):
+            if isinstance(child, ImageSet):
+                yield (index, None, child)
+            elif isinstance(child, Place):
+                if child.image_set is not None:
+                    yield (index, "place_imageset", child.image_set)
+                if child.foreground_image_set is not None:
+                    yield (index, "place_foreground", child.foreground_image_set)
+                if child.background_image_set is not None:
+                    yield (index, "place_background", child.background_image_set)
+
 
 def make_absolutizing_url_mutator(baseurl):
     """Return a function that makes relative URLs absolute.
