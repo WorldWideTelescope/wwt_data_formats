@@ -101,6 +101,9 @@ class WWTRequestHandler(http.server.SimpleHTTPRequestHandler):
 
         return super(WWTRequestHandler, self).do_HEAD()
 
+    def log_message(self, _format, *_args):
+        pass
+
 
 def run_server(settings):
     """
@@ -247,7 +250,7 @@ def preview_wtml(wtml_path, browser=None, app_type="webclient", app_url=None):
         # By the time the browser opens and the app loads up, our server
         # *should* be up and running ...
         print("file is being served as:", wtml_url)
-        print(f"opening it in {desc} ...")
+        print(f"opening it in {desc} ... type ^C to kill this program when done")
         webbrowser.get(browser).open(url, new=1, autoraise=True)
 
         try:

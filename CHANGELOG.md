@@ -1,4 +1,11 @@
-# rc: minor bump
+# rc: micro bump
+
+- In `wwtdatatool serve` and `wwtdatatool preview`, make the built-in web server
+  silent to avoid filling up the terminal with largely boring output (#43,
+  @pkgw).
+
+
+# wwt_data_formats 0.11.0 (2021-11-18)
 
 - The `wwtdatatool preview` command has gained the `--research` option to open
   previews in the WWT research app rather than the webclient (#42, @pkgw). This
