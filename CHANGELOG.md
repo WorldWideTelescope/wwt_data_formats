@@ -1,3 +1,10 @@
+# wwt_data_formats 0.11.1 (2021-12-10)
+
+- In `wwtdatatool serve` and `wwtdatatool preview`, make the built-in web server
+  silent to avoid filling up the terminal with largely boring output (#43,
+  @pkgw).
+
+
 # wwt_data_formats 0.11.0 (2021-11-18)
 
 - The `wwtdatatool preview` command has gained the `--research` option to open
