@@ -535,7 +535,7 @@ class ImageSet(LockedXmlTraits, UrlContainer):
         else:
             self.projection = ProjectionType.SKY_IMAGE
             self.offset_x = refpix_x
-            self.offset_y = refpix_y
+            self.offset_y = width + 1 - refpix_y
             self.base_degrees_per_tile = scale_y
             self.bottoms_up = cd_sign == -1
 
