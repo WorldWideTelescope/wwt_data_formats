@@ -321,6 +321,18 @@ class ImageSet(LockedXmlTraits, UrlContainer):
     permission = Int(0).tag(xml=XmlSer.attr("Permission"))
     "TBD."
 
+    pixel_cut_low = Float(0.0).tag(xml=XmlSer.attr("PixelCutLow"))
+    """Suggested default low cutoff value when displaying FITS."""
+
+    pixel_cut_high = Float(0.0).tag(xml=XmlSer.attr("PixelCutHigh"))
+    """Suggested default high cutoff value when displaying FITS."""
+
+    data_min = Float(0.0).tag(xml=XmlSer.attr("DataMin"))
+    """Lowest data value of a FITS file."""
+
+    data_max = Float(0.0).tag(xml=XmlSer.attr("DataMax"))
+    """Highest data value of a FITS file."""
+
     def _tag_name(self):
         return "ImageSet"
 
@@ -391,8 +403,8 @@ class ImageSet(LockedXmlTraits, UrlContainer):
         - ``CRVAL1`` and ``CRVAL2``
         - ``CRPIX1`` and ``CRPIX2``
         - Either:
-            - ``CD1_1``, ``CD2_2`` (preferred)
-            - ``CDELT1``, ``CDELT2``, ``PC1_1``, and ``PC1_2``; or
+            - ``CD1_1``, ``CD2_2`` (preferred) or
+            - ``CDELT1``, ``CDELT2``, ``PC1_1``, and ``PC1_2``;
 
         If present ``PC1_2``, ``PC2_1``, ``CD1_2``, and/or ``CD2_1`` are used.
         If absent, they are assumed to be zero.
