@@ -22,6 +22,7 @@ def test_basic_xml():
           MeanRadius="0.0" Name="Test name"
           OffsetX="100.1" OffsetY="100.2" Projection="SkyImage"
           Rotation="5.4321" Sparse="False" StockSet="False" TileLevels="4"
+          PixelCutHigh="0.0" PixelCutLow="0.0" DataMax="0.0" DataMin="0.0"
           Url="http://example.org/{0}" WidthFactor="2">
   <Credits>Escaping &amp; Entities</Credits>
   <CreditsUrl>https://example.org/credits</CreditsUrl>
@@ -67,6 +68,7 @@ def test_wcs_1():
           MSRComponentId="0" OffsetX="1503.3507831457316"
           OffsetY="1479.3005935660037" Permission="0" Projection="SkyImage"
           Rotation="-179.70963521481" Sparse="True" StockSet="False"
+          PixelCutHigh="0.0" PixelCutLow="0.0" DataMax="0.0" DataMin="0.0"
           TileLevels="0" WidthFactor="2">
 </ImageSet>
 '''
@@ -122,7 +124,7 @@ def test_wcs_1():
         if kw in ('CTYPE1', 'CTYPE2'):
             assert expected == observed
         else:
-            nt.assert_almost_equal(expected, observed)
+            nt.assert_almost_equal(observed, expected)
 
 
 def test_wcs_ok_matrices():
@@ -289,10 +291,10 @@ def test_wcs_45deg():
 def test_misc_ser():
     expected_str = '''
 <ImageSet BandPass="Visible" BaseDegreesPerTile="0.0" BaseTileLevel="0"
-          BottomsUp="False" CenterX="0.0" CenterY="0.0" DataSetType="Sky" ElevationModel="False"
+          BottomsUp="False" CenterX="0.0" CenterY="0.0" DataMax="0.0" DataMin="0.0" DataSetType="Sky" ElevationModel="False"
           FileType=".png" Generic="False" MeanRadius="0.0" MSRCommunityId="0" MSRComponentId="0"
-          OffsetX="0.0" OffsetY="0.0" Permission="0" Projection="SkyImage"
-          Rotation="0.0" Sparse="True" StockSet="False" TileLevels="0"
+          OffsetX="0.0" OffsetY="0.0" Permission="0" PixelCutHigh="0.0" PixelCutLow="0.0" 
+          Projection="SkyImage" Rotation="0.0" Sparse="True" StockSet="False" TileLevels="0"
           Url="http://example.com/unspecified" WidthFactor="2" />
 '''
     expected_xml = etree.fromstring(expected_str)
