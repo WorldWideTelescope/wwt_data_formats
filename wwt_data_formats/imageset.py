@@ -534,10 +534,14 @@ class ImageSet(LockedXmlTraits, UrlContainer):
             self.base_degrees_per_tile = scale_y * 256 * 2 ** self.tile_levels
         else:
             self.projection = ProjectionType.SKY_IMAGE
-            self.offset_x = refpix_x
-            self.offset_y = width + 1 - refpix_y
-            self.base_degrees_per_tile = scale_y
             self.bottoms_up = cd_sign == -1
+            self.offset_x = refpix_x
+            if self.bottoms_up:
+                self.offset_y = refpix_y
+            else:
+                self.offset_y = width - refpix_y
+
+            self.base_degrees_per_tile = scale_y
 
         if place is not None:
             place.data_set_type = DataSetType.SKY
