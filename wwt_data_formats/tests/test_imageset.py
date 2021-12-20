@@ -126,6 +126,38 @@ def test_wcs_1():
         else:
             nt.assert_almost_equal(observed, expected)
 
+def test_wcs_only_two_pc_values():
+    expected_str = '''
+<ImageSet BandPass="Visible" BaseDegreesPerTile="0.003888888888889" BaseTileLevel="0"
+             BottomsUp="False" CenterX="233.73705402943" CenterY="23.506972488486" DataMax="0.0" DataMin="0.0"
+             DataSetType="Sky" ElevationModel="False" FileType=".fits" Generic="False" MSRCommunityId="0"
+             MSRComponentId="0" MeanRadius="0.0" Name="herschel_spire_tiled" OffsetX="130.5" OffsetY="126.5"
+             Permission="0" PixelCutHigh="0.0" PixelCutLow="0.0" Projection="SkyImage"
+             Rotation="-0.0" Sparse="True" StockSet="False" TileLevels="0" WidthFactor="2">
+</ImageSet>
+'''
+    expected_xml = etree.fromstring(expected_str)
+
+    wcs_keywords = {
+        'CTYPE1': 'RA---TAN',
+        'CTYPE2': 'DEC--TAN',
+        'CRVAL1': 233.73705402943,
+        'CRVAL2': 23.506972488486,
+        'PC1_1': -0.003888888888889,
+        'PC2_2': -0.003888888888889,
+        'CRPIX1': 131.0,
+        'CRPIX2': 130.0,
+        'CDELT1': 1.0,
+        'CDELT2': 1.0,
+    }
+
+    imgset = imageset.ImageSet()
+    imgset.file_type = ".fits"
+    imgset.name = "herschel_spire_tiled"
+    imgset.set_position_from_wcs(wcs_keywords, 256, 256)
+
+    observed_xml = imgset.to_xml()
+    assert_xml_trees_equal(expected_xml, observed_xml)
 
 def test_wcs_ok_matrices():
     base_keywords = {
