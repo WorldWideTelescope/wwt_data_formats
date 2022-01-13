@@ -529,6 +529,7 @@ class ImageSet(LockedXmlTraits, UrlContainer):
 
         if self.tile_levels > 0:  # are we tiled?
             self.projection = ProjectionType.TAN
+            self.bottoms_up = False
             self.offset_x = (width / 2 - refpix_x) * scale_x
             self.offset_y = (refpix_y - height / 2) * scale_y
             self.base_degrees_per_tile = scale_y * 256 * 2 ** self.tile_levels
@@ -536,12 +537,11 @@ class ImageSet(LockedXmlTraits, UrlContainer):
             self.projection = ProjectionType.SKY_IMAGE
             self.bottoms_up = cd_sign == -1
             self.offset_x = refpix_x
-            if self.bottoms_up:
-                self.offset_y = refpix_y
-            else:
-                self.offset_y = width - refpix_y
-
+            self.offset_y = height - refpix_y
             self.base_degrees_per_tile = scale_y
+
+            if self.bottoms_up:
+                self.rotation_deg = -self.rotation_deg
 
         if place is not None:
             place.data_set_type = DataSetType.SKY
@@ -555,9 +555,18 @@ class ImageSet(LockedXmlTraits, UrlContainer):
 
         return self
 
-    def wcs_headers_from_position(self):
+    def wcs_headers_from_position(self, height=None):
         """
         Compute a set of WCS headers for this ImageSet's positional information.
+
+        Parameters
+        ----------
+        height : optional int
+            The height of the underlying image, in pixels. This quantity is
+            needed to compute WCS headers correctly for untiled (``SKY_IMAGE``
+            projection) images. If this quantity is needed but not provided,
+            a ValueError will be raised. Note that the :class:`ImageSet` class
+            does *not* store this quantity.
 
         Returns
         -------
@@ -581,19 +590,24 @@ class ImageSet(LockedXmlTraits, UrlContainer):
         }
 
         if self.projection != ProjectionType.SKY_IMAGE:
-            raise NotImplementError(
+            raise NotImplementedError(
                 "wcs_headers_from_position() only works if projection=SKY_IMAGE"
             )
 
+        if height is None:
+            raise ValueError(
+                "must provide `height` to compute WCS headers for untiled images"
+            )
+
         rv["CRPIX1"] = self.offset_x + 0.5
-        rv["CRPIX2"] = self.offset_y + 0.5
+        rv["CRPIX2"] = height - self.offset_y + 0.5
 
         # The WWT rotation angle is 180 degrees away from the usual angle
         # that you would use for a rotation matrix, which is why we negate
         # these trig values:
-        c = -math.cos(self.rotation_deg * math.pi / 180)
-        s = -math.sin(self.rotation_deg * math.pi / 180)
         parity = -1 if self.bottoms_up else 1
+        c = -math.cos(parity * self.rotation_deg * math.pi / 180)
+        s = -math.sin(parity * self.rotation_deg * math.pi / 180)
 
         # | CD1_1 CD1_2 | = scale * | p 0 | * |  cos(theta) sin(theta) |
         # | CD2_1 CD2_2 |           | 0 1 |   | -sin(theta) cos(theta) |
