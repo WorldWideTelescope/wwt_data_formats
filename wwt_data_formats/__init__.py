@@ -4,7 +4,7 @@
 
 from __future__ import absolute_import, division, print_function
 
-__all__ = '''
+__all__ = """
 indent_xml
 LockedDownTraits
 LockedXmlTraits
@@ -12,13 +12,24 @@ MetaLockedDownTraits
 stringify_xml_doc
 write_xml_doc
 XmlSer
-'''.split()
+""".split()
 
 from abc import ABCMeta
 from argparse import Namespace
 from enum import Enum
-from traitlets import (Bool, Float, HasTraits, Instance, Int, List, MetaHasTraits,
-                       TraitType, Unicode, Union, UseEnum)
+from traitlets import (
+    Bool,
+    Float,
+    HasTraits,
+    Instance,
+    Int,
+    List,
+    MetaHasTraits,
+    TraitType,
+    Unicode,
+    Union,
+    UseEnum,
+)
 from xml.etree import ElementTree as etree
 
 
@@ -30,18 +41,21 @@ class MetaLockedDownTraits(ABCMeta, MetaHasTraits):
     traitlet's MetaHasTraits metaclass is also performed.
 
     """
+
     def __init__(cls, name, bases, classdict):
         super(MetaLockedDownTraits, cls).__init__(name, bases, classdict)
 
         # This list hardcode attributes that are manipulated by the traitlets
         # machinery.
-        settable_attr_names = set((
-            '_cross_validation_lock',
-            '_trait_notifiers',
-            '_trait_validators',
-            '_trait_values',
-            'notify_change',
-        ))
+        settable_attr_names = set(
+            (
+                "_cross_validation_lock",
+                "_trait_notifiers",
+                "_trait_validators",
+                "_trait_values",
+                "notify_change",
+            )
+        )
 
         for c in cls.mro():
             for attr_name, attr_value in c.__dict__.items():
@@ -66,40 +80,44 @@ class LockedDownTraits(HasTraits, metaclass=MetaLockedDownTraits):
     metadata one wants.
 
     """
+
     rmeta = Instance(
         Namespace,
-        args = (),
-        help = 'Runtime metadata - a namespace object for attaching arbitrary extra information',
+        args=(),
+        help="Runtime metadata - a namespace object for attaching arbitrary extra information",
     )
 
     def __setattr__(self, name, value):
         if name not in self._settable_attr_names:
-            raise AttributeError(f'not allowed to set attribute {name!r} on this instance (typo?)')
+            raise AttributeError(
+                f"not allowed to set attribute {name!r} on this instance (typo?)"
+            )
         super(LockedDownTraits, self).__setattr__(name, value)
 
     def __delattr__(self, name):
-        if name != 'notify_change':  # sigh, traitlets
-            raise AttributeError(f'not allowed to delete attribute {name!r} from this instance')
+        if name != "notify_change":  # sigh, traitlets
+            raise AttributeError(
+                f"not allowed to delete attribute {name!r} from this instance"
+            )
         super(LockedDownTraits, self).__delattr__(name)
 
     def __repr__(self):
         # This gets a bit beyond the nominal bailiwick of this class, but it's
         # pretty universally useful.
-        s = ', '.join('{}={!r}'.format(a, getattr(self, a)) for a in self.trait_names())
-        return f'{self.__class__.__name__}({s})'
+        s = ", ".join("{}={!r}".format(a, getattr(self, a)) for a in self.trait_names())
+        return f"{self.__class__.__name__}({s})"
 
 
 class XmlSer(Enum):
-    """Ways that a traitlet can get serialized to XML in this framework.
+    """Ways that a traitlet can get serialized to XML in this framework."""
 
-    """
-    ATTRIBUTE = 'attr'
-    TEXT_ELEM = 'text_elem'
-    INNER = 'inner'
-    WRAPPED_INNER = 'wrapped_inner'
-    NS_TO_ATTR = 'ns_to_attr'
-    INNER_LIST = 'inner_list'
-    WRAPPED_INNER_LIST = 'wrapped_inner_list'
+    ATTRIBUTE = "attr"
+    TEXT_ELEM = "text_elem"
+    INNER = "inner"
+    WRAPPED_INNER = "wrapped_inner"
+    NS_TO_ATTR = "ns_to_attr"
+    INNER_LIST = "inner_list"
+    WRAPPED_INNER_LIST = "wrapped_inner_list"
 
     @classmethod
     def attr(cls, attr):
@@ -156,20 +174,20 @@ def _parse_trait(trait_spec, text):
         except ValueError:
             pass
 
-        if text.lower() == 'false':
+        if text.lower() == "false":
             return False
 
-        if text.lower() == 'true':
+        if text.lower() == "true":
             return True
 
-        raise ValueError(f'cannot interpret text {text!r} as a boolean')
+        raise ValueError(f"cannot interpret text {text!r} as a boolean")
 
     if isinstance(trait_spec, UseEnum):
         if text is None:
-            text = ''
+            text = ""
         return trait_spec.enum_class.from_text(text)
 
-    raise ValueError(f'internal error: unimplemented parse for trait type {trait_spec}')
+    raise ValueError(f"internal error: unimplemented parse for trait type {trait_spec}")
 
 
 class LockedXmlTraits(LockedDownTraits):
@@ -180,6 +198,7 @@ class LockedXmlTraits(LockedDownTraits):
     the needs of the WWT XML serialization formats.
 
     """
+
     def _tag_name(self):
         """Return the XML tag name associated with the serialization of this object."""
         raise NotImplementedError()
@@ -224,8 +243,8 @@ class LockedXmlTraits(LockedDownTraits):
         if not inst._check_elem_is_this_type(elem):
             return None
 
-        for tname, tspec in inst.traits(xml = lambda a: a is not None).items():
-            xml_spec, *xml_data = tspec.metadata['xml']
+        for tname, tspec in inst.traits(xml=lambda a: a is not None).items():
+            xml_spec, *xml_data = tspec.metadata["xml"]
             value = None
 
             if xml_spec == XmlSer.ATTRIBUTE:
@@ -238,7 +257,9 @@ class LockedXmlTraits(LockedDownTraits):
                     value = _parse_trait(tspec, sub.text)
             elif xml_spec == XmlSer.INNER:
                 if not isinstance(tspec, Instance):
-                    raise RuntimeError('an XML element serialized as INNER must be of Instance type')
+                    raise RuntimeError(
+                        "an XML element serialized as INNER must be of Instance type"
+                    )
 
                 for sub in elem:
                     value = tspec.klass._maybe_from_xml(sub)
@@ -246,7 +267,9 @@ class LockedXmlTraits(LockedDownTraits):
                         break
             elif xml_spec == XmlSer.WRAPPED_INNER:
                 if not isinstance(tspec, Instance):
-                    raise RuntimeError('an XML element serialized as WRAPPED_INNER must be of Instance type')
+                    raise RuntimeError(
+                        "an XML element serialized as WRAPPED_INNER must be of Instance type"
+                    )
 
                 wrapper = elem.find(xml_data[0])
                 if wrapper is not None:
@@ -256,20 +279,26 @@ class LockedXmlTraits(LockedDownTraits):
                             break
             elif xml_spec == XmlSer.NS_TO_ATTR:
                 if not isinstance(tspec, Instance):
-                    raise RuntimeError('an XML element serialized as NS_TO_ATTR must be of Instance type')
+                    raise RuntimeError(
+                        "an XML element serialized as NS_TO_ATTR must be of Instance type"
+                    )
 
                 value = tspec.klass()
                 for aname, avalue in elem.attrib.items():
                     if aname.startswith(xml_data[0]):
-                        setattr(value, aname[len(xml_data[0]):], avalue)
+                        setattr(value, aname[len(xml_data[0]) :], avalue)
             elif xml_spec == XmlSer.INNER_LIST:
                 if not isinstance(tspec, List):
-                    raise RuntimeError('XML elements serialized as INNER_LIST must be of List type')
+                    raise RuntimeError(
+                        "XML elements serialized as INNER_LIST must be of List type"
+                    )
 
                 # total hackiness specific for the Folder use case, plus encapsulation breakage:
                 un_spec = tspec._trait
                 if not isinstance(un_spec, Union):
-                    raise RuntimeError('XML elements serialized as INNER_LIST must be of List(Union) type')
+                    raise RuntimeError(
+                        "XML elements serialized as INNER_LIST must be of List(Union) type"
+                    )
 
                 klasses = [t.klass for t in un_spec.trait_types]
                 # end hackiness, maybe.
@@ -285,11 +314,15 @@ class LockedXmlTraits(LockedDownTraits):
             elif xml_spec == XmlSer.WRAPPED_INNER_LIST:
                 # Repeat the INNER_LIST hackiness
                 if not isinstance(tspec, List):
-                    raise RuntimeError('XML elements serialized as WRAPPED_INNER_LIST must be of List type')
+                    raise RuntimeError(
+                        "XML elements serialized as WRAPPED_INNER_LIST must be of List type"
+                    )
 
                 un_spec = tspec._trait
                 if not isinstance(un_spec, Union):
-                    raise RuntimeError('XML elements serialized as WRAPPED_INNER_LIST must be of List(Union) type')
+                    raise RuntimeError(
+                        "XML elements serialized as WRAPPED_INNER_LIST must be of List(Union) type"
+                    )
 
                 klasses = [t.klass for t in un_spec.trait_types]
                 # end hackiness, maybe.
@@ -305,13 +338,12 @@ class LockedXmlTraits(LockedDownTraits):
                                 value.append(v)
                                 break
             else:
-                raise RuntimeError(f'unhandled XML serialization mode {xml_spec}')
+                raise RuntimeError(f"unhandled XML serialization mode {xml_spec}")
 
             if value is not None:
                 setattr(inst, tname, value)
 
         return inst
-
 
     @classmethod
     def from_xml(cls, elem):
@@ -329,9 +361,10 @@ class LockedXmlTraits(LockedDownTraits):
         """
         inst = cls._maybe_from_xml(elem)
         if inst is None:
-            raise ValueError(f'expected to get a {cls} instance from <{elem.tag}>, but didn\'t')
+            raise ValueError(
+                f"expected to get a {cls} instance from <{elem.tag}>, but didn't"
+            )
         return inst
-
 
     @classmethod
     def from_text(cls, text):
@@ -350,9 +383,8 @@ class LockedXmlTraits(LockedDownTraits):
         elem = etree.fromstring(text)
         return cls.from_xml(elem)
 
-
     @classmethod
-    def from_file(cls, path, encoding='utf-8-sig'):
+    def from_file(cls, path, encoding="utf-8-sig"):
         """Deserialize an instance of this class from an XML file on local disk.
 
         Parameters
@@ -368,11 +400,10 @@ class LockedXmlTraits(LockedDownTraits):
         An instance of the class, initialized with data from the XML.
 
         """
-        with open(path, 'rt', encoding=encoding) as f:
+        with open(path, "rt", encoding=encoding) as f:
             text = f.read()
 
         return cls.from_text(text)
-
 
     @classmethod
     def from_url(cls, url, session=None, **kwargs):
@@ -395,6 +426,7 @@ class LockedXmlTraits(LockedDownTraits):
         """
         if session is None:
             import requests
+
             session = requests
 
         resp = session.get(url, **kwargs)
@@ -402,11 +434,10 @@ class LockedXmlTraits(LockedDownTraits):
         # We have to set this to get requests/Python to ignore the Unicode
         # Byte Order Marker (BOM) that is present in some WWT data files due
         # to their Windows origin, when we decode the response into text.
-        resp.encoding = 'utf-8-sig'
+        resp.encoding = "utf-8-sig"
 
         elem = etree.fromstring(resp.text)
         return cls.from_xml(elem)
-
 
     def _serialize_xml(self, elem):
         """Do the work of serializing this thing to XML.
@@ -445,8 +476,8 @@ class LockedXmlTraits(LockedDownTraits):
         # child elements are created in a deterministic order, which makes it
         # easier to test the output.
 
-        for tname, tspec in self.traits(xml = lambda a: a is not None).items():
-            xml_spec, *xml_data = tspec.metadata['xml']
+        for tname, tspec in self.traits(xml=lambda a: a is not None).items():
+            xml_spec, *xml_data = tspec.metadata["xml"]
             value = getattr(self, tname)
 
             if value is None:
@@ -495,14 +526,18 @@ class LockedXmlTraits(LockedDownTraits):
                 preexisting = bool(len(elem))
 
                 if preexisting and len(elem) != len(value):
-                    raise RuntimeError('serializing flexible list to existing XML data, '
-                                       'but it looks like something changed beneath us')
+                    raise RuntimeError(
+                        "serializing flexible list to existing XML data, "
+                        "but it looks like something changed beneath us"
+                    )
 
                 for idx, child in enumerate(value):
                     if preexisting:
                         if elem[idx].tag != child._tag_name():
-                            raise RuntimeError('serializing flexible list to existing XML data, '
-                                               f'but it looks like child #{i} changed')
+                            raise RuntimeError(
+                                "serializing flexible list to existing XML data, "
+                                f"but it looks like child #{i} changed"
+                            )
                         child._serialize_xml(elem[idx])
                     else:
                         new_sub = child._serialize_xml(None)
@@ -517,23 +552,26 @@ class LockedXmlTraits(LockedDownTraits):
                     preexisting = True
 
                     if len(wrapper) != len(value):
-                        raise RuntimeError('serializing flexible list to existing XML data, '
-                                           'but it looks like something changed beneath us')
+                        raise RuntimeError(
+                            "serializing flexible list to existing XML data, "
+                            "but it looks like something changed beneath us"
+                        )
 
                 for idx, child in enumerate(value):
                     if preexisting:
                         if wrapper[idx].tag != child._tag_name():
-                            raise RuntimeError('serializing flexible list to existing XML data, '
-                                               f'but it looks like child #{i} changed')
+                            raise RuntimeError(
+                                "serializing flexible list to existing XML data, "
+                                f"but it looks like child #{i} changed"
+                            )
                         child._serialize_xml(wrapper[idx])
                     else:
                         new_sub = child._serialize_xml(None)
                         wrapper.append(new_sub)
             else:
-                raise RuntimeError(f'unhandled XML serialization mode {xml_spec}')
+                raise RuntimeError(f"unhandled XML serialization mode {xml_spec}")
 
         return elem
-
 
     def apply_to_xml(self, elem):
         """Serialize the data of this object to an existing XML tree
@@ -558,7 +596,6 @@ class LockedXmlTraits(LockedDownTraits):
         self._serialize_xml(elem)
         return self
 
-
     def to_xml(self):
         """Serialize this object to XML.
 
@@ -569,7 +606,6 @@ class LockedXmlTraits(LockedDownTraits):
 
         """
         return self._serialize_xml(None)
-
 
     def write_xml(self, dest_stream, dest_wants_bytes=False, indent=True):
         """Serialize this object to XML, writing the data to a stream.
@@ -593,11 +629,10 @@ class LockedXmlTraits(LockedDownTraits):
         """
         write_xml_doc(
             self.to_xml(),
-            dest_stream = dest_stream,
-            dest_wants_bytes = dest_wants_bytes,
-            indent = indent,
+            dest_stream=dest_stream,
+            dest_wants_bytes=dest_wants_bytes,
+            indent=indent,
         )
-
 
     def to_xml_string(self, indent=True):
         """Serialize this object to XML text.
@@ -658,6 +693,7 @@ def write_xml_doc(root_element, indent=True, dest_stream=None, dest_wants_bytes=
 
     if dest_stream is None:
         import sys
+
         dest_stream = sys.stdout
 
     if indent:
@@ -675,10 +711,12 @@ def write_xml_doc(root_element, indent=True, dest_stream=None, dest_wants_bytes=
         try:
             dest_stream = dest_stream.buffer
         except Exception as e:
-            raise Exception('XML output into text I/O requires a destination whose '
-                'underlying bytes I/O can be retrieved') from e
+            raise Exception(
+                "XML output into text I/O requires a destination whose "
+                "underlying bytes I/O can be retrieved"
+            ) from e
 
-    doc.write(dest_stream, encoding='UTF-8', xml_declaration=True)
+    doc.write(dest_stream, encoding="UTF-8", xml_declaration=True)
 
 
 def stringify_xml_doc(root_element, indent=True):
@@ -691,7 +729,8 @@ def stringify_xml_doc(root_element, indent=True):
     # encoding to be UTF-8 even when running on Windows, when the locale
     # encoding may default to CP-1252.
     from io import BytesIO
+
     with BytesIO() as dest:
         write_xml_doc(root_element, indent, dest, dest_wants_bytes=True)
         bytes_result = dest.getvalue()
-    return bytes_result.decode('utf-8')
+    return bytes_result.decode("utf-8")
