@@ -46,13 +46,13 @@ class Folder(LockedXmlTraits, UrlContainer):
         default_value=FolderType.UNSPECIFIED,
     ).tag(xml=XmlSer.attr("Type"))
     sub_type = Unicode("").tag(xml=XmlSer.attr("SubType"))
-    msr_community_id = Int(0).tag(xml=XmlSer.attr("MSRCommunityId"))
+    msr_community_id = Int(0).tag(xml=XmlSer.attr("MSRCommunityId"), xml_omit_zero=True)
     """The ID number of the WWT Community that this content came from."""
 
-    msr_component_id = Int(0).tag(xml=XmlSer.attr("MSRComponentId"))
+    msr_component_id = Int(0).tag(xml=XmlSer.attr("MSRComponentId"), xml_omit_zero=True)
     """The ID number of this content item on the WWT Communities system."""
 
-    permission = Int(0).tag(xml=XmlSer.attr("Permission"))
+    permission = Int(0).tag(xml=XmlSer.attr("Permission"), xml_omit_zero=True)
     "TBD."
 
     children = List(

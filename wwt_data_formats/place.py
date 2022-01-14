@@ -27,10 +27,10 @@ class Place(LockedXmlTraits, UrlContainer):
         xml=XmlSer.attr("DataSetType")
     )
     name = Unicode("").tag(xml=XmlSer.attr("Name"))
-    ra_hr = Float(0.0).tag(xml=XmlSer.attr("RA"))
-    dec_deg = Float(0.0).tag(xml=XmlSer.attr("Dec"))
-    latitude = Float(0.0).tag(xml=XmlSer.attr("Lat"))
-    longitude = Float(0.0).tag(xml=XmlSer.attr("Lng"))
+    ra_hr = Float(0.0).tag(xml=XmlSer.attr("RA"), xml_if_sky_type_is=True)
+    dec_deg = Float(0.0).tag(xml=XmlSer.attr("Dec"), xml_if_sky_type_is=True)
+    latitude = Float(0.0).tag(xml=XmlSer.attr("Lat"), xml_if_sky_type_is=False)
+    longitude = Float(0.0).tag(xml=XmlSer.attr("Lng"), xml_if_sky_type_is=False)
     constellation = UseEnum(Constellation, default_value=Constellation.UNSPECIFIED).tag(
         xml=XmlSer.attr("Constellation")
     )
@@ -38,14 +38,14 @@ class Place(LockedXmlTraits, UrlContainer):
         Classification, default_value=Classification.UNSPECIFIED
     ).tag(xml=XmlSer.attr("Classification"))
     magnitude = Float(0.0).tag(xml=XmlSer.attr("Magnitude"))
-    distance = Float(0.0).tag(xml=XmlSer.attr("Distance"))
+    distance = Float(0.0).tag(xml=XmlSer.attr("Distance"), xml_omit_zero=True)
     angular_size = Float(0.0).tag(xml=XmlSer.attr("AngularSize"))
     zoom_level = Float(0.0).tag(xml=XmlSer.attr("ZoomLevel"))
     rotation_deg = Float(0.0).tag(xml=XmlSer.attr("Rotation"))
     angle = Float(0.0).tag(xml=XmlSer.attr("Angle"))
     opacity = Float(100.0).tag(xml=XmlSer.attr("Opacity"))
-    dome_alt = Float(0.0).tag(xml=XmlSer.attr("DomeAlt"))
-    dome_az = Float(0.0).tag(xml=XmlSer.attr("DomeAz"))
+    dome_alt = Float(0.0).tag(xml=XmlSer.attr("DomeAlt"), xml_omit_zero=True)
+    dome_az = Float(0.0).tag(xml=XmlSer.attr("DomeAz"), xml_omit_zero=True)
     background_image_set = Instance(ImageSet, allow_none=True).tag(
         xml=XmlSer.wrapped_inner("BackgroundImageSet")
     )
@@ -82,13 +82,13 @@ class Place(LockedXmlTraits, UrlContainer):
 
     """
 
-    msr_community_id = Int(0).tag(xml=XmlSer.attr("MSRCommunityId"))
+    msr_community_id = Int(0).tag(xml=XmlSer.attr("MSRCommunityId"), xml_omit_zero=True)
     """The ID number of the WWT Community that this content came from."""
 
-    msr_component_id = Int(0).tag(xml=XmlSer.attr("MSRComponentId"))
+    msr_component_id = Int(0).tag(xml=XmlSer.attr("MSRComponentId"), xml_omit_zero=True)
     """The ID number of this content item on the WWT Communities system."""
 
-    permission = Int(0).tag(xml=XmlSer.attr("Permission"))
+    permission = Int(0).tag(xml=XmlSer.attr("Permission"), xml_omit_zero=True)
     "TBD."
 
     xmeta = Instance(

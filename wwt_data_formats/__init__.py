@@ -155,7 +155,15 @@ def _stringify_trait(trait_spec, value):
     if isinstance(trait_spec, UseEnum):
         return str(value.value)
 
-    return str(value)
+    if trait_spec.metadata.get("xml_omit_zero") and value == 0:
+        return ""
+
+    text = str(value)
+
+    if isinstance(value, float) and text.endswith(".0"):
+        text = text[:-2]
+
+    return text
 
 
 def _parse_trait(trait_spec, text):
@@ -482,6 +490,14 @@ class LockedXmlTraits(LockedDownTraits):
 
             if value is None:
                 continue
+
+            sky_type_filter = tspec.metadata.get("xml_if_sky_type_is")
+            if sky_type_filter is not None:
+                from .enums import DataSetType
+
+                cmp = self.data_set_type == DataSetType.SKY
+                if sky_type_filter != cmp:
+                    continue
 
             if xml_spec == XmlSer.ATTRIBUTE:
                 text = _stringify_trait(tspec, value)
