@@ -62,19 +62,21 @@ CHILD1_XML_STRING = '''
 def fake_request_session_send(request, **kwargs):
     rv = Mock()
 
-    if request.url == 'http://example.com/root.wtml':
+    if request.url == "http://example.com/root.wtml":
         rv.text = ROOT_XML_STRING
-    elif request.url == 'http://example.com/child1.wtml':
+    elif request.url == "http://example.com/child1.wtml":
         rv.text = CHILD1_XML_STRING
     else:
-        raise Exception(f'unexpected URL to fake requests.Session.send(): {request.url}')
+        raise Exception(
+            f"unexpected URL to fake requests.Session.send(): {request.url}"
+        )
 
     return rv
 
 
 @pytest.fixture
 def fake_requests(mocker):
-    m = mocker.patch('requests.Session.send')
+    m = mocker.patch("requests.Session.send")
     m.side_effect = fake_request_session_send
 
 
@@ -128,8 +130,8 @@ def test_walk():
 
     expected = [
         (0, (), f0),
-        (1, (0, ), pl0),
-        (1, (1, ), f1),
+        (1, (0,), pl0),
+        (1, (1,), f1),
         (2, (1, 0), is0),
         (2, (1, 1), pl1),
     ]
@@ -140,7 +142,7 @@ def test_walk():
 
 def test_from_url():
     "Note that this test hits the network."
-    url = 'http://www.worldwidetelescope.org/wwtweb/catalog.aspx?W=ExploreRoot'
+    url = "http://www.worldwidetelescope.org/wwtweb/catalog.aspx?W=ExploreRoot"
     folder.Folder.from_url(url)  # just test that we don't crash
 
 
@@ -150,7 +152,7 @@ def test_fetch_tree(fake_requests, tempdir):
     def on_fetch(url):
         pass
 
-    folder.fetch_folder_tree('http://example.com/root.wtml', tempdir, on_fetch)
+    folder.fetch_folder_tree("http://example.com/root.wtml", tempdir, on_fetch)
 
     for item in folder.walk_cached_folder_tree(tempdir):
         pass
@@ -158,53 +160,61 @@ def test_fetch_tree(fake_requests, tempdir):
 
 def test_basic_url_mutation():
     f = folder.Folder()
-    f.url = '../updir/somewhere.wtml'
-    f.mutate_urls(folder.make_absolutizing_url_mutator('https://example.com/subdir/'))
-    assert f.url == 'https://example.com/updir/somewhere.wtml'
+    f.url = "../updir/somewhere.wtml"
+    f.mutate_urls(folder.make_absolutizing_url_mutator("https://example.com/subdir/"))
+    assert f.url == "https://example.com/updir/somewhere.wtml"
 
     from ..place import Place
     from ..imageset import ImageSet
 
     imgset = ImageSet()
-    imgset.url = 'image.jpg'
+    imgset.url = "image.jpg"
     p = Place()
     p.background_image_set = imgset
     f.children.append(p)
-    f.mutate_urls(folder.make_absolutizing_url_mutator('https://example.com/subdir/'))
+    f.mutate_urls(folder.make_absolutizing_url_mutator("https://example.com/subdir/"))
 
-    assert f.url == 'https://example.com/updir/somewhere.wtml'
-    assert imgset.url == 'https://example.com/subdir/image.jpg'
+    assert f.url == "https://example.com/updir/somewhere.wtml"
+    assert imgset.url == "https://example.com/subdir/image.jpg"
 
 
 def test_wtml_report():
     """Dumb smoketest."""
-    cli.entrypoint(['wtml', 'report', test_path('test1_rel.wtml')])
-    cli.entrypoint(['wtml', 'report', test_path('report_rel.wtml')])
+    cli.entrypoint(["wtml", "report", test_path("test1_rel.wtml")])
+    cli.entrypoint(["wtml", "report", test_path("report_rel.wtml")])
 
 
 def test_wtml_rewrite_disk(in_tempdir):
     f = folder.Folder()
-    f.url = 'sub%20dir/image.jpg'
+    f.url = "sub%20dir/image.jpg"
 
-    with open('index_rel.wtml', 'wt', encoding='utf8') as f_out:
+    with open("index_rel.wtml", "wt", encoding="utf8") as f_out:
         f.write_xml(f_out)
 
-    cli.entrypoint(['wtml', 'rewrite-disk', 'index_rel.wtml', 'index_disk.wtml'])
+    cli.entrypoint(["wtml", "rewrite-disk", "index_rel.wtml", "index_disk.wtml"])
 
-    f = folder.Folder.from_file('index_disk.wtml')
+    f = folder.Folder.from_file("index_disk.wtml")
     # abspath('') is not necessarily equal to abspath(in_tempdir), due to
     # symlinks and Windows filename shorterning.
-    assert f.url == os.path.join(os.path.abspath(''), 'sub dir', 'image.jpg')
+    assert f.url == os.path.join(os.path.abspath(""), "sub dir", "image.jpg")
 
 
 def test_wtml_rewrite_urls(in_tempdir):
     f = folder.Folder()
-    f.url = '../updir/somewhere.wtml'
+    f.url = "../updir/somewhere.wtml"
 
-    with open('index_rel.wtml', 'wt', encoding='utf8') as f_out:
+    with open("index_rel.wtml", "wt", encoding="utf8") as f_out:
         f.write_xml(f_out)
 
-    cli.entrypoint(['wtml', 'rewrite-urls', 'index_rel.wtml', 'https://example.com/subdir/', 'index.wtml'])
+    cli.entrypoint(
+        [
+            "wtml",
+            "rewrite-urls",
+            "index_rel.wtml",
+            "https://example.com/subdir/",
+            "index.wtml",
+        ]
+    )
 
-    f = folder.Folder.from_file('index.wtml')
-    assert f.url == 'https://example.com/updir/somewhere.wtml'
+    f = folder.Folder.from_file("index.wtml")
+    assert f.url == "https://example.com/updir/somewhere.wtml"
