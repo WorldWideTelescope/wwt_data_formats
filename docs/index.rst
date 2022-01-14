@@ -20,8 +20,8 @@ that provides some useful ways of working with various WWT data files. See the
 :ref:`cli-reference` for a list of its functionality.
 
 
-Detailed Table of Contents
-==========================
+Table of Contents
+=================
 
 .. toctree::
    :maxdepth: 2
@@ -29,7 +29,24 @@ Detailed Table of Contents
    installation
    imagesets
    cli
-   api
+
+
+API Reference
+=============
+
+.. toctree::
+   :maxdepth: 1
+
+   api/wwt_data_formats
+   api/wwt_data_formats.abcs
+   api/wwt_data_formats.cli
+   api/wwt_data_formats.enums
+   api/wwt_data_formats.filecabinet
+   api/wwt_data_formats.folder
+   api/wwt_data_formats.imageset
+   api/wwt_data_formats.layers
+   api/wwt_data_formats.place
+   api/wwt_data_formats.server
 
 
 Getting help
