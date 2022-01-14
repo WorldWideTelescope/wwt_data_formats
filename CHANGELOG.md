@@ -1,3 +1,18 @@
+# wwt_data_formats 0.12.0 (2022-01-14)
+
+- Add support for some new XML attributes: `DataMin`, `DataMax`, `PixelCutLow`,
+  `PixelCutHigh` (#44, @imbasimba). These will help clients know how to render
+  tiled FITS datasets.
+- Fix off-centered Y offsets (CRPIX2) in non-tiled images (#44, @imbasimba,
+  @pkgw). There have been many iterations of this but I think these are finally
+  straightened out for both image parities.
+- Tidy up XML output to be a bit more compact and align better with the output
+  from the C# code (#45, @pkgw).
+- Tidy up the organization of the API documentation (#46, @pkgw). This may break
+  a few existing URLs.
+
+
+
 # wwt_data_formats 0.11.1 (2021-12-10)
 
 - In `wwtdatatool serve` and `wwtdatatool preview`, make the built-in web server
