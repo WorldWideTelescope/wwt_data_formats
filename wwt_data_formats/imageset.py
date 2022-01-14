@@ -1,5 +1,5 @@
 # -*- mode: python; coding: utf-8 -*-
-# Copyright 2019-2021 the .NET Foundation
+# Copyright 2019-2022 the .NET Foundation
 # Licensed under the MIT License.
 
 """
@@ -208,7 +208,7 @@ class ImageSet(LockedXmlTraits, UrlContainer):
     :attr:`offset_y` parameters do that.
 
     """
-    offset_x = Float(0.0).tag(xml=XmlSer.attr("OffsetX"))
+    offset_x = Float(0.0).tag(xml=XmlSer.attr("OffsetX"), xml_omit_zero=True)
     """
     The horizontal positioning of the image relative to its projection
     coordinate system.
@@ -236,7 +236,7 @@ class ImageSet(LockedXmlTraits, UrlContainer):
     the sky.
 
     """
-    offset_y = Float(0.0).tag(xml=XmlSer.attr("OffsetY"))
+    offset_y = Float(0.0).tag(xml=XmlSer.attr("OffsetY"), xml_omit_zero=True)
     """The vertical positioning of the image relative to its projection
     coordinate system.
 
@@ -291,7 +291,7 @@ class ImageSet(LockedXmlTraits, UrlContainer):
     generic = Bool(False).tag(xml=XmlSer.attr("Generic"))
     """TBD."""
 
-    mean_radius = Float(0.0).tag(xml=XmlSer.attr("MeanRadius"))
+    mean_radius = Float(0.0).tag(xml=XmlSer.attr("MeanRadius"), xml_omit_zero=True)
     """TBD."""
 
     credits = Unicode("").tag(xml=XmlSer.text_elem("Credits"))
@@ -312,25 +312,25 @@ class ImageSet(LockedXmlTraits, UrlContainer):
     loaded from the XML.
     """
 
-    msr_community_id = Int(0).tag(xml=XmlSer.attr("MSRCommunityId"))
+    msr_community_id = Int(0).tag(xml=XmlSer.attr("MSRCommunityId"), xml_omit_zero=True)
     """The ID number of the WWT Community that this content came from."""
 
-    msr_component_id = Int(0).tag(xml=XmlSer.attr("MSRComponentId"))
+    msr_component_id = Int(0).tag(xml=XmlSer.attr("MSRComponentId"), xml_omit_zero=True)
     """The ID number of this content item on the WWT Communities system."""
 
-    permission = Int(0).tag(xml=XmlSer.attr("Permission"))
+    permission = Int(0).tag(xml=XmlSer.attr("Permission"), xml_omit_zero=True)
     "TBD."
 
-    pixel_cut_low = Float(0.0).tag(xml=XmlSer.attr("PixelCutLow"))
+    pixel_cut_low = Float(0.0).tag(xml=XmlSer.attr("PixelCutLow"), xml_omit_zero=True)
     """Suggested default low cutoff value when displaying FITS."""
 
-    pixel_cut_high = Float(0.0).tag(xml=XmlSer.attr("PixelCutHigh"))
+    pixel_cut_high = Float(0.0).tag(xml=XmlSer.attr("PixelCutHigh"), xml_omit_zero=True)
     """Suggested default high cutoff value when displaying FITS."""
 
-    data_min = Float(0.0).tag(xml=XmlSer.attr("DataMin"))
+    data_min = Float(0.0).tag(xml=XmlSer.attr("DataMin"), xml_omit_zero=True)
     """Lowest data value of a FITS file."""
 
-    data_max = Float(0.0).tag(xml=XmlSer.attr("DataMax"))
+    data_max = Float(0.0).tag(xml=XmlSer.attr("DataMax"), xml_omit_zero=True)
     """Highest data value of a FITS file."""
 
     def _tag_name(self):

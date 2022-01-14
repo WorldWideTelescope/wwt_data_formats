@@ -1,5 +1,5 @@
 # -*- mode: python; coding: utf-8 -*-
-# Copyright 2020-2021 the .NET Foundation
+# Copyright 2020-2022 the .NET Foundation
 # Licensed under the MIT License.
 
 from __future__ import absolute_import, division, print_function
@@ -15,19 +15,32 @@ from .. import imageset, enums, stringify_xml_doc, write_xml_doc
 
 def test_basic_xml():
     expected_str = """
-<ImageSet MSRCommunityId="0" MSRComponentId="0" Permission="0"
-          BandPass="Gamma" BaseDegreesPerTile="0.1" BaseTileLevel="1"
-          BottomsUp="True" CenterX="1.234" CenterY="-0.31415"
-          DataSetType="Planet" ElevationModel="False" FileType=".PNG" Generic="False"
-          MeanRadius="0.0" Name="Test name"
-          OffsetX="100.1" OffsetY="100.2" Projection="SkyImage"
-          Rotation="5.4321" Sparse="False" StockSet="False" TileLevels="4"
-          PixelCutHigh="0.0" PixelCutLow="0.0" DataMax="0.0" DataMin="0.0"
-          Url="http://example.org/{0}" WidthFactor="2">
-  <Credits>Escaping &amp; Entities</Credits>
-  <CreditsUrl>https://example.org/credits</CreditsUrl>
-  <Description>Escaping &lt;entities&gt;</Description>
-  <ThumbnailUrl>https://example.org/thumbnail.jpg</ThumbnailUrl>
+<ImageSet
+    BandPass="Gamma"
+    BaseDegreesPerTile="0.1"
+    BaseTileLevel="1"
+    BottomsUp="True"
+    CenterX="1.234"
+    CenterY="-0.31415"
+    DataSetType="Planet"
+    ElevationModel="False"
+    FileType=".PNG"
+    Generic="False"
+    Name="Test name"
+    OffsetX="100.1"
+    OffsetY="100.2"
+    Projection="SkyImage"
+    Rotation="5.4321"
+    Sparse="False"
+    StockSet="False"
+    TileLevels="4"
+    Url="http://example.org/{0}"
+    WidthFactor="2"
+>
+    <Credits>Escaping &amp; Entities</Credits>
+    <CreditsUrl>https://example.org/credits</CreditsUrl>
+    <Description>Escaping &lt;entities&gt;</Description>
+    <ThumbnailUrl>https://example.org/thumbnail.jpg</ThumbnailUrl>
 </ImageSet>
 """
     expected_xml = etree.fromstring(expected_str)
@@ -101,16 +114,26 @@ def _check_wcs_roundtrip(imgset, height, source_kws):
 
 def test_wcs_1():
     expected_str = """
-<ImageSet BandPass="Visible" BaseDegreesPerTile="4.870732233333334e-05"
-          BaseTileLevel="0" BottomsUp="True" CenterX="83.633083"
-          CenterY="22.0145" DataSetType="Sky" ElevationModel="False"
-          FileType=".png" Generic="False" MeanRadius="0.0" MSRCommunityId="0"
-          MSRComponentId="0" OffsetX="1503.3507831457316"
-          OffsetY="1520.6994064339963" Permission="0" Projection="SkyImage"
-          Rotation="179.70963521481" Sparse="True" StockSet="False"
-          PixelCutHigh="0.0" PixelCutLow="0.0" DataMax="0.0" DataMin="0.0"
-          TileLevels="0" WidthFactor="2">
-</ImageSet>
+<ImageSet
+    BandPass="Visible"
+    BaseDegreesPerTile="4.870732233333334e-05"
+    BaseTileLevel="0"
+    BottomsUp="True"
+    CenterX="83.633083"
+    CenterY="22.0145"
+    DataSetType="Sky"
+    ElevationModel="False"
+    FileType=".png"
+    Generic="False"
+    OffsetX="1503.3507831457316"
+    OffsetY="1520.6994064339963"
+    Projection="SkyImage"
+    Rotation="179.70963521481"
+    Sparse="True"
+    StockSet="False"
+    TileLevels="0"
+    WidthFactor="2"
+/>
 """
     expected_xml = etree.fromstring(expected_str)
 
@@ -140,13 +163,27 @@ def test_wcs_1():
 
 def test_wcs_only_two_pc_values():
     expected_str = """
-<ImageSet BandPass="Visible" BaseDegreesPerTile="0.003888888888889" BaseTileLevel="0"
-             BottomsUp="False" CenterX="233.73705402943" CenterY="23.506972488486" DataMax="0.0" DataMin="0.0"
-             DataSetType="Sky" ElevationModel="False" FileType=".fits" Generic="False" MSRCommunityId="0"
-             MSRComponentId="0" MeanRadius="0.0" Name="herschel_spire_tiled" OffsetX="130.5" OffsetY="126.5"
-             Permission="0" PixelCutHigh="0.0" PixelCutLow="0.0" Projection="SkyImage"
-             Rotation="-0.0" Sparse="True" StockSet="False" TileLevels="0" WidthFactor="2">
-</ImageSet>
+<ImageSet
+    BandPass="Visible"
+    BaseDegreesPerTile="0.003888888888889"
+    BaseTileLevel="0"
+    BottomsUp="False"
+    CenterX="233.73705402943"
+    CenterY="23.506972488486"
+    DataSetType="Sky"
+    ElevationModel="False"
+    FileType=".fits"
+    Generic="False"
+    Name="herschel_spire_tiled"
+    OffsetX="130.5"
+    OffsetY="126.5"
+    Projection="SkyImage"
+    Rotation="-0"
+    Sparse="True"
+    StockSet="False"
+    TileLevels="0"
+    WidthFactor="2"
+/>
 """
     expected_xml = etree.fromstring(expected_str)
 
@@ -377,21 +414,13 @@ def test_wcs_offsety():
     BottomsUp="False"
     CenterX="97.99720145"
     CenterY="4.722029196"
-    DataMax="0.0"
-    DataMin="0.0"
     DataSetType="Sky"
     ElevationModel="False"
     FileType=".png"
     Generic="False"
-    MeanRadius="0.0"
-    MSRCommunityId="0"
-    MSRComponentId="0"
     Name="noao-02190_300x240"
     OffsetX="163.6018453"
     OffsetY="93.40002848"
-    Permission="0"
-    PixelCutHigh="0.0"
-    PixelCutLow="0.0"
     Projection="SkyImage"
     Rotation="-1.2477001179999867"
     Sparse="True"
@@ -434,21 +463,13 @@ def test_wcs_offsety():
     BottomsUp="True"
     CenterX="97.99720145"
     CenterY="4.722029196"
-    DataMax="0.0"
-    DataMin="0.0"
     DataSetType="Sky"
     ElevationModel="False"
     FileType=".png"
     Generic="False"
-    MeanRadius="0.0"
-    MSRCommunityId="0"
-    MSRComponentId="0"
     Name="noao-02190_300x240_botup"
     OffsetX="163.6018453"
     OffsetY="146.59997152"
-    Permission="0"
-    PixelCutHigh="0.0"
-    PixelCutLow="0.0"
     Projection="SkyImage"
     Rotation="178.75229988200002"
     Sparse="True"
@@ -488,21 +509,13 @@ def test_wcs_offsety():
     BottomsUp="False"
     CenterX="97.99720145"
     CenterY="4.722029196"
-    DataMax="0.0"
-    DataMin="0.0"
     DataSetType="Sky"
     ElevationModel="False"
     FileType=".png"
     Generic="False"
-    MeanRadius="0.0"
-    MSRCommunityId="0"
-    MSRComponentId="0"
     Name="noao-02190_300x240_tiled"
     OffsetX="-0.12173735991406849"
     OffsetY="0.23807139657986032"
-    Permission="0"
-    PixelCutHigh="0.0"
-    PixelCutLow="0.0"
     Projection="Tan"
     Rotation="-1.2477001179999867"
     Sparse="True"
@@ -523,12 +536,25 @@ def test_wcs_offsety():
 
 def test_misc_ser():
     expected_str = """
-<ImageSet BandPass="Visible" BaseDegreesPerTile="0.0" BaseTileLevel="0"
-          BottomsUp="False" CenterX="0.0" CenterY="0.0" DataMax="0.0" DataMin="0.0" DataSetType="Sky" ElevationModel="False"
-          FileType=".png" Generic="False" MeanRadius="0.0" MSRCommunityId="0" MSRComponentId="0"
-          OffsetX="0.0" OffsetY="0.0" Permission="0" PixelCutHigh="0.0" PixelCutLow="0.0"
-          Projection="SkyImage" Rotation="0.0" Sparse="True" StockSet="False" TileLevels="0"
-          Url="http://example.com/unspecified" WidthFactor="2" />
+<ImageSet
+    BandPass="Visible"
+    BaseDegreesPerTile="0"
+    BaseTileLevel="0"
+    BottomsUp="False"
+    CenterX="0"
+    CenterY="0"
+    DataSetType="Sky"
+    ElevationModel="False"
+    FileType=".png"
+    Generic="False"
+    Projection="SkyImage"
+    Rotation="0"
+    Sparse="True"
+    StockSet="False"
+    TileLevels="0"
+    Url="http://example.com/unspecified"
+    WidthFactor="2"
+/>
 """
     expected_xml = etree.fromstring(expected_str)
 
