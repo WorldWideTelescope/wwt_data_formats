@@ -43,7 +43,7 @@ class Folder(LockedXmlTraits, UrlContainer):
     searchable = Bool(True).tag(xml=XmlSer.attr("Searchable"))
     type = UseEnum(
         FolderType,
-        default_value=FolderType.SKY,
+        default_value=FolderType.UNSPECIFIED,
     ).tag(xml=XmlSer.attr("Type"))
     sub_type = Unicode("").tag(xml=XmlSer.attr("SubType"))
     msr_community_id = Int(0).tag(xml=XmlSer.attr("MSRCommunityId"))
