@@ -1,5 +1,5 @@
 # -*- mode: python; coding: utf-8 -*-
-# Copyright 2019-2021 the .NET Foundation
+# Copyright 2019-2022 the .NET Foundation
 # Licensed under the MIT License.
 
 """
@@ -8,9 +8,9 @@ An image, possibly tiled, for display in WWT.
 
 from __future__ import absolute_import, division, print_function
 
-__all__ = '''
+__all__ = """
 ImageSet
-'''.split()
+""".split()
 
 import math
 from traitlets import Bool, Float, Int, Unicode, UseEnum
@@ -32,24 +32,26 @@ class ImageSet(LockedXmlTraits, UrlContainer):
     rendering.
     """
 
-    data_set_type = UseEnum(DataSetType, default_value=DataSetType.SKY).tag(xml=XmlSer.attr('DataSetType'))
+    data_set_type = UseEnum(DataSetType, default_value=DataSetType.SKY).tag(
+        xml=XmlSer.attr("DataSetType")
+    )
     """The renderer mode to which these data apply.
 
     Possible values are ``"Earth"``, ``"Planet"``, ``"Sky"``, ``"Panorama"``,
     ``"SolarSystem"``, and ``"Sandbox"``.
 
     """
-    reference_frame = Unicode('').tag(xml=XmlSer.attr('ReferenceFrame'))
+    reference_frame = Unicode("").tag(xml=XmlSer.attr("ReferenceFrame"))
     """TBD."""
 
-    name = Unicode('').tag(xml=XmlSer.attr('Name'))
+    name = Unicode("").tag(xml=XmlSer.attr("Name"))
     """A name used to refer to this imageset.
 
     Various parts of the WWT internals reference imagesets by this name, so
     it should be distinctive.
 
     """
-    url = Unicode('').tag(xml=XmlSer.attr('Url'))
+    url = Unicode("").tag(xml=XmlSer.attr("Url"))
     """The URL of the image data.
 
     Either a URL or a URL template. URLs that are exposed to the engine should
@@ -59,7 +61,7 @@ class ImageSet(LockedXmlTraits, UrlContainer):
     details.
 
     """
-    alt_url = Unicode('').tag(xml=XmlSer.attr('AltUrl'))
+    alt_url = Unicode("").tag(xml=XmlSer.attr("AltUrl"))
     """An alternative URL that provided the data.
 
     If provided and the Windows client attempts to load an imageset using this
@@ -67,25 +69,25 @@ class ImageSet(LockedXmlTraits, UrlContainer):
     mechanism for superseding old imagesets with improved versions.
 
     """
-    dem_url = Unicode('').tag(xml=XmlSer.attr('DemUrl'))
+    dem_url = Unicode("").tag(xml=XmlSer.attr("DemUrl"))
     """The URL of the DEM data.
 
     Either a URL or a URL template. TODO: details
 
     """
-    width_factor = Int(2).tag(xml=XmlSer.attr('WidthFactor'))
+    width_factor = Int(2).tag(xml=XmlSer.attr("WidthFactor"))
     """This is a legacy parameter. Leave it at 2."""
 
-    base_tile_level = Int(0).tag(xml=XmlSer.attr('BaseTileLevel'))
+    base_tile_level = Int(0).tag(xml=XmlSer.attr("BaseTileLevel"))
     """The level of the highest (coarsest-resolution) tiling available.
 
     This should be zero except for special circumstances.
 
     """
-    quad_tree_map = Unicode('').tag(xml=XmlSer.attr('QuadTreeMap'))
+    quad_tree_map = Unicode("").tag(xml=XmlSer.attr("QuadTreeMap"))
     """TBD."""
 
-    tile_levels = Int(0).tag(xml=XmlSer.attr('TileLevels'))
+    tile_levels = Int(0).tag(xml=XmlSer.attr("TileLevels"))
     """The number of levels of tiling.
 
     Should be zero for untiled images (``projection =
@@ -99,7 +101,7 @@ class ImageSet(LockedXmlTraits, UrlContainer):
     nonzero it will usually be 4 or larger.
 
     """
-    base_degrees_per_tile = Float(0.0).tag(xml=XmlSer.attr('BaseDegreesPerTile'))
+    base_degrees_per_tile = Float(0.0).tag(xml=XmlSer.attr("BaseDegreesPerTile"))
     """The angular scale of the image.
 
     For untiled images, this is the pixel scale: the number of degrees per pixel
@@ -112,7 +114,7 @@ class ImageSet(LockedXmlTraits, UrlContainer):
     be set to 0.016 * 2048 / 1200 = 0.0273.
 
     """
-    file_type = Unicode('.png').tag(xml=XmlSer.attr('FileType'))
+    file_type = Unicode(".png").tag(xml=XmlSer.attr("FileType"))
     """
     The extension(s) of the image file(s) in this set.
 
@@ -141,7 +143,7 @@ class ImageSet(LockedXmlTraits, UrlContainer):
     claim to contain both kinds of data.)
     """
 
-    bottoms_up = Bool(False).tag(xml=XmlSer.attr('BottomsUp'))
+    bottoms_up = Bool(False).tag(xml=XmlSer.attr("BottomsUp"))
     """
     The parity of the image's projection on the sky.
 
@@ -176,10 +178,9 @@ class ImageSet(LockedXmlTraits, UrlContainer):
     true, the imageset won't render.
     """
 
-    projection = UseEnum(
-        ProjectionType,
-        default_value = ProjectionType.SKY_IMAGE
-    ).tag(xml=XmlSer.attr('Projection'))
+    projection = UseEnum(ProjectionType, default_value=ProjectionType.SKY_IMAGE).tag(
+        xml=XmlSer.attr("Projection")
+    )
     """The type of projection used to place this image on the sky.
 
     For untiled images, this should be "SkyImage". For tiled images, it should
@@ -187,7 +188,7 @@ class ImageSet(LockedXmlTraits, UrlContainer):
     appropriately based on :attr:`tile_levels`.
 
     """
-    center_x = Float(0.0).tag(xml=XmlSer.attr('CenterX'))
+    center_x = Float(0.0).tag(xml=XmlSer.attr("CenterX"))
     """The horizontal location of the center of the image’s projection
     coordinate system.
 
@@ -197,7 +198,7 @@ class ImageSet(LockedXmlTraits, UrlContainer):
     :attr:`offset_x` and :attr:`offset_y` parameters do that.
 
     """
-    center_y = Float(0.0).tag(xml=XmlSer.attr('CenterY'))
+    center_y = Float(0.0).tag(xml=XmlSer.attr("CenterY"))
     """The vertical location of the center of the image’s projection coordinate
     system.
 
@@ -207,7 +208,7 @@ class ImageSet(LockedXmlTraits, UrlContainer):
     :attr:`offset_y` parameters do that.
 
     """
-    offset_x = Float(0.0).tag(xml=XmlSer.attr('OffsetX'))
+    offset_x = Float(0.0).tag(xml=XmlSer.attr("OffsetX"), xml_omit_zero=True)
     """
     The horizontal positioning of the image relative to its projection
     coordinate system.
@@ -235,7 +236,7 @@ class ImageSet(LockedXmlTraits, UrlContainer):
     the sky.
 
     """
-    offset_y = Float(0.0).tag(xml=XmlSer.attr('OffsetY'))
+    offset_y = Float(0.0).tag(xml=XmlSer.attr("OffsetY"), xml_omit_zero=True)
     """The vertical positioning of the image relative to its projection
     coordinate system.
 
@@ -263,7 +264,7 @@ class ImageSet(LockedXmlTraits, UrlContainer):
     sky.
 
     """
-    rotation_deg = Float(0.0).tag(xml=XmlSer.attr('Rotation'))
+    rotation_deg = Float(0.0).tag(xml=XmlSer.attr("Rotation"))
     """
     The rotation of image’s projection coordinate system, in degrees.
 
@@ -273,37 +274,36 @@ class ImageSet(LockedXmlTraits, UrlContainer):
     rotate the image *clockwise* relative to the sky.
     """
 
-    band_pass = UseEnum(
-        Bandpass,
-        default_value = Bandpass.VISIBLE
-    ).tag(xml=XmlSer.attr('BandPass'))
+    band_pass = UseEnum(Bandpass, default_value=Bandpass.VISIBLE).tag(
+        xml=XmlSer.attr("BandPass")
+    )
     """The bandpass of the image data."""
 
-    sparse = Bool(True).tag(xml=XmlSer.attr('Sparse'))
+    sparse = Bool(True).tag(xml=XmlSer.attr("Sparse"))
     """TBD."""
 
-    elevation_model = Bool(False).tag(xml=XmlSer.attr('ElevationModel'))
+    elevation_model = Bool(False).tag(xml=XmlSer.attr("ElevationModel"))
     """TBD."""
 
-    stock_set = Bool(False).tag(xml=XmlSer.attr('StockSet'))
+    stock_set = Bool(False).tag(xml=XmlSer.attr("StockSet"))
     """TBD."""
 
-    generic = Bool(False).tag(xml=XmlSer.attr('Generic'))
+    generic = Bool(False).tag(xml=XmlSer.attr("Generic"))
     """TBD."""
 
-    mean_radius = Float(0.0).tag(xml=XmlSer.attr('MeanRadius'))
+    mean_radius = Float(0.0).tag(xml=XmlSer.attr("MeanRadius"), xml_omit_zero=True)
     """TBD."""
 
-    credits = Unicode('').tag(xml=XmlSer.text_elem('Credits'))
+    credits = Unicode("").tag(xml=XmlSer.text_elem("Credits"))
     """Textual credits for the image originator."""
 
-    credits_url = Unicode('').tag(xml=XmlSer.text_elem('CreditsUrl'))
+    credits_url = Unicode("").tag(xml=XmlSer.text_elem("CreditsUrl"))
     """A URL giving the source of the image or more information about its creation."""
 
-    thumbnail_url = Unicode('').tag(xml=XmlSer.text_elem('ThumbnailUrl'))
+    thumbnail_url = Unicode("").tag(xml=XmlSer.text_elem("ThumbnailUrl"))
     """A URL to a standard WWT thumbnail representation of this imageset."""
 
-    description = Unicode('').tag(xml=XmlSer.text_elem('Description'))
+    description = Unicode("").tag(xml=XmlSer.text_elem("Description"))
     """
     A textual description of the imagery.
 
@@ -312,17 +312,29 @@ class ImageSet(LockedXmlTraits, UrlContainer):
     loaded from the XML.
     """
 
-    msr_community_id = Int(0).tag(xml=XmlSer.attr('MSRCommunityId'))
+    msr_community_id = Int(0).tag(xml=XmlSer.attr("MSRCommunityId"), xml_omit_zero=True)
     """The ID number of the WWT Community that this content came from."""
 
-    msr_component_id = Int(0).tag(xml=XmlSer.attr('MSRComponentId'))
+    msr_component_id = Int(0).tag(xml=XmlSer.attr("MSRComponentId"), xml_omit_zero=True)
     """The ID number of this content item on the WWT Communities system."""
 
-    permission = Int(0).tag(xml=XmlSer.attr('Permission'))
+    permission = Int(0).tag(xml=XmlSer.attr("Permission"), xml_omit_zero=True)
     "TBD."
 
+    pixel_cut_low = Float(0.0).tag(xml=XmlSer.attr("PixelCutLow"), xml_omit_zero=True)
+    """Suggested default low cutoff value when displaying FITS."""
+
+    pixel_cut_high = Float(0.0).tag(xml=XmlSer.attr("PixelCutHigh"), xml_omit_zero=True)
+    """Suggested default high cutoff value when displaying FITS."""
+
+    data_min = Float(0.0).tag(xml=XmlSer.attr("DataMin"), xml_omit_zero=True)
+    """Lowest data value of a FITS file."""
+
+    data_max = Float(0.0).tag(xml=XmlSer.attr("DataMax"), xml_omit_zero=True)
+    """Highest data value of a FITS file."""
+
     def _tag_name(self):
-        return 'ImageSet'
+        return "ImageSet"
 
     def mutate_urls(self, mutator):
         if self.url:
@@ -391,8 +403,8 @@ class ImageSet(LockedXmlTraits, UrlContainer):
         - ``CRVAL1`` and ``CRVAL2``
         - ``CRPIX1`` and ``CRPIX2``
         - Either:
-            - ``CD1_1``, ``CD2_2`` (preferred)
-            - ``CDELT1``, ``CDELT2``, ``PC1_1``, and ``PC1_2``; or
+            - ``CD1_1``, ``CD2_2`` (preferred) or
+            - ``CDELT1``, ``CDELT2``, ``PC1_1``, and ``PC1_2``;
 
         If present ``PC1_2``, ``PC2_1``, ``CD1_2``, and/or ``CD2_1`` are used.
         If absent, they are assumed to be zero.
@@ -410,13 +422,13 @@ class ImageSet(LockedXmlTraits, UrlContainer):
         will do its best to detect and reject them.
         """
 
-        if headers['CTYPE1'] != 'RA---TAN' or headers['CTYPE2'] != 'DEC--TAN':
-            raise ValueError('WCS coordinates must be in an equatorial/TAN projection')
+        if headers["CTYPE1"] != "RA---TAN" or headers["CTYPE2"] != "DEC--TAN":
+            raise ValueError("WCS coordinates must be in an equatorial/TAN projection")
 
         # Figure out the stuff we need from the headers.
 
-        ra_deg = headers['CRVAL1']
-        dec_deg = headers['CRVAL2']
+        ra_deg = headers["CRVAL1"]
+        dec_deg = headers["CRVAL2"]
 
         # In FITS/WCS, pixel coordinates are 1-based and integer pixel
         # coordinates land on pixel centers. Therefore in standard FITS
@@ -424,23 +436,23 @@ class ImageSet(LockedXmlTraits, UrlContainer):
         # lower-left corner of the image has pixel coordinate (0.5, 0.5). For
         # the WWT offset parameters, the lower-left corner of the image has
         # coordinate (0, 0).
-        refpix_x = headers['CRPIX1'] - 0.5
-        refpix_y = headers['CRPIX2'] - 0.5
+        refpix_x = headers["CRPIX1"] - 0.5
+        refpix_y = headers["CRPIX2"] - 0.5
 
-        if 'CD1_1' in headers:
-            cd1_1 = headers['CD1_1']
-            cd2_2 = headers['CD2_2']
-            cd1_2 = headers.get('CD1_2', 0.0)
-            cd2_1 = headers.get('CD2_1', 0.0)
+        if "CD1_1" in headers:
+            cd1_1 = headers["CD1_1"]
+            cd2_2 = headers["CD2_2"]
+            cd1_2 = headers.get("CD1_2", 0.0)
+            cd2_1 = headers.get("CD2_1", 0.0)
         else:
             # older PC/CDELT form -- note that we're using two additional
             # numbers to express the same information.
-            d1 = headers['CDELT1']
-            d2 = headers['CDELT2']
-            cd1_1 = d1 * headers.get('PC1_1', 1.0)
-            cd2_2 = d2 * headers.get('PC2_2', 1.0)
-            cd1_2 = d1 * headers.get('PC1_2', 0.0)
-            cd2_1 = d2 * headers.get('PC2_1', 0.0)
+            d1 = headers["CDELT1"]
+            d2 = headers["CDELT2"]
+            cd1_1 = d1 * headers.get("PC1_1", 1.0)
+            cd2_2 = d2 * headers.get("PC2_2", 1.0)
+            cd1_2 = d1 * headers.get("PC1_2", 0.0)
+            cd2_1 = d2 * headers.get("PC2_1", 0.0)
 
         cd_det = cd1_1 * cd2_2 - cd1_2 * cd2_1
 
@@ -448,7 +460,9 @@ class ImageSet(LockedXmlTraits, UrlContainer):
             cd_sign = -1
 
             if self.tile_levels > 0:
-                raise Exception('WCS for tiled imagery must have top-down/negative/JPEG_like parity')
+                raise Exception(
+                    "WCS for tiled imagery must have top-down/negative/JPEG_like parity"
+                )
         else:
             cd_sign = 1
 
@@ -466,21 +480,25 @@ class ImageSet(LockedXmlTraits, UrlContainer):
         TOL = 0.05
 
         if not abs(cd_det) > 0:
-            raise ValueError('determinant of the CD matrix is not positive')
+            raise ValueError("determinant of the CD matrix is not positive")
 
-        scale_x = math.sqrt(cd1_1**2 + cd1_2**2)
-        scale_y = math.sqrt(cd2_1**2 + cd2_2**2)
+        scale_x = math.sqrt(cd1_1 ** 2 + cd1_2 ** 2)
+        scale_y = math.sqrt(cd2_1 ** 2 + cd2_2 ** 2)
 
         if abs(scale_x - scale_y) / (scale_x + scale_y) > TOL:
-            raise ValueError('WWT cannot express non-square pixels, which this WCS has')
+            raise ValueError("WWT cannot express non-square pixels, which this WCS has")
 
         det_scale = math.sqrt(abs(cd_det))
 
         if abs((cd1_1 - cd_sign * cd2_2) / det_scale) > TOL:
-            raise ValueError(f'WWT cannot express this CD matrix (1; {cd1_1} {cd_sign} {cd2_2} {det_scale})')
+            raise ValueError(
+                f"WWT cannot express this CD matrix (1; {cd1_1} {cd_sign} {cd2_2} {det_scale})"
+            )
 
         if abs((cd2_1 + cd_sign * cd1_2) / det_scale) > TOL:
-            raise ValueError(f'WWT cannot express this CD matrix (2; {cd2_1} {cd_sign} {cd1_2} {det_scale})')
+            raise ValueError(
+                f"WWT cannot express this CD matrix (2; {cd2_1} {cd_sign} {cd1_2} {det_scale})"
+            )
 
         # This is our best effort to make sure that the view centers on the
         # center of the image.
@@ -511,30 +529,44 @@ class ImageSet(LockedXmlTraits, UrlContainer):
 
         if self.tile_levels > 0:  # are we tiled?
             self.projection = ProjectionType.TAN
+            self.bottoms_up = False
             self.offset_x = (width / 2 - refpix_x) * scale_x
             self.offset_y = (refpix_y - height / 2) * scale_y
-            self.base_degrees_per_tile = scale_y * 256 * 2**self.tile_levels
+            self.base_degrees_per_tile = scale_y * 256 * 2 ** self.tile_levels
         else:
             self.projection = ProjectionType.SKY_IMAGE
+            self.bottoms_up = cd_sign == -1
             self.offset_x = refpix_x
-            self.offset_y = refpix_y
+            self.offset_y = height - refpix_y
             self.base_degrees_per_tile = scale_y
-            self.bottoms_up = (cd_sign == -1)
+
+            if self.bottoms_up:
+                self.rotation_deg = -self.rotation_deg
 
         if place is not None:
             place.data_set_type = DataSetType.SKY
-            place.rotation_deg = 0.  # I think this is better than propagating the image rotation?
-            place.ra_hr = center_ra_deg / 15.
+            place.rotation_deg = (
+                0.0  # I think this is better than propagating the image rotation?
+            )
+            place.ra_hr = center_ra_deg / 15.0
             place.dec_deg = center_dec_deg
             # It is hardcoded that in sky mode, zoom_level = height of client FOV * 6.
             place.zoom_level = height * scale_y * fov_factor * 6
 
         return self
 
-
-    def wcs_headers_from_position(self):
+    def wcs_headers_from_position(self, height=None):
         """
         Compute a set of WCS headers for this ImageSet's positional information.
+
+        Parameters
+        ----------
+        height : optional int
+            The height of the underlying image, in pixels. This quantity is
+            needed to compute WCS headers correctly for untiled (``SKY_IMAGE``
+            projection) images. If this quantity is needed but not provided,
+            a ValueError will be raised. Note that the :class:`ImageSet` class
+            does *not* store this quantity.
 
         Returns
         -------
@@ -551,31 +583,38 @@ class ImageSet(LockedXmlTraits, UrlContainer):
         """
 
         rv = {
-            'CTYPE1': 'RA---TAN',
-            'CTYPE2': 'DEC--TAN',
-            'CRVAL1': self.center_x,
-            'CRVAL2': self.center_y,
+            "CTYPE1": "RA---TAN",
+            "CTYPE2": "DEC--TAN",
+            "CRVAL1": self.center_x,
+            "CRVAL2": self.center_y,
         }
 
         if self.projection != ProjectionType.SKY_IMAGE:
-            raise NotImplementError('wcs_headers_from_position() only works if projection=SKY_IMAGE')
+            raise NotImplementedError(
+                "wcs_headers_from_position() only works if projection=SKY_IMAGE"
+            )
 
-        rv['CRPIX1'] = self.offset_x + 0.5
-        rv['CRPIX2'] = self.offset_y + 0.5
+        if height is None:
+            raise ValueError(
+                "must provide `height` to compute WCS headers for untiled images"
+            )
+
+        rv["CRPIX1"] = self.offset_x + 0.5
+        rv["CRPIX2"] = height - self.offset_y + 0.5
 
         # The WWT rotation angle is 180 degrees away from the usual angle
         # that you would use for a rotation matrix, which is why we negate
         # these trig values:
-        c = -math.cos(self.rotation_deg * math.pi / 180)
-        s = -math.sin(self.rotation_deg * math.pi / 180)
         parity = -1 if self.bottoms_up else 1
+        c = -math.cos(parity * self.rotation_deg * math.pi / 180)
+        s = -math.sin(parity * self.rotation_deg * math.pi / 180)
 
         # | CD1_1 CD1_2 | = scale * | p 0 | * |  cos(theta) sin(theta) |
         # | CD2_1 CD2_2 |           | 0 1 |   | -sin(theta) cos(theta) |
 
-        rv['CD1_1'] = c * self.base_degrees_per_tile * parity
-        rv['CD1_2'] = s * self.base_degrees_per_tile * parity
-        rv['CD2_1'] = -s * self.base_degrees_per_tile
-        rv['CD2_2'] = c * self.base_degrees_per_tile
+        rv["CD1_1"] = c * self.base_degrees_per_tile * parity
+        rv["CD1_2"] = s * self.base_degrees_per_tile * parity
+        rv["CD2_1"] = -s * self.base_degrees_per_tile
+        rv["CD2_2"] = c * self.base_degrees_per_tile
 
         return rv
