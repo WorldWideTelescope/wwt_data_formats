@@ -36,7 +36,7 @@ def test_xmeta():
 '''
     expected_xml = etree.fromstring(expected_str)
     pl = place.Place()
-    pl.xmeta.Extra1 = 'hello'
+    pl.xmeta.Extra1 = "hello"
     pl.xmeta.Extra2 = 1
     observed_xml = pl.to_xml()
     assert_xml_trees_equal(expected_xml, observed_xml)
@@ -81,10 +81,10 @@ def test_nesting():
     expected_xml = etree.fromstring(expected_str)
     pl = place.Place()
     pl.image_set = imageset.ImageSet()
-    pl.image_set.url = 'http://example.com/unspecified'
+    pl.image_set.url = "http://example.com/unspecified"
     pl.foreground_image_set = imageset.ImageSet()
-    pl.foreground_image_set.url = 'http://example.com/foreground'
+    pl.foreground_image_set.url = "http://example.com/foreground"
     pl.background_image_set = imageset.ImageSet()
-    pl.background_image_set.url = 'http://example.com/background'
+    pl.background_image_set.url = "http://example.com/background"
     observed_xml = pl.to_xml()
     assert_xml_trees_equal(expected_xml, observed_xml)
