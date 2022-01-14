@@ -50,6 +50,7 @@ def test_nesting():
        Opacity="100.0" RA="0.0" Rotation="0.0" ZoomLevel="0.0">
   <BackgroundImageSet>
     <ImageSet MSRCommunityId="0" MSRComponentId="0" Permission="0"
+              PixelCutHigh="0.0" PixelCutLow="0.0" DataMax="0.0" DataMin="0.0"
               BandPass="Visible" BaseDegreesPerTile="0.0" BaseTileLevel="0"
               BottomsUp="False" CenterX="0.0" CenterY="0.0" DataSetType="Sky" ElevationModel="False"
               FileType=".png" Generic="False" MeanRadius="0.0" OffsetX="0.0" OffsetY="0.0" Projection="SkyImage"
@@ -59,6 +60,7 @@ def test_nesting():
   </BackgroundImageSet>
   <ForegroundImageSet>
     <ImageSet MSRCommunityId="0" MSRComponentId="0" Permission="0"
+              PixelCutHigh="0.0" PixelCutLow="0.0" DataMax="0.0" DataMin="0.0"
               BandPass="Visible" BaseDegreesPerTile="0.0" BaseTileLevel="0"
               BottomsUp="False" CenterX="0.0" CenterY="0.0" DataSetType="Sky" ElevationModel="False"
               FileType=".png" Generic="False" MeanRadius="0.0" OffsetX="0.0" OffsetY="0.0" Projection="SkyImage"
@@ -67,6 +69,7 @@ def test_nesting():
     </ImageSet>
   </ForegroundImageSet>
   <ImageSet MSRCommunityId="0" MSRComponentId="0" Permission="0"
+            PixelCutHigh="0.0" PixelCutLow="0.0" DataMax="0.0" DataMin="0.0"
             BandPass="Visible" BaseDegreesPerTile="0.0" BaseTileLevel="0"
             BottomsUp="False" CenterX="0.0" CenterY="0.0" DataSetType="Sky" ElevationModel="False"
             FileType=".png" Generic="False" MeanRadius="0.0" OffsetX="0.0" OffsetY="0.0" Projection="SkyImage"
