@@ -552,7 +552,7 @@ class LockedXmlTraits(LockedDownTraits):
                         if elem[idx].tag != child._tag_name():
                             raise RuntimeError(
                                 "serializing flexible list to existing XML data, "
-                                f"but it looks like child #{i} changed"
+                                f"but it looks like child #{idx} changed"
                             )
                         child._serialize_xml(elem[idx])
                     else:
@@ -578,7 +578,7 @@ class LockedXmlTraits(LockedDownTraits):
                         if wrapper[idx].tag != child._tag_name():
                             raise RuntimeError(
                                 "serializing flexible list to existing XML data, "
-                                f"but it looks like child #{i} changed"
+                                f"but it looks like child #{idx} changed"
                             )
                         child._serialize_xml(wrapper[idx])
                     else:
