@@ -79,14 +79,18 @@ def test_nesting():
             ElevationModel="False"
             FileType=".png"
             Generic="False"
+            Name=""
             Projection="SkyImage"
+            QuadTreeMap=""
             Rotation="0"
             Sparse="True"
             StockSet="False"
             TileLevels="0"
             Url="http://example.com/background"
             WidthFactor="2"
-        />
+        >
+            <ThumbnailUrl></ThumbnailUrl>
+        </ImageSet>
     </BackgroundImageSet>
     <ForegroundImageSet>
         <ImageSet
@@ -100,14 +104,18 @@ def test_nesting():
             ElevationModel="False"
             FileType=".png"
             Generic="False"
+            Name=""
             Projection="SkyImage"
+            QuadTreeMap=""
             Rotation="0"
             Sparse="True"
             StockSet="False"
             TileLevels="0"
             Url="http://example.com/foreground"
             WidthFactor="2"
-        />
+        >
+            <ThumbnailUrl></ThumbnailUrl>
+        </ImageSet>
     </ForegroundImageSet>
     <ImageSet
         BandPass="Visible"
@@ -120,14 +128,18 @@ def test_nesting():
         ElevationModel="False"
         FileType=".png"
         Generic="False"
+        Name=""
         Projection="SkyImage"
+        QuadTreeMap=""
         Rotation="0"
         Sparse="True"
         StockSet="False"
         TileLevels="0"
         Url="http://example.com/unspecified"
         WidthFactor="2"
-    />
+    >
+        <ThumbnailUrl></ThumbnailUrl>
+    </ImageSet>
 </Place>
 """
     expected_xml = etree.fromstring(expected_str)
