@@ -1,3 +1,11 @@
+# wwt_data_formats 0.12.1 (2022-01-24)
+
+- Adjust XML output to ensure that the WWT Windows client's loader for
+  `imagesets.xml` succeeds (#47, @pkgw). It expects certain attributes to
+  be present unconditionally, so we have to make sure to emit them even if
+  they're empty.
+
+
 # wwt_data_formats 0.12.0 (2022-01-14)
 
 - Add support for some new XML attributes: `DataMin`, `DataMax`, `PixelCutLow`,
