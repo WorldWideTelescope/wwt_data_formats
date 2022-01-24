@@ -44,14 +44,14 @@ class ImageSet(LockedXmlTraits, UrlContainer):
     reference_frame = Unicode("").tag(xml=XmlSer.attr("ReferenceFrame"))
     """TBD."""
 
-    name = Unicode("").tag(xml=XmlSer.attr("Name"))
+    name = Unicode("").tag(xml=XmlSer.attr("Name"), xml_even_if_empty=True)
     """A name used to refer to this imageset.
 
     Various parts of the WWT internals reference imagesets by this name, so
     it should be distinctive.
 
     """
-    url = Unicode("").tag(xml=XmlSer.attr("Url"))
+    url = Unicode("").tag(xml=XmlSer.attr("Url"), xml_even_if_empty=True)
     """The URL of the image data.
 
     Either a URL or a URL template. URLs that are exposed to the engine should
@@ -84,7 +84,9 @@ class ImageSet(LockedXmlTraits, UrlContainer):
     This should be zero except for special circumstances.
 
     """
-    quad_tree_map = Unicode("").tag(xml=XmlSer.attr("QuadTreeMap"))
+    quad_tree_map = Unicode("").tag(
+        xml=XmlSer.attr("QuadTreeMap"), xml_even_if_empty=True
+    )
     """TBD."""
 
     tile_levels = Int(0).tag(xml=XmlSer.attr("TileLevels"))
@@ -114,7 +116,7 @@ class ImageSet(LockedXmlTraits, UrlContainer):
     be set to 0.016 * 2048 / 1200 = 0.0273.
 
     """
-    file_type = Unicode(".png").tag(xml=XmlSer.attr("FileType"))
+    file_type = Unicode(".png").tag(xml=XmlSer.attr("FileType"), xml_even_if_empty=True)
     """
     The extension(s) of the image file(s) in this set.
 
@@ -300,7 +302,9 @@ class ImageSet(LockedXmlTraits, UrlContainer):
     credits_url = Unicode("").tag(xml=XmlSer.text_elem("CreditsUrl"))
     """A URL giving the source of the image or more information about its creation."""
 
-    thumbnail_url = Unicode("").tag(xml=XmlSer.text_elem("ThumbnailUrl"))
+    thumbnail_url = Unicode("").tag(
+        xml=XmlSer.text_elem("ThumbnailUrl"), xml_even_if_empty=True
+    )
     """A URL to a standard WWT thumbnail representation of this imageset."""
 
     description = Unicode("").tag(xml=XmlSer.text_elem("Description"))

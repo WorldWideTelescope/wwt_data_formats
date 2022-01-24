@@ -486,6 +486,7 @@ class LockedXmlTraits(LockedDownTraits):
 
         for tname, tspec in self.traits(xml=lambda a: a is not None).items():
             xml_spec, *xml_data = tspec.metadata["xml"]
+            even_if_empty = tspec.metadata.get("xml_even_if_empty", False)
             value = getattr(self, tname)
 
             if value is None:
@@ -501,13 +502,13 @@ class LockedXmlTraits(LockedDownTraits):
 
             if xml_spec == XmlSer.ATTRIBUTE:
                 text = _stringify_trait(tspec, value)
-                if not text:
+                if not text and not even_if_empty:
                     continue
 
                 elem.set(xml_data[0], text)
             elif xml_spec == XmlSer.TEXT_ELEM:
                 text = _stringify_trait(tspec, value)
-                if not text:
+                if not text and not even_if_empty:
                     continue
 
                 sub = elem.find(xml_data[0])
