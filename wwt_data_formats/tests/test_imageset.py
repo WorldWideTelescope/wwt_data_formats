@@ -30,6 +30,7 @@ def test_basic_xml():
     OffsetX="100.1"
     OffsetY="100.2"
     Projection="SkyImage"
+    QuadTreeMap=""
     Rotation="5.4321"
     Sparse="False"
     StockSet="False"
@@ -125,15 +126,20 @@ def test_wcs_1():
     ElevationModel="False"
     FileType=".png"
     Generic="False"
+    Name=""
     OffsetX="1503.3507831457316"
     OffsetY="1520.6994064339963"
     Projection="SkyImage"
+    QuadTreeMap=""
     Rotation="179.70963521481"
     Sparse="True"
     StockSet="False"
     TileLevels="0"
+    Url=""
     WidthFactor="2"
-/>
+>
+    <ThumbnailUrl></ThumbnailUrl>
+</ImageSet>
 """
     expected_xml = etree.fromstring(expected_str)
 
@@ -178,12 +184,16 @@ def test_wcs_only_two_pc_values():
     OffsetX="130.5"
     OffsetY="126.5"
     Projection="SkyImage"
+    QuadTreeMap=""
     Rotation="-0"
     Sparse="True"
     StockSet="False"
     TileLevels="0"
+    Url=""
     WidthFactor="2"
-/>
+>
+    <ThumbnailUrl></ThumbnailUrl>
+</ImageSet>
 """
     expected_xml = etree.fromstring(expected_str)
 
@@ -422,12 +432,16 @@ def test_wcs_offsety():
     OffsetX="163.6018453"
     OffsetY="93.40002848"
     Projection="SkyImage"
+    QuadTreeMap=""
     Rotation="-1.2477001179999867"
     Sparse="True"
     StockSet="False"
     TileLevels="0"
+    Url=""
     WidthFactor="2"
-/>
+>
+    <ThumbnailUrl></ThumbnailUrl>
+</ImageSet>
 """
     expected_xml = etree.fromstring(expected_topdown_str)
 
@@ -471,12 +485,16 @@ def test_wcs_offsety():
     OffsetX="163.6018453"
     OffsetY="146.59997152"
     Projection="SkyImage"
+    QuadTreeMap=""
     Rotation="178.75229988200002"
     Sparse="True"
     StockSet="False"
     TileLevels="0"
+    Url=""
     WidthFactor="2"
-/>
+>
+    <ThumbnailUrl></ThumbnailUrl>
+</ImageSet>
 """
     expected_xml = etree.fromstring(expected_botup_str)
 
@@ -517,12 +535,16 @@ def test_wcs_offsety():
     OffsetX="-0.12173735991406849"
     OffsetY="0.23807139657986032"
     Projection="Tan"
+    QuadTreeMap=""
     Rotation="-1.2477001179999867"
     Sparse="True"
     StockSet="False"
     TileLevels="1"
+    Url=""
     WidthFactor="2"
-/>
+>
+    <ThumbnailUrl></ThumbnailUrl>
+</ImageSet>
 """
     expected_xml = etree.fromstring(expected_tiled_str)
 
@@ -547,14 +569,18 @@ def test_misc_ser():
     ElevationModel="False"
     FileType=".png"
     Generic="False"
+    Name=""
     Projection="SkyImage"
+    QuadTreeMap=""
     Rotation="0"
     Sparse="True"
     StockSet="False"
     TileLevels="0"
     Url="http://example.com/unspecified"
     WidthFactor="2"
-/>
+>
+    <ThumbnailUrl></ThumbnailUrl>
+</ImageSet>
 """
     expected_xml = etree.fromstring(expected_str)
 
@@ -576,3 +602,70 @@ def test_misc_ser():
     imgset.write_xml(observed_bio, dest_wants_bytes=True)
     assert observed_bio.getvalue() == expected_bio.getvalue()
     assert b"encoding='UTF-8'" in observed_bio.getvalue()
+
+
+def test_windows_compat():
+    """
+    When processing the `imageset.xml` file, the classic Windows app requires
+    that the following XML items are present:
+
+    - BaseDegreesPerTile
+    - BaseTileLevel
+    - BottomsUp
+    - CenterX
+    - CenterY
+    - FileType
+    - Name
+    - QuadTreeMap
+    - Rotation
+    - Sparse
+    - ThumbnailUrl child element
+    - TileLevels
+    - Url
+
+    Here we verify that these are included in the XML output even when given
+    null-ish values. Note that while we could update the Windows app to be more
+    forgiving, old versions of the app would remain stringent, and we don't want
+    to break those.
+    """
+    imgset = imageset.ImageSet()
+    imgset.base_degrees_per_tile = 0
+    imgset.base_tile_level = 0
+    imgset.bottoms_up = False
+    imgset.center_x = 0
+    imgset.center_y = 0
+    imgset.file_type = ""
+    imgset.name = ""
+    imgset.quad_tree_map = ""
+    imgset.rotation_deg = 0
+    imgset.sparse = False
+    imgset.thumbnail_url = ""
+    imgset.tile_levels = 0
+    imgset.url = ""
+
+    observed_xml = imgset.to_xml()
+
+    NEED_ATTRS = """
+    BaseDegreesPerTile
+    BaseTileLevel
+    BottomsUp
+    CenterX
+    CenterY
+    FileType
+    Name
+    QuadTreeMap
+    Rotation
+    Sparse
+    TileLevels
+    Url
+    """.split()
+
+    NEED_CHILDREN = ["ThumbnailUrl"]
+
+    for attr in NEED_ATTRS:
+        assert attr in observed_xml.attrib
+
+    tags = frozenset(e.tag for e in observed_xml)
+
+    for ctag in NEED_CHILDREN:
+        assert ctag in tags

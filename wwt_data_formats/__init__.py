@@ -486,6 +486,7 @@ class LockedXmlTraits(LockedDownTraits):
 
         for tname, tspec in self.traits(xml=lambda a: a is not None).items():
             xml_spec, *xml_data = tspec.metadata["xml"]
+            even_if_empty = tspec.metadata.get("xml_even_if_empty", False)
             value = getattr(self, tname)
 
             if value is None:
@@ -501,13 +502,13 @@ class LockedXmlTraits(LockedDownTraits):
 
             if xml_spec == XmlSer.ATTRIBUTE:
                 text = _stringify_trait(tspec, value)
-                if not text:
+                if not text and not even_if_empty:
                     continue
 
                 elem.set(xml_data[0], text)
             elif xml_spec == XmlSer.TEXT_ELEM:
                 text = _stringify_trait(tspec, value)
-                if not text:
+                if not text and not even_if_empty:
                     continue
 
                 sub = elem.find(xml_data[0])
@@ -552,7 +553,7 @@ class LockedXmlTraits(LockedDownTraits):
                         if elem[idx].tag != child._tag_name():
                             raise RuntimeError(
                                 "serializing flexible list to existing XML data, "
-                                f"but it looks like child #{i} changed"
+                                f"but it looks like child #{idx} changed"
                             )
                         child._serialize_xml(elem[idx])
                     else:
@@ -578,7 +579,7 @@ class LockedXmlTraits(LockedDownTraits):
                         if wrapper[idx].tag != child._tag_name():
                             raise RuntimeError(
                                 "serializing flexible list to existing XML data, "
-                                f"but it looks like child #{i} changed"
+                                f"but it looks like child #{idx} changed"
                             )
                         child._serialize_xml(wrapper[idx])
                     else:
