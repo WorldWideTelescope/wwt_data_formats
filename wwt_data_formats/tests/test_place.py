@@ -8,6 +8,7 @@ from xml.etree import ElementTree as etree
 
 from . import assert_xml_trees_equal
 from .. import imageset, place
+from ..enums import Constellation
 
 
 def test_basic_xml():
@@ -152,3 +153,20 @@ def test_nesting():
     pl.background_image_set.url = "http://example.com/background"
     observed_xml = pl.to_xml()
     assert_xml_trees_equal(expected_xml, observed_xml)
+
+
+def test_constellations():
+    SAMPLES = [
+        (23.99, 90, Constellation.URSA_MINOR),
+        (1.5, 82.5, Constellation.CEPHEUS),
+        (20.5, 41.5, Constellation.CYGNUS),
+        (17.0, -42.6, Constellation.SCORPIUS),
+        (0, -90, Constellation.OCTANS),
+        (6, -84.5, Constellation.MENSA),
+    ]
+
+    pl = place.Place()
+
+    for ra_hr, dec_deg, expected in SAMPLES:
+        pl.set_ra_dec(ra_hr, dec_deg)
+        assert pl.constellation == expected
