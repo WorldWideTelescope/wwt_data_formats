@@ -6,7 +6,6 @@ from __future__ import absolute_import, division, print_function
 
 from argparse import Namespace
 from http.server import HTTPServer
-import pytest
 import requests
 from threading import Thread
 from time import sleep
@@ -123,5 +122,5 @@ def test_smoke():
 
     server_address = ("", 0)
 
-    with HTTPServer(server_address, server.WWTRequestHandler) as httpd:
+    with HTTPServer(server_address, server.WWTRequestHandler) as _httpd:
         pass
