@@ -4,8 +4,6 @@
 
 from __future__ import absolute_import, division, print_function
 
-import os.path
-
 from .. import cli, enums, folder, imageset, place
 from . import test_path, work_in_tempdir
 
@@ -14,9 +12,9 @@ def test_transfer_cli(work_in_tempdir):
     # Reference data
 
     iref = imageset.ImageSet()
-    iref.name = 'my imageset'
+    iref.name = "my imageset"
     iref.data_set_type = enums.DataSetType.SKY
-    iref.url = 'ref'
+    iref.url = "ref"
     iref.width_factor = 2
     iref.tile_levels = 5
     iref.base_degrees_per_tile = 1.7
@@ -28,20 +26,20 @@ def test_transfer_cli(work_in_tempdir):
     iref.rotation_deg = 98.76
 
     pref = place.Place()
-    pref.name = 'my place'
+    pref.name = "my place"
     pref.data_set_type = enums.DataSetType.SKY
     pref.ra_hr = 12.34
     pref.dec_deg = -88.88
     pref.zoom_level = 17.02
     pref.rotation_deg = 45.0
-    pref.description = 'ref'
-    pref.thumbnail = 'ref'
+    pref.description = "ref"
+    pref.thumbnail = "ref"
     pref.foreground_image_set = iref
 
     fref = folder.Folder()
     fref.children.append(pref)
 
-    with open('reference.wtml', 'wt', encoding='utf8') as f:
+    with open("reference.wtml", "wt", encoding="utf8") as f:
         fref.write_xml(f)
 
     # "Updated data"
@@ -54,8 +52,8 @@ def test_transfer_cli(work_in_tempdir):
     iupd.offset_x = 0.0
     iupd.offset_y = 0.0
     # should be preserved:
-    iupd.url = 'upd-url'
-    iupd.dem_url = 'upd-dem'
+    iupd.url = "upd-url"
+    iupd.dem_url = "upd-dem"
     iupd.mean_radius = 5555.5
 
     pupd = place.Place.from_text(pref.to_xml_string())
@@ -66,30 +64,34 @@ def test_transfer_cli(work_in_tempdir):
     pupd.zoom_level = 0.0
     pupd.rotation_deg = 0.0
     # should be preserved:
-    pupd.description = 'upd-desc'
-    pupd.thumbnail = 'upd-th'
+    pupd.description = "upd-desc"
+    pupd.thumbnail = "upd-th"
 
     fupd1 = folder.Folder()
     f2 = folder.Folder()
     fupd1.children.append(f2)
     f2.children.append(pupd)
 
-    with open('update1.wtml', 'wt', encoding='utf8') as f:
+    with open("update1.wtml", "wt", encoding="utf8") as f:
         fupd1.write_xml(f)
 
     fupd2 = folder.Folder()
     fupd2.children.append(iupd)
 
-    with open('update2.wtml', 'wt', encoding='utf8') as f:
+    with open("update2.wtml", "wt", encoding="utf8") as f:
         fupd2.write_xml(f)
 
     # Run the command
 
-    cli.entrypoint([
-        'wtml', 'transfer-astrometry',
-        'reference.wtml',
-        'update1.wtml', 'update2.wtml',
-    ])
+    cli.entrypoint(
+        [
+            "wtml",
+            "transfer-astrometry",
+            "reference.wtml",
+            "update1.wtml",
+            "update2.wtml",
+        ]
+    )
 
     # How did we do?
 
@@ -104,8 +106,8 @@ def test_transfer_cli(work_in_tempdir):
     pupd.zoom_level = pref.zoom_level
     pupd.rotation_deg = pref.rotation_deg
 
-    u1 = folder.Folder.from_file('update1.wtml')
+    u1 = folder.Folder.from_file("update1.wtml")
     assert fupd1.to_xml_string() == u1.to_xml_string()
 
-    u2 = folder.Folder.from_file('update2.wtml')
+    u2 = folder.Folder.from_file("update2.wtml")
     assert fupd2.to_xml_string() == u2.to_xml_string()

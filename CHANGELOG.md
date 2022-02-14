@@ -1,3 +1,21 @@
+# wwt_data_formats 0.13.0 (2022-02-14)
+
+- Add proper support for the `Constellation` attribute of WWT `Place` items
+  (#48, @pkgw). In particular, there is now a `Place.set_ra_dec()` method that
+  will compute the constellation appropriately for the RA and Dec, and
+  `Place.update_constellation()` which will set the constellation (if
+  appropriate) given the current coordinate parameters.
+  `ImageSet.set_position_from_wcs()` will use the new methods if given a `place`
+  argument, which means that many use cases will automatically start doing this
+  computation correctly now. It should be noted that the computation here
+  emulates the logic used in the various WWT clients, which may not agree
+  exactly with other computations in (literal) edge cases. If you need to
+  compute a constellation in a context where WWT compatibility isn't important,
+  you should use [`astropy.coordinates.get_constellation()`][acgc].
+
+[acgc]: https://docs.astropy.org/en/stable/api/astropy.coordinates.get_constellation.html
+
+
 # wwt_data_formats 0.12.1 (2022-01-24)
 
 - Adjust XML output to ensure that the WWT Windows client's loader for
