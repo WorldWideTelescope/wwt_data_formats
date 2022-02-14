@@ -6,6 +6,7 @@ include *.yml
 graft docs
 prune docs/_build
 
+graft wwt_data_formats/data
 graft wwt_data_formats/tests
 
 global-exclude *~

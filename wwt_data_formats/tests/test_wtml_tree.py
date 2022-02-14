@@ -5,11 +5,8 @@
 from __future__ import absolute_import, division, print_function
 
 import os.path
-import shutil
-import tempfile
-import pytest
 
-from .. import cli, filecabinet
+from .. import cli
 from . import tempdir
 
 
@@ -20,11 +17,16 @@ def test_cli(tempdir):
 
     try:
         os.chdir(tempdir)
-        cli.entrypoint(['tree', 'fetch',
-            'https://web.wwtassets.org/engine/assets/builtin-image-sets.wtml'])
-        cli.entrypoint(['tree', 'summarize'])
-        cli.entrypoint(['tree', 'print-image-urls'])
-        cli.entrypoint(['tree', 'print-dem-urls'])
+        cli.entrypoint(
+            [
+                "tree",
+                "fetch",
+                "https://web.wwtassets.org/engine/assets/builtin-image-sets.wtml",
+            ]
+        )
+        cli.entrypoint(["tree", "summarize"])
+        cli.entrypoint(["tree", "print-image-urls"])
+        cli.entrypoint(["tree", "print-dem-urls"])
     finally:
         # Windows can't remove the temp tree unless we chdir out of it.
         os.chdir(prev_dir)

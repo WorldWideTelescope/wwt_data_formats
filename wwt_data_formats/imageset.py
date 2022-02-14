@@ -548,12 +548,10 @@ class ImageSet(LockedXmlTraits, UrlContainer):
                 self.rotation_deg = -self.rotation_deg
 
         if place is not None:
-            place.data_set_type = DataSetType.SKY
+            place.set_ra_dec(center_ra_deg / 15.0, center_dec_deg)
             place.rotation_deg = (
                 0.0  # I think this is better than propagating the image rotation?
             )
-            place.ra_hr = center_ra_deg / 15.0
-            place.dec_deg = center_dec_deg
             # It is hardcoded that in sky mode, zoom_level = height of client FOV * 6.
             place.zoom_level = height * scale_y * fov_factor * 6
 

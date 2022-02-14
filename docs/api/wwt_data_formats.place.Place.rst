@@ -61,6 +61,7 @@ Place
       ~Place.notify_change
       ~Place.observe
       ~Place.on_trait_change
+      ~Place.set_ra_dec
       ~Place.set_trait
       ~Place.setup_instance
       ~Place.to_xml
@@ -74,6 +75,7 @@ Place
       ~Place.traits
       ~Place.unobserve
       ~Place.unobserve_all
+      ~Place.update_constellation
       ~Place.write_xml
 
    .. rubric:: Attributes Documentation
@@ -127,6 +129,7 @@ Place
    .. automethod:: notify_change
    .. automethod:: observe
    .. automethod:: on_trait_change
+   .. automethod:: set_ra_dec
    .. automethod:: set_trait
    .. automethod:: setup_instance
    .. automethod:: to_xml
@@ -140,4 +143,5 @@ Place
    .. automethod:: traits
    .. automethod:: unobserve
    .. automethod:: unobserve_all
+   .. automethod:: update_constellation
    .. automethod:: write_xml
