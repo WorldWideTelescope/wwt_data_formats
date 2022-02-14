@@ -8,6 +8,7 @@ from xml.etree import ElementTree as etree
 
 from . import assert_xml_trees_equal
 from .. import imageset, place
+from ..enums import Constellation, DataSetType
 
 
 def test_basic_xml():
@@ -152,3 +153,47 @@ def test_nesting():
     pl.background_image_set.url = "http://example.com/background"
     observed_xml = pl.to_xml()
     assert_xml_trees_equal(expected_xml, observed_xml)
+
+
+def test_constellations():
+    SAMPLES = [
+        (23.99, 90, Constellation.URSA_MINOR),
+        (1.5, 82.5, Constellation.CEPHEUS),
+        (20.5, 41.5, Constellation.CYGNUS),
+        (17.0, -42.6, Constellation.SCORPIUS),
+        (0, -90, Constellation.OCTANS),
+        (6, -84.5, Constellation.MENSA),
+    ]
+
+    pl = place.Place()
+
+    for ra_hr, dec_deg, expected in SAMPLES:
+        pl.set_ra_dec(ra_hr, dec_deg)
+        assert pl.constellation == expected
+
+
+def test_update_constellation_semantics():
+    pl = place.Place()
+    pl.data_set_type = DataSetType.SKY
+    pl.latitude = 1
+    pl.longitude = 1
+    pl.ra_hr = 0.012
+    pl.dec_deg = 0.034
+    pl.update_constellation()
+    assert pl.latitude == 0
+    assert pl.longitude == 0
+    assert pl.ra_hr == 0.012
+    assert pl.dec_deg == 0.034
+    assert pl.constellation == Constellation.PISCES
+
+    pl.data_set_type = DataSetType.PLANET
+    pl.latitude = 12
+    pl.longitude = 34
+    pl.ra_hr = 1
+    pl.dec_deg = 1
+    pl.update_constellation()
+    assert pl.latitude == 12
+    assert pl.longitude == 34
+    assert pl.ra_hr == 0
+    assert pl.dec_deg == 0
+    assert pl.constellation == Constellation.UNSPECIFIED
