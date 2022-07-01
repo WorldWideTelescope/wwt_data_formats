@@ -7,7 +7,7 @@
 """
 from __future__ import absolute_import, division, print_function
 
-__all__ = '''
+__all__ = """
 Bandpass
 Classification
 Constellation
@@ -15,7 +15,7 @@ DataSetType
 FolderType
 ProjectionType
 SerEnum
-'''.split()
+""".split()
 
 from enum import Enum
 
@@ -26,6 +26,7 @@ class SerEnum(Enum):
     for the same value.
 
     """
+
     @classmethod
     def from_text(cls, text):
         """The default implementation here just looks up the appropriate enum instance
@@ -34,56 +35,58 @@ class SerEnum(Enum):
         """
         return cls(text)
 
+
 class Bandpass(SerEnum):
-    GAMMA = 'Gamma'
-    XRAY = 'XRay'
-    ULTRAVIOLET = 'Ultraviolet'
-    VISIBLE = 'Visible'
-    HYDROGEN_ALPHA = 'HydrogenAlpha'
-    INFRARED = 'IR'
-    MICROWAVE = 'Microwave'
-    RADIO = 'Radio'
-    VISIBLE_NIGHT = 'VisibleNight'
+    GAMMA = "Gamma"
+    XRAY = "XRay"
+    ULTRAVIOLET = "Ultraviolet"
+    VISIBLE = "Visible"
+    HYDROGEN_ALPHA = "HydrogenAlpha"
+    INFRARED = "IR"
+    MICROWAVE = "Microwave"
+    RADIO = "Radio"
+    VISIBLE_NIGHT = "VisibleNight"
 
 
 class Classification(SerEnum):
-    UNSPECIFIED = ''
-    STAR = 'Star'
-    SUPERNOVA = 'Supernova'
-    BLACKHOLE = 'BlackHole'
-    NEUTRON_STAR = 'NeutronStar'
-    DOUBLE_STAR = 'DoubleStar'
-    MULTIPLE_STARS = 'MultipleStars'
-    ASTERISM = 'Asterism'
-    CONSTELLATION = 'Constellation'
-    OPEN_CLUSTER = 'OpenCluster'
-    GLOBULAR_CLUSTER = 'GlobularCluster'
-    NEBULOUS_CLUSTER = 'NebulousCluster'
-    NEBULA = 'Nebula'
-    EMISSION_NEBULA = 'EmissionNebula'
-    PLANETARY_NEBULA = 'PlanetaryNebula'
-    REFLECTION_NEBULA = 'ReflectionNebula'
-    DARK_NEBULA = 'DarkNebula'
-    GIANT_MOLECULAR_CLOUD = 'GiantMolecularCloud'
-    SUPERNOVA_REMNANT = 'SupernovaRemnant'
-    INTERSTELLAR_DUST = 'InterstellarDust'
-    QUASAR = 'Quasar'
-    GALAXY = 'Galaxy'
-    SPIRAL_GALAXY = 'SpiralGalaxy'
-    IRREGULAR_GALAXY = 'IrregularGalaxy'
-    ELLIPTICAL_GALAXY = 'EllipticalGalaxy'
-    KNOT = 'Knot'
-    PLATE_DEFECT = 'PlateDefect'
-    CLUSTER_OF_GALAXIES = 'ClusterOfGalaxies'
-    OTHER_NGC = 'OtherNGC'
-    UNIDENTIFIED = 'Unidentified'
-    SOLAR_SYSTEM = 'SolarSystem'
-    UNFILTERED = 'Unfiltered'
-    STELLAR = 'Stellar'
-    STELLAR_GROUPINGS = 'StellarGroupings'
-    NEBULAE = 'Nebulae'
-    GALACTIC = 'Galactic'
-    OTHER = 'Other'
+    UNSPECIFIED = ""
+    STAR = "Star"
+    SUPERNOVA = "Supernova"
+    BLACKHOLE = "BlackHole"
+    NEUTRON_STAR = "NeutronStar"
+    DOUBLE_STAR = "DoubleStar"
+    MULTIPLE_STARS = "MultipleStars"
+    ASTERISM = "Asterism"
+    CONSTELLATION = "Constellation"
+    OPEN_CLUSTER = "OpenCluster"
+    GLOBULAR_CLUSTER = "GlobularCluster"
+    NEBULOUS_CLUSTER = "NebulousCluster"
+    NEBULA = "Nebula"
+    EMISSION_NEBULA = "EmissionNebula"
+    PLANETARY_NEBULA = "PlanetaryNebula"
+    REFLECTION_NEBULA = "ReflectionNebula"
+    DARK_NEBULA = "DarkNebula"
+    GIANT_MOLECULAR_CLOUD = "GiantMolecularCloud"
+    SUPERNOVA_REMNANT = "SupernovaRemnant"
+    INTERSTELLAR_DUST = "InterstellarDust"
+    QUASAR = "Quasar"
+    GALAXY = "Galaxy"
+    SPIRAL_GALAXY = "SpiralGalaxy"
+    IRREGULAR_GALAXY = "IrregularGalaxy"
+    ELLIPTICAL_GALAXY = "EllipticalGalaxy"
+    KNOT = "Knot"
+    PLATE_DEFECT = "PlateDefect"
+    CLUSTER_OF_GALAXIES = "ClusterOfGalaxies"
+    OTHER_NGC = "OtherNGC"
+    UNIDENTIFIED = "Unidentified"
+    SOLAR_SYSTEM = "SolarSystem"
+    UNFILTERED = "Unfiltered"
+    STELLAR = "Stellar"
+    STELLAR_GROUPINGS = "StellarGroupings"
+    NEBULAE = "Nebulae"
+    GALACTIC = "Galactic"
+    OTHER = "Other"
+
 
 class Constellation(SerEnum):
     UNSPECIFIED = ""
@@ -179,34 +182,34 @@ class Constellation(SerEnum):
 
 
 class DataSetType(SerEnum):
-    EARTH = 'Earth'
-    PLANET = 'Planet'
-    SKY = 'Sky'
-    PANORAMA = 'Panorama'
-    SOLAR_SYSTEM = 'SolarSystem'
-    SANDBOX = 'Sandbox'
+    EARTH = "Earth"
+    PLANET = "Planet"
+    SKY = "Sky"
+    PANORAMA = "Panorama"
+    SOLAR_SYSTEM = "SolarSystem"
+    SANDBOX = "Sandbox"
 
 
 class FolderType(SerEnum):
-    UNSPECIFIED = ''
-    EARTH = 'Earth'
-    PLANET = 'Planet'
-    SKY = 'Sky'
-    PANORAMA = 'Panorama'
+    UNSPECIFIED = ""
+    EARTH = "Earth"
+    PLANET = "Planet"
+    SKY = "Sky"
+    PANORAMA = "Panorama"
 
 
 class ProjectionType(SerEnum):
-    MERCATOR = 'Mercator'
-    EQUIRECTANGULAR = 'Equirectangular'
-    HEALPIX = 'Healpix'
-    TAN = 'Tan'
-    TOAST = 'Toast'
-    SPHERICAL = 'Spherical'
-    SKY_IMAGE = 'SkyImage'
-    PLOTTED = 'Plotted'
+    MERCATOR = "Mercator"
+    EQUIRECTANGULAR = "Equirectangular"
+    HEALPIX = "Healpix"
+    TAN = "Tan"
+    TOAST = "Toast"
+    SPHERICAL = "Spherical"
+    SKY_IMAGE = "SkyImage"
+    PLOTTED = "Plotted"
 
     @classmethod
     def from_text(cls, text):
-        if text == 'Tangent':
+        if text == "Tangent":
             return cls.TAN
         return cls(text)
