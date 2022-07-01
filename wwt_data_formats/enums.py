@@ -77,7 +77,7 @@ class Classification(SerEnum):
     CLUSTER_OF_GALAXIES = 'ClusterOfGalaxies'
     OTHER_NGC = 'OtherNGC'
     UNIDENTIFIED = 'Unidentified'
-    SOLARS_YSTEM = 'SolarSystem'
+    SOLAR_SYSTEM = 'SolarSystem'
     UNFILTERED = 'Unfiltered'
     STELLAR = 'Stellar'
     STELLAR_GROUPINGS = 'StellarGroupings'
