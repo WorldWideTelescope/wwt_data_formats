@@ -263,7 +263,12 @@ class ConstellationDatabase(object):
         ra_hr : RA in hours
         dec_deg : dec in degrees
         """
-        # This implementation from WWT's `FindConstellationForPoint()` function.
+        # This implementation from WWT's `FindConstellationForPoint()` function,
+        # with a correction for Apus/Octans. The basic approach is to use the
+        # "even-odd rule" (https://en.wikipedia.org/wiki/Even%E2%80%93odd_rule),
+        # with some special-casing to deal with the fact that we are in a
+        # spherical coordinate system (including the data preprocessing in the
+        # constructor above).
 
         if dec_deg > 88.402:
             return Constellation.URSA_MINOR
@@ -277,11 +282,20 @@ class ConstellationDatabase(object):
                 c = c or points[j].dec_deg <= dec_deg and dec_deg < points[i].dec_deg
 
                 if c:
-                    x = (points[j].ra_hr - points[i].ra_hr) * (
-                        dec_deg - points[i].dec_deg
-                    )
+                    # The WWT specification for Octans ends up spanning more
+                    # than 24 hours in RA, with the postprocessed RA data having
+                    # the form [0.1022, 3.3394, ... 23.4665, 24.1044]. This
+                    # leads to a failure of this algorithm for points in the
+                    # southernmost portion of Apus. We can fix things by
+                    # wrapping around the i'th RA when needed.
+
+                    eff_i_ra = points[i].ra_hr
+                    if points[j].ra_hr - eff_i_ra > 12:
+                        eff_i_ra += 24
+
+                    x = (points[j].ra_hr - eff_i_ra) * (dec_deg - points[i].dec_deg)
                     x /= points[j].dec_deg - points[i].dec_deg
-                    if ra_hr < x + points[i].ra_hr:
+                    if ra_hr < x + eff_i_ra:
                         inside = not inside
 
                 j = i
