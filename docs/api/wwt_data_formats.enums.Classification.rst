@@ -11,7 +11,7 @@ Classification
    .. autosummary::
 
       ~Classification.ASTERISM
-      ~Classification.BLACKHOLE
+      ~Classification.BLACK_HOLE
       ~Classification.CLUSTER_OF_GALAXIES
       ~Classification.CONSTELLATION
       ~Classification.DARK_NEBULA
@@ -51,7 +51,7 @@ Classification
    .. rubric:: Attributes Documentation
 
    .. autoattribute:: ASTERISM
-   .. autoattribute:: BLACKHOLE
+   .. autoattribute:: BLACK_HOLE
    .. autoattribute:: CLUSTER_OF_GALAXIES
    .. autoattribute:: CONSTELLATION
    .. autoattribute:: DARK_NEBULA
