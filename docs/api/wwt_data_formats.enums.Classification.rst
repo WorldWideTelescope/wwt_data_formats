@@ -11,7 +11,7 @@ Classification
    .. autosummary::
 
       ~Classification.ASTERISM
-      ~Classification.BLACKHOLE
+      ~Classification.BLACK_HOLE
       ~Classification.CLUSTER_OF_GALAXIES
       ~Classification.CONSTELLATION
       ~Classification.DARK_NEBULA
@@ -37,7 +37,7 @@ Classification
       ~Classification.PLATE_DEFECT
       ~Classification.QUASAR
       ~Classification.REFLECTION_NEBULA
-      ~Classification.SOLARS_YSTEM
+      ~Classification.SOLAR_SYSTEM
       ~Classification.SPIRAL_GALAXY
       ~Classification.STAR
       ~Classification.STELLAR
@@ -51,7 +51,7 @@ Classification
    .. rubric:: Attributes Documentation
 
    .. autoattribute:: ASTERISM
-   .. autoattribute:: BLACKHOLE
+   .. autoattribute:: BLACK_HOLE
    .. autoattribute:: CLUSTER_OF_GALAXIES
    .. autoattribute:: CONSTELLATION
    .. autoattribute:: DARK_NEBULA
@@ -77,7 +77,7 @@ Classification
    .. autoattribute:: PLATE_DEFECT
    .. autoattribute:: QUASAR
    .. autoattribute:: REFLECTION_NEBULA
-   .. autoattribute:: SOLARS_YSTEM
+   .. autoattribute:: SOLAR_SYSTEM
    .. autoattribute:: SPIRAL_GALAXY
    .. autoattribute:: STAR
    .. autoattribute:: STELLAR

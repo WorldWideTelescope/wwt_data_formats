@@ -163,6 +163,18 @@ def test_constellations():
         (17.0, -42.6, Constellation.SCORPIUS),
         (0, -90, Constellation.OCTANS),
         (6, -84.5, Constellation.MENSA),
+        (14.57, -78.39, Constellation.APUS),
+        (0.094, -80.079, Constellation.OCTANS),
+        (0.188, -80.079, Constellation.HYDRUS),
+        (3.294, -80.079, Constellation.HYDRUS),
+        (3.388, -80.079, Constellation.MENSA),
+        (7.435, -80.079, Constellation.MENSA),
+        (7.529, -80.079, Constellation.CHAMAELEON),
+        (13.835, -80.079, Constellation.CHAMAELEON),
+        (13.929, -80.079, Constellation.APUS),
+        (18.353, -80.079, Constellation.APUS),
+        (18.447, -80.079, Constellation.OCTANS),
+        (23.999, -80.079, Constellation.OCTANS),
     ]
 
     pl = place.Place()
