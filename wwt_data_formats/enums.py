@@ -237,6 +237,23 @@ class DataSetType(SerEnum):
     SOLAR_SYSTEM = "SolarSystem"
     SANDBOX = "Sandbox"
 
+    def to_numeric(self):
+        """
+        Convert this DataSetType to its WWT-internal numeric expression.
+        """
+        return _datasettype_to_numeric_map[self]
+
+
+# see `enum ImageSetType` in the C#
+_datasettype_to_numeric_map = {
+    DataSetType.EARTH: 0,
+    DataSetType.PLANET: 1,
+    DataSetType.SKY: 2,
+    DataSetType.PANORAMA: 3,
+    DataSetType.SOLAR_SYSTEM: 4,
+    DataSetType.SANDBOX: 5,
+}
+
 
 class FolderType(SerEnum):
     UNSPECIFIED = ""
@@ -261,3 +278,22 @@ class ProjectionType(SerEnum):
         if text == "Tangent":
             return cls.TAN
         return cls(text)
+
+    def to_numeric(self):
+        """
+        Convert this ProjectionType to its WWT-internal numeric expression.
+        """
+        return _projectiontype_to_numeric_map[self]
+
+
+# see `enum ProjectionType` in the C#
+_projectiontype_to_numeric_map = {
+    ProjectionType.MERCATOR: 0,
+    ProjectionType.EQUIRECTANGULAR: 1,
+    ProjectionType.TAN: 2,
+    ProjectionType.TOAST: 3,
+    ProjectionType.SPHERICAL: 4,
+    ProjectionType.SKY_IMAGE: 5,
+    ProjectionType.PLOTTED: 6,
+    ProjectionType.HEALPIX: 7,
+}
