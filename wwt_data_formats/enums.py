@@ -52,7 +52,7 @@ class Classification(SerEnum):
     UNSPECIFIED = ""
     STAR = "Star"
     SUPERNOVA = "Supernova"
-    BLACKHOLE = "BlackHole"
+    BLACK_HOLE = "BlackHole"
     NEUTRON_STAR = "NeutronStar"
     DOUBLE_STAR = "DoubleStar"
     MULTIPLE_STARS = "MultipleStars"
@@ -80,12 +80,60 @@ class Classification(SerEnum):
     OTHER_NGC = "OtherNGC"
     UNIDENTIFIED = "Unidentified"
     SOLAR_SYSTEM = "SolarSystem"
-    UNFILTERED = "Unfiltered"
-    STELLAR = "Stellar"
-    STELLAR_GROUPINGS = "StellarGroupings"
-    NEBULAE = "Nebulae"
-    GALACTIC = "Galactic"
-    OTHER = "Other"
+
+    # These are bitmasks for matching different broad categories numerically:
+
+    UNFILTERED = "Unfiltered"  # 0x3FFF_FFFF = 1073741823; everything
+    STELLAR = "Stellar"  # 0x0000_003F = 63
+    STELLAR_GROUPINGS = "StellarGroupings"  # 0x0000_07F0 = 2032; overlaps STELLAR
+    NEBULAE = "Nebulae"  # 0x0007_FC00 = 523264; overlaps STELLAR_GROUPINGS with NEBULOUS_CLUSTER
+    GALACTIC = "Galactic"  # 0x07F8_0000 = 133693440
+    OTHER = "Other"  # 0x1A00_0000 = 436207616
+
+    def to_numeric(self):
+        """
+        Convert this Classification to its WWT-internal numeric expression.
+        """
+        v = _classification_to_numeric_map.get(self)
+        if v is None:
+            raise ValueError(
+                f"cannot safely represent WWT Classification `{self}` numerically"
+            )
+        return v
+
+
+_classification_to_numeric_map = {
+    Classification.STAR: 1 << 0,
+    Classification.SUPERNOVA: 1 << 1,
+    Classification.BLACK_HOLE: 1 << 2,
+    Classification.NEUTRON_STAR: 1 << 3,
+    Classification.DOUBLE_STAR: 1 << 4,
+    Classification.MULTIPLE_STARS: 1 << 5,
+    Classification.ASTERISM: 1 << 6,
+    Classification.CONSTELLATION: 1 << 7,
+    Classification.OPEN_CLUSTER: 1 << 8,
+    Classification.GLOBULAR_CLUSTER: 1 << 9,
+    Classification.NEBULOUS_CLUSTER: 1 << 10,
+    Classification.NEBULA: 1 << 11,
+    Classification.EMISSION_NEBULA: 1 << 12,
+    Classification.PLANETARY_NEBULA: 1 << 13,
+    Classification.REFLECTION_NEBULA: 1 << 14,
+    Classification.DARK_NEBULA: 1 << 15,
+    Classification.GIANT_MOLECULAR_CLOUD: 1 << 16,
+    Classification.SUPERNOVA_REMNANT: 1 << 17,
+    Classification.INTERSTELLAR_DUST: 1 << 18,
+    Classification.QUASAR: 1 << 19,
+    Classification.GALAXY: 1 << 20,
+    Classification.SPIRAL_GALAXY: 1 << 21,
+    Classification.IRREGULAR_GALAXY: 1 << 22,
+    Classification.ELLIPTICAL_GALAXY: 1 << 23,
+    Classification.KNOT: 1 << 24,
+    Classification.PLATE_DEFECT: 1 << 25,
+    Classification.CLUSTER_OF_GALAXIES: 1 << 26,
+    Classification.OTHER_NGC: 1 << 27,
+    Classification.UNIDENTIFIED: 1 << 28,
+    Classification.SOLAR_SYSTEM: 1 << 29,
+}
 
 
 class Constellation(SerEnum):
