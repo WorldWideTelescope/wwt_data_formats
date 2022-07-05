@@ -1,3 +1,17 @@
+# wwt_data_formats 0.14.0 (2022-07-05)
+
+- Correct the constellation-finding for southern Apus (#49, @pkgw). Some of the
+  work below revealed that our algorithm was failing for a particular very
+  southerly patch of sky, where Octans spans more than 24 hours of RA in WWT's
+  representation.
+- Rename two options on `wwt_data_formats.enums.Classification`: the old
+  `BLACKHOLE` becomes `BLACK_HOLE`, and the old `SOLARS_YSTEM` (sic) becomes
+  `SOLAR_SYSTEM` (#49, @pkgw). This is nominally a breaking change, but we're
+  not aware of any code that actually used named variants of this enum.
+- Add `to_numeric()` routines on several enums to support recreation of the WWT
+  webclient search index file (#49, @pkgw).
+
+
 # wwt_data_formats 0.13.0 (2022-02-14)
 
 - Add proper support for the `Constellation` attribute of WWT `Place` items
