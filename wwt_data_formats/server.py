@@ -120,7 +120,7 @@ def run_server(settings):
         # the auto-detected server name and use one of those.
         server_name = "127.0.0.1"  # httpd.server_name
 
-        print(f"listening at: http://{server_name}:{httpd.server_port}/")
+        print(f"listening at: http://{server_name}:{httpd.server_port}/", flush=True)
         print()
         print("virtual root-directory WTML files with on-the-fly rewriting:")
         print()
