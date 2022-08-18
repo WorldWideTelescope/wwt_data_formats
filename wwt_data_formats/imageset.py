@@ -463,7 +463,7 @@ class ImageSet(LockedXmlTraits, UrlContainer):
         if cd_det < 0:
             cd_sign = -1
 
-            if self.tile_levels > 0:
+            if self.tile_levels > 0 and self.projection != ProjectionType.TOAST:
                 raise Exception(
                     "WCS for tiled imagery must have top-down/negative/JPEG_like parity"
                 )
@@ -532,7 +532,8 @@ class ImageSet(LockedXmlTraits, UrlContainer):
         self.rotation_deg = rot_rad * 180 / math.pi
 
         if self.tile_levels > 0:  # are we tiled?
-            self.projection = ProjectionType.TAN
+            if self.projection != ProjectionType.TOAST:
+                self.projection = ProjectionType.TAN
             self.bottoms_up = False
             self.offset_x = (width / 2 - refpix_x) * scale_x
             self.offset_y = (refpix_y - height / 2) * scale_y
