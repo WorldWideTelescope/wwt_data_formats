@@ -1,5 +1,5 @@
 # -*- mode: python; coding: utf-8 -*-
-# Copyright 2020-2021 the .NET Foundation
+# Copyright 2020-2022 the .NET Foundation
 # Licensed under the MIT License.
 
 """
@@ -23,6 +23,7 @@ production server. (You can do this with ``wwtdatatool wtml rewrite-urls``.)
 from __future__ import absolute_import, division, print_function
 
 __all__ = """
+launch_app_for_wtml
 preview_wtml
 run_server
 """.split()
@@ -180,6 +181,50 @@ def _setup_preview_research(app_url, wtml_url, image_url):
     return url, "the WWT research app"
 
 
+def launch_app_for_wtml(
+    wtml_url, image_url=None, browser=None, app_type="webclient", app_url=None
+):
+    """
+    Launch a WWT data viewer in a new browser window.
+
+    Parameters
+    ----------
+    wtml_url : str
+        The URL of the WTML file to view
+    image_url : str
+        The URL of the imageset within the WTML file to view. This is currently
+        required.
+    browser : optional str or None
+        The type of web browser to use to open the WTML preview application, as
+        understood by the :mod:`webbrowser` module. If unspecified,
+        :mod:`webbrowser` will guess a sensible default.
+    app_type : optional str
+        Which kind or application to use to view the WTML file. Allowed values
+        are ``"webclient"`` (the default) for the classic WWT webclient, or
+        ``"research"`` for the WWT research application.
+    app_url : optional str or None
+        The URL to use for the preview app. If ``None`` (the default), the
+        default URL for the specified application is used. Note that this does
+        not supersede the ``app_type`` argument because the form of the query
+        string that is passed to the preview app depends on its type.
+
+    Returns
+    -------
+    A human-readable description of the app that has been launched.
+    """
+
+    if app_type == "webclient":
+        setup = _setup_preview_webclient
+    elif app_type == "research":
+        setup = _setup_preview_research
+    else:
+        raise ValueError("app_type")
+
+    url, desc = setup(app_url, wtml_url, image_url)
+    webbrowser.get(browser).open(url, new=1, autoraise=True)
+    return desc
+
+
 def preview_wtml(wtml_path, browser=None, app_type="webclient", app_url=None):
     """
     Run a server for a local WTML file and open it in a web browser.
@@ -206,13 +251,6 @@ def preview_wtml(wtml_path, browser=None, app_type="webclient", app_url=None):
     -------
     None
     """
-
-    if app_type == "webclient":
-        setup = _setup_preview_webclient
-    elif app_type == "research":
-        setup = _setup_preview_research
-    else:
-        raise ValueError("app_type")
 
     # In some cases (research app preview) we'll need to parse the WTML to
     # figure out the URL of the image to show. (In an ideal world, we might
@@ -245,13 +283,18 @@ def preview_wtml(wtml_path, browser=None, app_type="webclient", app_url=None):
         if image_url is None:
             raise Exception(f"found no imagesets in WTML preview file `{wtml_path}`")
 
-        url, desc = setup(app_url, wtml_url, image_url)
-
         # By the time the browser opens and the app loads up, our server
         # *should* be up and running ...
+        desc = launch_app_for_wtml(
+            wtml_url,
+            image_url=image_url,
+            browser=browser,
+            app_type=app_type,
+            app_url=app_url,
+        )
+
         print("file is being served as:", wtml_url)
-        print(f"opening it in {desc} ... type ^C to kill this program when done")
-        webbrowser.get(browser).open(url, new=1, autoraise=True)
+        print(f"opening it in {desc} ... type ^C to terminate this program when done")
 
         try:
             httpd.serve_forever()
