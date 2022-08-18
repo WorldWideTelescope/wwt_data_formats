@@ -229,6 +229,11 @@ def serve_getparser(parser):
         help = 'The port on which to listen for connections.'
     )
     parser.add_argument(
+        '--heartbeat',
+        action = 'store_true',
+        help = 'Print periodic heartbeat messages to stdout and terminate on failure.'
+    )
+    parser.add_argument(
         'root_dir',
         metavar = 'PATH',
         default = '.',

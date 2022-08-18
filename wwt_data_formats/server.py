@@ -137,7 +137,33 @@ def run_server(settings):
         if not seen_any:
             print("    (none)")
 
-        print()
+        print(flush=True)
+
+        # If/when the server is launched over SSH, it can be hard to get it to
+        # shut down reliably. If it is not launched with a TTY, we don't get
+        # SIGHUP, and I had a lot of trouble trying to reliably detect when
+        # stdin gets closed. But what *does* seem to work reliably is getting
+        # SIGPIPE when writing to stdout. So in the heartbeat mode, we do that.
+        # The only documented way to exit serve_forever() is to call the
+        # shutdown() method, which must be done from another thread, so that's
+        # the approach we take.
+
+        if settings.heartbeat:
+            import threading
+            import time
+
+            def send_heartbeats(server):
+                try:
+                    while True:
+                        print("heartbeat", flush=True)
+                        time.sleep(1)
+                except (KeyboardInterrupt, Exception) as e:
+                    pass
+                finally:
+                    server.shutdown()
+
+            hbthread = threading.Thread(target=send_heartbeats, args=(httpd,), daemon=True)
+            hbthread.start()
 
         try:
             httpd.serve_forever()
@@ -294,7 +320,7 @@ def preview_wtml(wtml_path, browser=None, app_type="webclient", app_url=None):
         )
 
         print("file is being served as:", wtml_url)
-        print(f"opening it in {desc} ... type ^C to terminate this program when done")
+        print(f"opening it in {desc} ... type Control-C to terminate this program when done")
 
         try:
             httpd.serve_forever()
