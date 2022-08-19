@@ -159,4 +159,12 @@ def test_heartbeat():
     wpid, wstatus = os.waitpid(pid, os.WNOHANG)
 
     assert wpid == pid
-    assert os.waitstatus_to_exitcode(wstatus) == 10
+
+    if hasattr(os, "waitstatus_to_exitcode"):
+        ec = os.waitstatus_to_exitcode(wstatus)
+    elif os.WIFEXITED(wstatus):
+        ec = os.WEXITSTATUS(wstatus)
+    else:
+        ec = -1
+
+    assert ec == 10
