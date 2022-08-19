@@ -18,6 +18,8 @@ all of your development with the relative-URL files, and you only need to do one
 substitution at the very end when the files are ready for upload to the
 production server. (You can do this with ``wwtdatatool wtml rewrite-urls``.)
 
+This module also contains some helpers for launching web browsers that can
+interact with this server to display data in the WWT environment.
 """
 
 from __future__ import absolute_import, division, print_function
@@ -162,7 +164,9 @@ def run_server(settings):
                 finally:
                     server.shutdown()
 
-            hbthread = threading.Thread(target=send_heartbeats, args=(httpd,), daemon=True)
+            hbthread = threading.Thread(
+                target=send_heartbeats, args=(httpd,), daemon=True
+            )
             hbthread.start()
 
         try:
@@ -320,7 +324,9 @@ def preview_wtml(wtml_path, browser=None, app_type="webclient", app_url=None):
         )
 
         print("file is being served as:", wtml_url)
-        print(f"opening it in {desc} ... type Control-C to terminate this program when done")
+        print(
+            f"opening it in {desc} ... type Control-C to terminate this program when done"
+        )
 
         try:
             httpd.serve_forever()
