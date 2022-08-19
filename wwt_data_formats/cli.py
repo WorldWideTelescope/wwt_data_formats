@@ -254,6 +254,41 @@ def serve_impl(settings):
     run_server(settings)
 
 
+# "show" subcommand
+
+
+def show_getparser(parser):
+    subparsers = parser.add_subparsers(dest="show_command")
+    _parser = subparsers.add_parser("concept-doi")
+    _parser = subparsers.add_parser("version")
+    _parser = subparsers.add_parser("version-doi")
+
+
+def show_impl(settings):
+    if settings.show_command is None:
+        print('Run the "show" command with `--help` for help on its subcommands')
+        return
+
+    if settings.show_command == "concept-doi":
+        # This string constant will be rewritten by Cranko during releases:
+        doi = "xx.xxxx/dev-build.wwt_data_formats.concept"
+        if not doi.startswith("10."):
+            warn("this DOI is a fake value used for development builds")
+        print(doi)
+    elif settings.show_command == "version":
+        # This string constant will be rewritten by Cranko during releases:
+        version = "0.dev0"  # cranko project-version
+        print(version)
+    elif settings.show_command == "version-doi":
+        # This string constant will be rewritten by Cranko during releases:
+        doi = "xx.xxxx/dev-build.wwt_data_formats.version"
+        if not doi.startswith("10."):
+            warn("this DOI is a fake value used for development builds")
+        print(doi)
+    else:
+        die('unrecognized "show" subcommand ' + settings.show_command)
+
+
 # "tree" subcommand
 
 

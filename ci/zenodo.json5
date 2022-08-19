@@ -1,0 +1,51 @@
+// See https://pkgw.github.io/cranko/book/latest/integrations/zenodo.html
+// and https://developers.zenodo.org/#representation
+
+{
+  conceptrecid: 'new-for:0.15.0',
+
+  metadata: {
+    upload_type: 'software',
+    language: 'eng',
+
+    // ** Keep this alphabetical by family name!!! **
+    creators: [
+      {
+        affiliation: 'Center for Astrophysics | Harvard & Smithsonian',
+        name: 'Carifio, Jonathan',
+        orcid: '0000-0002-7759-2601',
+      },
+      {
+        affiliation: 'Winter Way',
+        name: 'Norman, Henrik',
+        orcid: '0000-0003-4189-3450',
+      },
+      {
+        affiliation: 'Center for Astrophysics | Harvard & Smithsonian',
+        name: 'Williams, Peter K. G.',
+        orcid: '0000-0003-3734-3587',
+      },
+    ],
+
+    // Subset of HTML allowed here:
+    description: 'wwt_data_formats is a low-level Python package that interfaces \
+with the various XML serialization formats used by AAS WorldWide Telescope. Learn more \
+at <a href="https://wwt-data-formats.readthedocs.io/">the wwt_data_formats website</a>.',
+
+    access_right: 'open',
+    license: 'MIT', // see https://spdx.org/licenses/
+
+    grants: [
+      // National Science Foundation:
+      {id: '10.13039/100000001::2004840'},
+    ],
+
+    // Keywords use an uncontrolled vocabulary (and so are of limited usefulness):
+    keywords: [
+      'AAS WorldWide Telescope',
+      'Astronomy',
+      'Python',
+      'Visualization',
+    ],
+  },
+}
