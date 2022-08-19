@@ -11,23 +11,27 @@ import sys
 
 
 __all__ = [
-    'GLOB_PATHS_INTERNALLY',
-    'EnsureGlobsExpandedAction',
-    'entrypoint',
-    'serve_getparser',
+    "GLOB_PATHS_INTERNALLY",
+    "EnsureGlobsExpandedAction",
+    "entrypoint",
+    "serve_getparser",
 ]
 
 
 # General CLI utilities
 
+
 def die(msg):
-    print('error:', msg, file=sys.stderr)
+    print("error:", msg, file=sys.stderr)
     sys.exit(1)
 
-def warn(msg):
-    print('warning:', msg, file=sys.stderr)
 
-GLOB_PATHS_INTERNALLY = (os.name == 'nt')  # non-Windows has reasonable shells
+def warn(msg):
+    print("warning:", msg, file=sys.stderr)
+
+
+GLOB_PATHS_INTERNALLY = os.name == "nt"  # non-Windows has reasonable shells
+
 
 class EnsureGlobsExpandedAction(argparse.Action):
     """
@@ -41,6 +45,7 @@ class EnsureGlobsExpandedAction(argparse.Action):
     text to apply globs. This argument should generally be used on arguments
     with a ``nargs='+'`` cardinality.
     """
+
     def __call__(self, parser, namespace, values, option_string=None):
         setattr(namespace, self.dest, self.expand_globs(values))
 
@@ -69,43 +74,44 @@ class EnsureGlobsExpandedAction(argparse.Action):
 
 # "cabinet" subcommand
 
+
 def cabinet_getparser(parser):
-    subparsers = parser.add_subparsers(dest='cabinet_command')
+    subparsers = parser.add_subparsers(dest="cabinet_command")
 
-    p = subparsers.add_parser('list')
+    p = subparsers.add_parser("list")
     p.add_argument(
-        'path',
-        metavar = 'PATH',
-        help = 'The path to a cabinet file.',
+        "path",
+        metavar="PATH",
+        help="The path to a cabinet file.",
     )
 
-    p = subparsers.add_parser('pack')
+    p = subparsers.add_parser("pack")
     p.add_argument(
-        'cab_path',
-        metavar = 'PATH',
-        help = 'The path of the cabinet file to create.',
+        "cab_path",
+        metavar="PATH",
+        help="The path of the cabinet file to create.",
     )
     p.add_argument(
-        'input_paths',
-        nargs = '+',
-        action = EnsureGlobsExpandedAction,
-        metavar = 'PATHS',
-        help = 'Paths to files to put into the cabinet.',
+        "input_paths",
+        nargs="+",
+        action=EnsureGlobsExpandedAction,
+        metavar="PATHS",
+        help="Paths to files to put into the cabinet.",
     )
 
-    p = subparsers.add_parser('unpack')
+    p = subparsers.add_parser("unpack")
     p.add_argument(
-        'path',
-        metavar = 'PATH',
-        help = 'The path to a cabinet file.',
+        "path",
+        metavar="PATH",
+        help="The path to a cabinet file.",
     )
 
 
 def cabinet_list(settings):
     from .filecabinet import FileCabinetReader
 
-    with open(settings.path, 'rb') as f:
-        reader =  FileCabinetReader(f)
+    with open(settings.path, "rb") as f:
+        reader = FileCabinetReader(f)
 
         for fn in reader.filenames():
             print(fn)
@@ -118,19 +124,21 @@ def cabinet_pack(settings):
     writer = FileCabinetWriter()
 
     for fn in settings.input_paths:
-        with open(fn, 'rb') as f:
+        with open(fn, "rb") as f:
             data = f.read()
 
         # TODO: smarter splitting
         pieces = fn.split(os.path.sep)
 
         for p in pieces:
-            if p in ('.', '..', ''):
-                die(f'illegal input path "{fn}": must be relative with no ".", ".." components')
+            if p in (".", "..", ""):
+                die(
+                    f'illegal input path "{fn}": must be relative with no ".", ".." components'
+                )
 
-        writer.add_file_with_data('\\'.join(pieces), data)
+        writer.add_file_with_data("\\".join(pieces), data)
 
-    with open(settings.cab_path, 'wb') as f_out:
+    with open(settings.cab_path, "wb") as f_out:
         writer.emit(f_out)
 
 
@@ -139,12 +147,12 @@ def cabinet_unpack(settings):
     from os import makedirs
     from os.path import join
 
-    with open(settings.path, 'rb') as f_in:
-        reader =  FileCabinetReader(f_in)
+    with open(settings.path, "rb") as f_in:
+        reader = FileCabinetReader(f_in)
 
         for fn in reader.filenames():
             data = reader.read_file(fn)
-            pieces = fn.split('\\')  # paths are Windows-style
+            pieces = fn.split("\\")  # paths are Windows-style
 
             # At least the MakeDataCabinetFile tool creates a file whose
             # paths all begin with \. We are not gonna treat those as
@@ -155,7 +163,7 @@ def cabinet_unpack(settings):
             if len(pieces) > 1:
                 makedirs(join(*pieces[:-1]), exist_ok=True)
 
-            with open(join(*pieces), 'wb') as f_out:
+            with open(join(*pieces), "wb") as f_out:
                 f_out.write(data)
 
 
@@ -164,11 +172,11 @@ def cabinet_impl(settings):
         print('Run the "cabinet" command with `--help` for help on its subcommands')
         return
 
-    if settings.cabinet_command == 'list':
+    if settings.cabinet_command == "list":
         return cabinet_list(settings)
-    elif settings.cabinet_command == 'pack':
+    elif settings.cabinet_command == "pack":
         return cabinet_pack(settings)
-    elif settings.cabinet_command == 'unpack':
+    elif settings.cabinet_command == "unpack":
         return cabinet_unpack(settings)
     else:
         die('unrecognized "cabinet" subcommand ' + settings.cabinet_command)
@@ -176,91 +184,92 @@ def cabinet_impl(settings):
 
 # "preview" subcommand
 
+
 def preview_getparser(parser):
     parser.add_argument(
-        '--browser',
-        '-b',
-        metavar = 'BROWSER-TYPE',
-        help = 'The type of browser to use for the preview (as per Python webbrowser)'
+        "--browser",
+        "-b",
+        metavar="BROWSER-TYPE",
+        help="The type of browser to use for the preview (as per Python webbrowser)",
     )
     parser.add_argument(
-        '--research',
-        '-r',
-        action = 'store_true',
-        help = 'Preview in the WWT Research App'
+        "--research", "-r", action="store_true", help="Preview in the WWT Research App"
     )
     parser.add_argument(
-        '--appurl',
-        metavar = 'URL',
-        help = 'The URL of the app to use; useful for development'
+        "--appurl",
+        metavar="URL",
+        help="The URL of the app to use; useful for development",
     )
     parser.add_argument(
-        'wtml_path',
-        metavar = 'PATH',
-        help = 'The path to the WTML file to preview',
+        "wtml_path",
+        metavar="PATH",
+        help="The path to the WTML file to preview",
     )
 
 
 def preview_impl(settings):
     from .server import preview_wtml
 
-    app = 'webclient'
+    app = "webclient"
 
     if settings.research:
-        app = 'research'
+        app = "research"
 
     preview_wtml(
         settings.wtml_path,
-        browser = settings.browser,
-        app_type = app,
-        app_url = settings.appurl,
+        browser=settings.browser,
+        app_type=app,
+        app_url=settings.appurl,
     )
 
 
 # "serve" subcommand
 
+
 def serve_getparser(parser):
     parser.add_argument(
-        '--port',
-        '-p',
-        metavar = 'PORT',
-        type = int,
-        default = 8080,
-        help = 'The port on which to listen for connections.'
+        "--port",
+        "-p",
+        metavar="PORT",
+        type=int,
+        default=8080,
+        help="The port on which to listen for connections.",
     )
     parser.add_argument(
-        '--heartbeat',
-        action = 'store_true',
-        help = 'Print periodic heartbeat messages to stdout and terminate on failure.'
+        "--heartbeat",
+        action="store_true",
+        help="Print periodic heartbeat messages to stdout and terminate on failure.",
     )
     parser.add_argument(
-        'root_dir',
-        metavar = 'PATH',
-        default = '.',
-        help = 'The path to the base directory of the server.',
+        "root_dir",
+        metavar="PATH",
+        default=".",
+        help="The path to the base directory of the server.",
     )
 
 
 def serve_impl(settings):
     from .server import run_server
+
     run_server(settings)
 
 
 # "tree" subcommand
 
-def tree_getparser(parser):
-    subparsers = parser.add_subparsers(dest='tree_command')
 
-    p = subparsers.add_parser('fetch')
+def tree_getparser(parser):
+    subparsers = parser.add_subparsers(dest="tree_command")
+
+    p = subparsers.add_parser("fetch")
     p.add_argument(
-        'root_url',
-        metavar = 'URL',
-        help = 'The URL of the initial WTML file to download.',
+        "root_url",
+        metavar="URL",
+        help="The URL of the initial WTML file to download.",
     )
 
-    p = subparsers.add_parser('print-dem-urls')
-    p = subparsers.add_parser('print-image-urls')
-    p = subparsers.add_parser('summarize')
+    p = subparsers.add_parser("print-dem-urls")
+    p = subparsers.add_parser("print-image-urls")
+    p = subparsers.add_parser("summarize")
 
 
 def tree_impl(settings):
@@ -268,13 +277,13 @@ def tree_impl(settings):
         print('Run the "tree" command with `--help` for help on its subcommands')
         return
 
-    if settings.tree_command == 'fetch':
+    if settings.tree_command == "fetch":
         return tree_fetch(settings)
-    elif settings.tree_command == 'print-dem-urls':
+    elif settings.tree_command == "print-dem-urls":
         return tree_print_dem_urls(settings)
-    elif settings.tree_command == 'print-image-urls':
+    elif settings.tree_command == "print-image-urls":
         return tree_print_image_urls(settings)
-    elif settings.tree_command == 'summarize':
+    elif settings.tree_command == "summarize":
         return tree_summarize(settings)
     else:
         die('unrecognized "tree" subcommand ' + settings.tree_command)
@@ -284,9 +293,9 @@ def tree_fetch(settings):
     from .folder import fetch_folder_tree
 
     def on_fetch(url):
-        print('Fetching', url, '...')
+        print("Fetching", url, "...")
 
-    fetch_folder_tree(settings.root_url, '.', on_fetch)
+    fetch_folder_tree(settings.root_url, ".", on_fetch)
 
 
 def tree_print_dem_urls(settings):
@@ -296,7 +305,7 @@ def tree_print_dem_urls(settings):
 
     done_urls = set()
 
-    for treepath, item in walk_cached_folder_tree('.'):
+    for treepath, item in walk_cached_folder_tree("."):
         imgset = None
 
         if isinstance(item, ImageSet):
@@ -321,7 +330,7 @@ def tree_print_image_urls(settings):
 
     done_urls = set()
 
-    for treepath, item in walk_cached_folder_tree('.'):
+    for treepath, item in walk_cached_folder_tree("."):
         imgset = None
 
         if isinstance(item, ImageSet):
@@ -332,7 +341,7 @@ def tree_print_image_urls(settings):
         if imgset is None:
             continue
 
-        for url, tag in zip((imgset.url, imgset.alt_url), ('', ' (alt)')):
+        for url, tag in zip((imgset.url, imgset.alt_url), ("", " (alt)")):
             if not url or url in done_urls:
                 continue
 
@@ -345,98 +354,105 @@ def tree_summarize(settings):
     from .imageset import ImageSet
     from .place import Place
 
-    for treepath, item in walk_cached_folder_tree('.'):
-        pfx = '  ' * len(treepath)
+    for treepath, item in walk_cached_folder_tree("."):
+        pfx = "  " * len(treepath)
 
         if isinstance(item, Folder):
-            print(pfx + 'Folder', item.name)
+            print(pfx + "Folder", item.name)
         elif isinstance(item, ImageSet):
             index = treepath[-1]
-            print(f'{pfx}{index:03d}', 'ImageSet:', item.name, '@', item.url)
+            print(f"{pfx}{index:03d}", "ImageSet:", item.name, "@", item.url)
         elif isinstance(item, Place):
             maybe_imgset = item.as_imageset()
             if maybe_imgset is not None:
                 index = treepath[-1]
-                print(f'{pfx}{index:03d}', 'Place+ImgSet:', item.name, '@', maybe_imgset.url)
+                print(
+                    f"{pfx}{index:03d}",
+                    "Place+ImgSet:",
+                    item.name,
+                    "@",
+                    maybe_imgset.url,
+                )
 
 
 # "wtml" subcommand
 
+
 def wtml_getparser(parser):
-    subparsers = parser.add_subparsers(dest='wtml_command')
+    subparsers = parser.add_subparsers(dest="wtml_command")
 
-    p = subparsers.add_parser('merge')
+    p = subparsers.add_parser("merge")
     p.add_argument(
-        '--merged-name',
-        default = 'Folder',
-        help = 'The name to give to the merged folder.',
+        "--merged-name",
+        default="Folder",
+        help="The name to give to the merged folder.",
     )
     p.add_argument(
-        '--merged-thumb-url',
-        default = '',
-        help = 'The thumbnail URL to give to the merged folder.',
+        "--merged-thumb-url",
+        default="",
+        help="The thumbnail URL to give to the merged folder.",
     )
     p.add_argument(
-        'in_paths',
-        nargs = '+',
-        action = EnsureGlobsExpandedAction,
-        metavar = 'IN-WTML-PATH',
-        help = 'The path to the input WTML files.',
+        "in_paths",
+        nargs="+",
+        action=EnsureGlobsExpandedAction,
+        metavar="IN-WTML-PATH",
+        help="The path to the input WTML files.",
     )
     p.add_argument(
-        'out_path',
-        metavar = 'OUT-WTML-PATH',
-        help = 'The path to the output WTML file.',
-    )
-
-    p = subparsers.add_parser('report')
-    p.add_argument(
-        'path',
-        metavar = 'WTML',
-        help = 'The path to a WTML file.',
+        "out_path",
+        metavar="OUT-WTML-PATH",
+        help="The path to the output WTML file.",
     )
 
-    p = subparsers.add_parser('rewrite-disk')
+    p = subparsers.add_parser("report")
     p.add_argument(
-        'in_path',
-        metavar = 'INPUT-WTML',
-        help = 'The path to the input WTML file.',
-    )
-    p.add_argument(
-        'out_path',
-        metavar = 'OUTPUT-WTML',
-        help = 'The path of the rewritten, output WTML file.',
+        "path",
+        metavar="WTML",
+        help="The path to a WTML file.",
     )
 
-    p = subparsers.add_parser('rewrite-urls')
+    p = subparsers.add_parser("rewrite-disk")
     p.add_argument(
-        'in_path',
-        metavar = 'INPUT-WTML',
-        help = 'The path to the input WTML file.',
+        "in_path",
+        metavar="INPUT-WTML",
+        help="The path to the input WTML file.",
     )
     p.add_argument(
-        'baseurl',
-        metavar = 'BASE-URL',
-        help = 'The new base URL to use in the file\'s contents',
-    )
-    p.add_argument(
-        'out_path',
-        metavar = 'OUTPUT-WTML',
-        help = 'The path of the rewritten, output WTML file.',
+        "out_path",
+        metavar="OUTPUT-WTML",
+        help="The path of the rewritten, output WTML file.",
     )
 
-    p = subparsers.add_parser('transfer-astrometry')
+    p = subparsers.add_parser("rewrite-urls")
     p.add_argument(
-        'in_path',
-        metavar = 'INPUT-WTML',
-        help = 'The path to the input WTML file with refined astrometric solutions.',
+        "in_path",
+        metavar="INPUT-WTML",
+        help="The path to the input WTML file.",
     )
     p.add_argument(
-        'update_paths',
-        nargs = '+',
-        action = EnsureGlobsExpandedAction,
-        metavar = 'UPDATE-WTML',
-        help = 'Paths of WTML files to update with data from the input file.',
+        "baseurl",
+        metavar="BASE-URL",
+        help="The new base URL to use in the file's contents",
+    )
+    p.add_argument(
+        "out_path",
+        metavar="OUTPUT-WTML",
+        help="The path of the rewritten, output WTML file.",
+    )
+
+    p = subparsers.add_parser("transfer-astrometry")
+    p.add_argument(
+        "in_path",
+        metavar="INPUT-WTML",
+        help="The path to the input WTML file with refined astrometric solutions.",
+    )
+    p.add_argument(
+        "update_paths",
+        nargs="+",
+        action=EnsureGlobsExpandedAction,
+        metavar="UPDATE-WTML",
+        help="Paths of WTML files to update with data from the input file.",
     )
 
 
@@ -445,15 +461,15 @@ def wtml_impl(settings):
         print('Run the "wtml" command with `--help` for help on its subcommands')
         return
 
-    if settings.wtml_command == 'merge':
+    if settings.wtml_command == "merge":
         return wtml_merge(settings)
-    elif settings.wtml_command == 'report':
+    elif settings.wtml_command == "report":
         return wtml_report(settings)
-    elif settings.wtml_command == 'rewrite-disk':
+    elif settings.wtml_command == "rewrite-disk":
         return wtml_rewrite_disk(settings)
-    elif settings.wtml_command == 'rewrite-urls':
+    elif settings.wtml_command == "rewrite-urls":
         return wtml_rewrite_urls(settings)
-    elif settings.wtml_command == 'transfer-astrometry':
+    elif settings.wtml_command == "transfer-astrometry":
         return wtml_transfer_astrometry(settings)
     else:
         die('unrecognized "wtml" subcommand ' + settings.wtml_command)
@@ -471,7 +487,7 @@ def wtml_merge(settings):
 
     for path in settings.in_paths:
         in_folder = Folder.from_file(path)
-        cur_base_url = path.replace(os.path.sep, '/')
+        cur_base_url = path.replace(os.path.sep, "/")
 
         def mutator(url):
             if not url:
@@ -485,15 +501,15 @@ def wtml_merge(settings):
 
             # Now go back to filesystem-path land, so that we can use relpath to
             # compute the new path relative to the merged folder file.
-            rel = os.path.relpath(url.replace('/', os.path.sep), rel_base)
+            rel = os.path.relpath(url.replace("/", os.path.sep), rel_base)
 
             # Finally, re-express that as a URL
-            return rel.replace(os.path.sep, '/')
+            return rel.replace(os.path.sep, "/")
 
         in_folder.mutate_urls(mutator)
         out_folder.children += in_folder.children
 
-    with open(settings.out_path, 'wt', encoding='utf8') as f_out:
+    with open(settings.out_path, "wt", encoding="utf8") as f_out:
         out_folder.write_xml(f_out)
 
 
@@ -519,22 +535,26 @@ def wtml_report(settings):
         warnings_hack[0] += 1
 
     if len(f.children) != 1:
-        mywarn(f'expected WTML file to contain exactly one item; found {len(f.children)}')
+        mywarn(
+            f"expected WTML file to contain exactly one item; found {len(f.children)}"
+        )
 
     if len(f.children) == 0:
-        die('cannot proceed if WTML has zero items')
+        die("cannot proceed if WTML has zero items")
 
     pl = f.children[0]
 
     if isinstance(pl, ImageSet):
-        die('sorry, this program is too dumb to handle top-level imagesets right now. File a bug!')
+        die(
+            "sorry, this program is too dumb to handle top-level imagesets right now. File a bug!"
+        )
     if not isinstance(pl, Place):
-        die(f'the WTML item must be a Place; found: {c}')
+        die(f"the WTML item must be a Place; found: {c}")
 
     if pl.foreground_image_set is not None:
         imgset = pl.foreground_image_set
     else:
-        die('the WTML Place must contain a <ForegroundImageSet> item')
+        die("the WTML Place must contain a <ForegroundImageSet> item")
 
     # Name:
 
@@ -543,9 +563,9 @@ def wtml_report(settings):
     i_name = imgset.name
 
     if f_name != p_name:
-        mywarn(f'name of folder ({f_name}) and name of Place ({p_name}) disagree')
+        mywarn(f"name of folder ({f_name}) and name of Place ({p_name}) disagree")
     if f_name != i_name:
-        mywarn(f'name of folder ({f_name}) and name of ImageSet ({i_name}) disagree')
+        mywarn(f"name of folder ({f_name}) and name of ImageSet ({i_name}) disagree")
 
     # Our extended metadata -- needs documentation!
 
@@ -557,23 +577,25 @@ def wtml_report(settings):
         try:
             anno_data = json.loads(pl.annotation)
         except Exception as e:
-            mywarn(f'Place annotation data is not valid JSON; the text is: {pl.annotation!r}')
+            mywarn(
+                f"Place annotation data is not valid JSON; the text is: {pl.annotation!r}"
+            )
         else:
-            channel_name = anno_data.get('channel')
-            item_id = anno_data.get('itemid')
-            published8601 = anno_data.get('publishedUTCISO8601')
+            channel_name = anno_data.get("channel")
+            item_id = anno_data.get("itemid")
+            published8601 = anno_data.get("publishedUTCISO8601")
     else:
-        mywarn('Place contains no Annotation metadata')
+        mywarn("Place contains no Annotation metadata")
 
     if channel_name is None:
-        mywarn('Place Annotation metadata does not contain a channel name')
-        channel_report = '(none specified)'
+        mywarn("Place Annotation metadata does not contain a channel name")
+        channel_report = "(none specified)"
     else:
         channel_report = channel_name
 
     if item_id is None:
-        mywarn('Place Annotation metadata does not contain an itemid')
-        item_id_report = '(none specified)'
+        mywarn("Place Annotation metadata does not contain an itemid")
+        item_id_report = "(none specified)"
     else:
         item_id_report = item_id
 
@@ -583,25 +605,27 @@ def wtml_report(settings):
         try:
             pubdate = datetime.fromisoformat(published8601)
         except Error as e:
-            mywarn('publication date in Place Annotation data does not seem to be in ISO8601 format')
+            mywarn(
+                "publication date in Place Annotation data does not seem to be in ISO8601 format"
+            )
         else:
             if pubdate.tzinfo is None:
-                mywarn('publication date does not contain timezone information')
+                mywarn("publication date does not contain timezone information")
 
     if pubdate is None:
-        mywarn('Place Annotation metadata does not contain a valid publication date')
-        pubdate_report = '(unspecified)'
+        mywarn("Place Annotation metadata does not contain a valid publication date")
+        pubdate_report = "(unspecified)"
     else:
         pubdate_report = pubdate
 
     # Text entries
 
     def process_html(text):
-        parsed = BeautifulSoup(text, 'html.parser')
+        parsed = BeautifulSoup(text, "html.parser")
         plain_report = textwrap.wrap(
             parsed.text,
-            break_long_words = False,
-            break_on_hyphens = False,
+            break_long_words=False,
+            break_on_hyphens=False,
         )
 
         tag_report = []
@@ -609,75 +633,75 @@ def wtml_report(settings):
         for line in parsed.prettify().splitlines():
             # Determine indent for mo' pretty
             i = 0
-            while i < len(line) and line[i] == ' ':
+            while i < len(line) and line[i] == " ":
                 i += 1
             indent = line[:i]
 
             tag_report += textwrap.wrap(
                 line,
-                initial_indent = indent,
-                subsequent_indent = indent,
-                break_long_words = False,
-                break_on_hyphens = False,
+                initial_indent=indent,
+                subsequent_indent=indent,
+                break_long_words=False,
+                break_on_hyphens=False,
             )
 
         return plain_report, tag_report
 
     if not pl.description:
-        mywarn('Place has no Description')
-        desc_plain_report = desc_tag_report = ['(none)']
+        mywarn("Place has no Description")
+        desc_plain_report = desc_tag_report = ["(none)"]
     else:
         desc_plain_report, desc_tag_report = process_html(pl.description)
 
     if not imgset.credits:
-        mywarn('ImageSet has no credits')
-        credits_plain_report = credits_tag_report = ['(none)']
+        mywarn("ImageSet has no credits")
+        credits_plain_report = credits_tag_report = ["(none)"]
     else:
         credits_plain_report, credits_tag_report = process_html(imgset.credits)
 
     if not imgset.credits_url:
-        mywarn('ImageSet has no CreditsUrl')
-        credits_url_report = '(none)'
+        mywarn("ImageSet has no CreditsUrl")
+        credits_url_report = "(none)"
     else:
         credits_url_report = imgset.credits_url
 
     # Finally, report out
 
-    print(f'Filename: {settings.path}')
-    print(f'Title (no HTML allowed): {f_name}')
-    print(f'Source channel: {channel_report}')
-    print(f'Source/credit URL: {credits_url_report}')
-    print(f'Item ID (should be unique within channel): {item_id_report}')
-    print(f'Publication date: {pubdate_report}')
+    print(f"Filename: {settings.path}")
+    print(f"Title (no HTML allowed): {f_name}")
+    print(f"Source channel: {channel_report}")
+    print(f"Source/credit URL: {credits_url_report}")
+    print(f"Item ID (should be unique within channel): {item_id_report}")
+    print(f"Publication date: {pubdate_report}")
     print()
 
-    print('Description reduced to plain text:')
+    print("Description reduced to plain text:")
     print()
     for line in desc_plain_report:
-        print('   ', line)
+        print("   ", line)
     print()
-    print('Full HTML description (check links and tags!):')
+    print("Full HTML description (check links and tags!):")
     print()
     for line in desc_tag_report:
-        print('   ', line)
+        print("   ", line)
     print()
-    print('Credits reduced to plain text:')
+    print("Credits reduced to plain text:")
     print()
     for line in credits_plain_report:
-        print('   ', line)
+        print("   ", line)
     print()
-    print('Full HTML credits (check links and tags!):')
+    print("Full HTML credits (check links and tags!):")
     print()
     for line in credits_tag_report:
-        print('   ', line)
+        print("   ", line)
 
     print()
     n_warnings = warnings_hack[0]
 
     if n_warnings:
-        print(f'Summary: {n_warnings} were flagged')
+        print(f"Summary: {n_warnings} were flagged")
     else:
-        print('Summary: file structure looks OK! Check description and credits HTML.')
+        print("Summary: file structure looks OK! Check description and credits HTML.")
 
 
 def wtml_rewrite_disk(settings):
@@ -691,7 +715,7 @@ def wtml_rewrite_disk(settings):
     f = Folder.from_file(settings.in_path)
     f.mutate_urls(mutator)
 
-    with open(settings.out_path, 'wt', encoding='utf8') as f_out:
+    with open(settings.out_path, "wt", encoding="utf8") as f_out:
         f.write_xml(f_out)
 
 
@@ -701,7 +725,7 @@ def wtml_rewrite_urls(settings):
     f = Folder.from_file(settings.in_path)
     f.mutate_urls(make_absolutizing_url_mutator(settings.baseurl))
 
-    with open(settings.out_path, 'wt', encoding='utf8') as f_out:
+    with open(settings.out_path, "wt", encoding="utf8") as f_out:
         f.write_xml(f_out)
 
 
@@ -720,13 +744,19 @@ def wtml_transfer_astrometry(settings):
             return  # convenience for Place handling
 
         if imgset.name in imagesets:
-            print('note: imageset name "%s" appears repeatedly in input file "%s"' % (imgset.name, settings.in_path))
+            print(
+                'note: imageset name "%s" appears repeatedly in input file "%s"'
+                % (imgset.name, settings.in_path)
+            )
         else:
             imagesets[imgset.name] = imgset
 
     def add_place(place):
         if place.name in places:
-            print('note: place name "%s" appears repeatedly in input file "%s"' % (place.name, settings.in_path))
+            print(
+                'note: place name "%s" appears repeatedly in input file "%s"'
+                % (place.name, settings.in_path)
+            )
         else:
             places[place.name] = place
 
@@ -735,31 +765,31 @@ def wtml_transfer_astrometry(settings):
         add_imageset(place.foreground_image_set)
 
     IMAGESET_ASTROMETRIC_ATTRS = [
-        'data_set_type',
-        'width_factor',
-        'reference_frame',
-        'base_degrees_per_tile',
-        'projection',
-        'center_x',
-        'center_y',
-        'offset_x',
-        'offset_y',
-        'rotation_deg',
+        "data_set_type",
+        "width_factor",
+        "reference_frame",
+        "base_degrees_per_tile",
+        "projection",
+        "center_x",
+        "center_y",
+        "offset_x",
+        "offset_y",
+        "rotation_deg",
     ]
 
     PLACE_ASTROMETRIC_ATTRS = [
-        'data_set_type',
-        'ra_hr',
-        'dec_deg',
-        'latitude',
-        'longitude',
-        'distance',
-        'angular_size',
-        'zoom_level',
-        'rotation_deg',
-        'angle',
-        'dome_alt',
-        'dome_az'
+        "data_set_type",
+        "ra_hr",
+        "dec_deg",
+        "latitude",
+        "longitude",
+        "distance",
+        "angular_size",
+        "zoom_level",
+        "rotation_deg",
+        "angle",
+        "dome_alt",
+        "dome_az",
     ]
 
     def update_imageset(imgset):
@@ -814,19 +844,20 @@ def wtml_transfer_astrometry(settings):
             elif isinstance(item, ImageSet):
                 n_updates += update_imageset(item)
 
-        print('%s: updated %d items' % (update_path, n_updates))
+        print("%s: updated %d items" % (update_path, n_updates))
 
         if n_updates > 0:
             n_updated_files += 1
 
-            with open(update_path, 'wt', encoding='utf8') as f_out:
+            with open(update_path, "wt", encoding="utf8") as f_out:
                 folder.write_xml(f_out)
 
     print()
-    print('Updated %d WTML files.' % n_updated_files)
+    print("Updated %d WTML files." % n_updated_files)
 
 
 # The CLI driver:
+
 
 def entrypoint(args=None):
     """The entrypoint for the \"wwtdatatool\" command-line interface.
@@ -846,8 +877,8 @@ def entrypoint(args=None):
     commands = set()
 
     for py_name, value in globals().items():
-        if py_name.endswith('_getparser'):
-            cmd_name = py_name[:-10].replace('_', '-')
+        if py_name.endswith("_getparser"):
+            cmd_name = py_name[:-10].replace("_", "-")
             subparser = subparsers.add_parser(cmd_name)
             value(subparser)
             commands.add(cmd_name)
@@ -857,15 +888,15 @@ def entrypoint(args=None):
     settings = parser.parse_args(args)
 
     if settings.subcommand is None:
-        print('Run me with --help for help. Allowed subcommands are:')
+        print("Run me with --help for help. Allowed subcommands are:")
         print()
         for cmd in sorted(commands):
-            print('   ', cmd)
+            print("   ", cmd)
         return
 
-    py_name = settings.subcommand.replace('-', '_')
+    py_name = settings.subcommand.replace("-", "_")
 
-    impl = globals().get(py_name + '_impl')
+    impl = globals().get(py_name + "_impl")
     if impl is None:
         die('no such subcommand "{}"'.format(settings.subcommand))
 
