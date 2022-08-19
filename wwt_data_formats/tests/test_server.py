@@ -1,12 +1,16 @@
 # -*- mode: python; coding: utf-8 -*-
-# Copyright 2020 the .NET Foundation
+# Copyright 2020-2022 the .NET Foundation
 # Licensed under the MIT License.
 
 from __future__ import absolute_import, division, print_function
 
 from argparse import Namespace
 from http.server import HTTPServer
+import io
+import os
+import pytest
 import requests
+import sys
 from threading import Thread
 from time import sleep
 
@@ -125,3 +129,34 @@ def test_smoke():
 
     with HTTPServer(server_address, server.WWTRequestHandler) as _httpd:
         pass
+
+
+@pytest.mark.skipif(os.name != "posix", reason="heartbeat test requires Unix OS")
+def test_heartbeat():
+    settings = Namespace()
+    settings.port = 0  # we don't care
+    settings.root_dir = test_path()
+    settings.heartbeat = True
+
+    read_me, write_me = os.pipe()
+    pid = os.fork()
+
+    if pid == 0:
+        # Child process: run server
+        os.close(read_me)
+        sys.stdout = io.TextIOWrapper(os.fdopen(write_me, "wb"))
+        try:
+            server.run_server(settings)
+        except Exception as e:
+            print(e, file=sys.stderr, flush=True)
+        os._exit(10)
+
+    # Parent process: see if we can kill it by closing its stdout
+    os.close(write_me)
+    sleep(3)
+    os.close(read_me)
+    sleep(3)
+    wpid, wstatus = os.waitpid(pid, os.WNOHANG)
+
+    assert wpid == pid
+    assert os.waitstatus_to_exitcode(wstatus) == 10
