@@ -35,10 +35,13 @@ at <a href="https://wwt-data-formats.readthedocs.io/">the wwt_data_formats websi
     access_right: 'open',
     license: 'MIT', // see https://spdx.org/licenses/
 
-    grants: [
-      // National Science Foundation:
-      {id: '10.13039/100000001::2004840'},
-    ],
+    // Relevant grants are currently (2022 Aug) missing from Zenodo's database
+    // so we don't include them for now.
+    //
+    // grants: [
+    //   // National Science Foundation:
+    //   {id: '10.13039/100000001::2004840'},
+    // ],
 
     // Keywords use an uncontrolled vocabulary (and so are of limited usefulness):
     keywords: [
