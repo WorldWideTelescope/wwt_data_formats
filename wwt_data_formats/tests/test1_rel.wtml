@@ -17,7 +17,7 @@
                 OffsetY="1.3867980621800038e-05" Permission="0" Projection="Tan"
                 Rotation="50.320000000000306" Sparse="True" StockSet="False" TileLevels="7"
                 Url="L{1}X{2}Y{3}.png" WidthFactor="2">
-        <Credits>NASA, ESA, N. Smith (University of California, Berkeley), and The Hubble Heritage Team (STScI/AURA)</Credits>
+        <Credits>NASA, ESA, N. Smith (University of California, Berkeley), and The Hubble Heritage Team (STScI,AURA)</Credits>
         <CreditsUrl>https://www.spacetelescope.org/images/heic0707a/</CreditsUrl>
         <Description>Hubble's view of the Carina Nebula ...</Description>
         <ThumbnailUrl>thumb.jpg</ThumbnailUrl>

@@ -14,12 +14,15 @@ Usage
 
 .. code-block:: shell
 
-   wwtdatatool serve [--port PORT] {PATH}
+   wwtdatatool serve [--port PORT] [--heartbeat] {PATH}
 
 - The ``PATH`` argument specifies the directory that will be used as the root
   for the files in the server
 - The optional ``--port PORT`` argument allows you to specify the specific port
   at which the server will listen for connections
+- The optional ``--heartbeat`` argument can be used in scripting scenarios to
+  help make sure that the server exits when launched over SSH. It is unlikely
+  that you will ever need to specify it explicitly.
 
 Details
 =======
@@ -57,6 +60,12 @@ of the ``wwtdatatool serve`` command even if the data that you are serving have
 changed. You may need to force your browser to reload new content to get updated
 data. A quick way to avoid this issue is to launch the server using a new
 ``--port`` number.
+
+The ``--heartbeat`` option causes the server to print out a line of text every
+second while it is running. This can be useful when launching the server over
+SSH, because if the connection is dropped, the printout will fail and cause the
+server to exit. It is unlikely that you will ever need to specify this option
+explicitly.
 
 See Also
 ========
