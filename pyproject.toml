@@ -1,4 +1,5 @@
 [tool.cranko]
-extra_python_rewrite_files = [
-  "docs/conf.py"
+anotated_files = [
+  "docs/conf.py",
+  "wwt_data_formats/cli.py",
 ]
