@@ -1,3 +1,16 @@
+# wwt_data_formats 0.15.0 (2022-08-19)
+
+- Start depositing releases into Zenodo and registering DOIs for them (#52,
+  @pkgw)! New commands `wwtdatatool show version-doi`,
+  `wwtdatatool show concept-doi`, and `wwtdatatool show version` help surface
+  the DOIs to users of the software.
+- Add some features to the server mode in to help enable simple display of tiled
+  FITS data over an SSH tunnel (#51, @pkgw). The server gains a `--heartbeat`
+  option, which helps us make sure it exits when the SSH connection closes, and
+  there is a new `wwt_data_formats.server.launch_app_for_wtml()` function that
+  makes the existing viewer-app-launching logic more reusable.
+
+
 # wwt_data_formats 0.14.0 (2022-07-05)
 
 - Correct the constellation-finding for southern Apus (#49, @pkgw). Some of the

@@ -12,6 +12,9 @@ CLI Reference
    cli/cabinet-unpack
    cli/preview
    cli/serve
+   cli/show-concept-doi
+   cli/show-version
+   cli/show-version-doi
    cli/wtml-merge
    cli/wtml-report
    cli/wtml-rewrite-disk

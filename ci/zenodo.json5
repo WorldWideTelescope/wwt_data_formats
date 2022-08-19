@@ -1,0 +1,40 @@
+{
+  "conceptrecid": "7011176",
+  "metadata": {
+    "access_right": "open",
+    "creators": [
+      {
+        "affiliation": "Center for Astrophysics | Harvard & Smithsonian",
+        "name": "Carifio, Jonathan",
+        "orcid": "0000-0002-7759-2601"
+      },
+      {
+        "affiliation": "Winter Way",
+        "name": "Norman, Henrik",
+        "orcid": "0000-0003-4189-3450"
+      },
+      {
+        "affiliation": "Center for Astrophysics | Harvard & Smithsonian",
+        "name": "Williams, Peter K. G.",
+        "orcid": "0000-0003-3734-3587"
+      }
+    ],
+    "description": "wwt_data_formats is a low-level Python package that interfaces with the various XML serialization formats used by AAS WorldWide Telescope. Learn more at <a href=\"https://wwt-data-formats.readthedocs.io/\">the wwt_data_formats website</a>.",
+    "keywords": [
+      "AAS WorldWide Telescope",
+      "Astronomy",
+      "Python",
+      "Visualization"
+    ],
+    "language": "eng",
+    "license": "MIT",
+    "publication_date": "2022-08-19",
+    "title": "wwt_data_formats 0.15.0",
+    "upload_type": "software",
+    "version": "0.15.0"
+  },
+  "conceptdoi": "10.5281/zenodo.7011176",
+  "record_id": "7011177",
+  "doi": "10.5281/zenodo.7011177",
+  "bucket_link": "https://zenodo.org/api/files/6ea96ade-90e2-4598-8dcb-457e1982653d"
+}
