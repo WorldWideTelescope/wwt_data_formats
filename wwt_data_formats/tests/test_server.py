@@ -24,6 +24,7 @@ class TestRunServer(object):
         settings = Namespace()
         settings.port = cls.server_port
         settings.root_dir = test_path()
+        settings.heartbeat = False
 
         # Note: there can be a race condition between server startup and the
         # execution of the tests. There doesn't seem to be any mechanism to

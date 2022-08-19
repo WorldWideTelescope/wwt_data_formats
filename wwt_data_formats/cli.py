@@ -657,6 +657,8 @@ def wtml_report(settings):
         mywarn("ImageSet has no credits")
         credits_plain_report = credits_tag_report = ["(none)"]
     else:
+        # NB this can cause MarkupResemblesLocatorWarning if the text is short
+        # and contains no HTML tags
         credits_plain_report, credits_tag_report = process_html(imgset.credits)
 
     if not imgset.credits_url:
