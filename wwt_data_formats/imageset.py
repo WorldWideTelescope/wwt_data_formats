@@ -426,7 +426,9 @@ class ImageSet(LockedXmlTraits, UrlContainer):
         will do its best to detect and reject them.
         """
 
-        if headers["CTYPE1"] != "RA---TAN" or headers["CTYPE2"] != "DEC--TAN":
+        if headers["CTYPE1"] not in ("RA---TAN", "RA---TPV") or headers[
+            "CTYPE2"
+        ] not in ("DEC--TAN", "DEC--TPV"):
             raise ValueError("WCS coordinates must be in an equatorial/TAN projection")
 
         # Figure out the stuff we need from the headers.
