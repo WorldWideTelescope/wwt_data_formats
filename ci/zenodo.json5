@@ -28,13 +28,13 @@
     ],
     "language": "eng",
     "license": "MIT",
-    "publication_date": "2022-08-19",
-    "title": "wwt_data_formats 0.15.0",
+    "publication_date": "2022-08-23",
+    "title": "wwt_data_formats 0.15.1",
     "upload_type": "software",
-    "version": "0.15.0"
+    "version": "0.15.1"
   },
   "conceptdoi": "10.5281/zenodo.7011176",
-  "record_id": "7011177",
-  "doi": "10.5281/zenodo.7011177",
-  "bucket_link": "https://zenodo.org/api/files/6ea96ade-90e2-4598-8dcb-457e1982653d"
+  "record_id": "7017142",
+  "doi": "10.5281/zenodo.7017142",
+  "bucket_link": "https://zenodo.org/api/files/36fca0be-f871-403d-a154-e892ac607dbb"
 }
