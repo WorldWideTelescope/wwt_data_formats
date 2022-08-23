@@ -1,4 +1,21 @@
-# rc: minor bump
+# rc: micro bump
+
+- Fix `Imageset.set_position_from_wcs()` to succeed sensibly when the imageset
+  uses the TOAST tiling (#50, @imbasimba). Because TOAST is a global coordinate
+  system, this doesn't affect the image appearance, but it does help the client
+  center on the image data. For all-sky or most-of-sky TOAST images, there isn't
+  necessarily a well-defined "center", but some images are large enough to
+  benefit from TOASTing but small enough for the notion of a "center" to be
+  meaningful.
+- Record Toasty's Zenodo "concept" record ID so that this release, and future
+  ones, will be chained together (#53, @pkgw).
+
+The DOI of this release is [xx.xxxx/dev-build.wwt_data_formats.version][xdoi].
+
+[xdoi]: https://doi.org/xx.xxxx/dev-build.wwt_data_formats.version
+
+
+# wwt_data_formats 0.15.0 (2022-08-19)
 
 - Start depositing releases into Zenodo and registering DOIs for them (#52,
   @pkgw)! New commands `wwtdatatool show version-doi`,

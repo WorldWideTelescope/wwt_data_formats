@@ -463,7 +463,7 @@ class ImageSet(LockedXmlTraits, UrlContainer):
         if cd_det < 0:
             cd_sign = -1
 
-            if self.tile_levels > 0:
+            if self.tile_levels > 0 and self.projection != ProjectionType.TOAST:
                 raise Exception(
                     "WCS for tiled imagery must have top-down/negative/JPEG_like parity"
                 )
@@ -486,8 +486,8 @@ class ImageSet(LockedXmlTraits, UrlContainer):
         if not abs(cd_det) > 0:
             raise ValueError("determinant of the CD matrix is not positive")
 
-        scale_x = math.sqrt(cd1_1 ** 2 + cd1_2 ** 2)
-        scale_y = math.sqrt(cd2_1 ** 2 + cd2_2 ** 2)
+        scale_x = math.sqrt(cd1_1**2 + cd1_2**2)
+        scale_y = math.sqrt(cd2_1**2 + cd2_2**2)
 
         if abs(scale_x - scale_y) / (scale_x + scale_y) > TOL:
             raise ValueError("WWT cannot express non-square pixels, which this WCS has")
@@ -531,21 +531,22 @@ class ImageSet(LockedXmlTraits, UrlContainer):
         self.center_y = dec_deg
         self.rotation_deg = rot_rad * 180 / math.pi
 
-        if self.tile_levels > 0:  # are we tiled?
-            self.projection = ProjectionType.TAN
-            self.bottoms_up = False
-            self.offset_x = (width / 2 - refpix_x) * scale_x
-            self.offset_y = (refpix_y - height / 2) * scale_y
-            self.base_degrees_per_tile = scale_y * 256 * 2 ** self.tile_levels
-        else:
-            self.projection = ProjectionType.SKY_IMAGE
-            self.bottoms_up = cd_sign == -1
-            self.offset_x = refpix_x
-            self.offset_y = height - refpix_y
-            self.base_degrees_per_tile = scale_y
+        if self.projection != ProjectionType.TOAST:
+            if self.tile_levels > 0:  # are we tiled?
+                self.projection = ProjectionType.TAN
+                self.bottoms_up = False
+                self.offset_x = (width / 2 - refpix_x) * scale_x
+                self.offset_y = (refpix_y - height / 2) * scale_y
+                self.base_degrees_per_tile = scale_y * 256 * 2**self.tile_levels
+            else:
+                self.projection = ProjectionType.SKY_IMAGE
+                self.bottoms_up = cd_sign == -1
+                self.offset_x = refpix_x
+                self.offset_y = height - refpix_y
+                self.base_degrees_per_tile = scale_y
 
-            if self.bottoms_up:
-                self.rotation_deg = -self.rotation_deg
+                if self.bottoms_up:
+                    self.rotation_deg = -self.rotation_deg
 
         if place is not None:
             place.set_ra_dec(center_ra_deg / 15.0, center_dec_deg)
