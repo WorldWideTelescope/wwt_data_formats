@@ -46,6 +46,7 @@ API Reference
    api/wwt_data_formats.imageset
    api/wwt_data_formats.layers
    api/wwt_data_formats.place
+   api/wwt_data_formats.plate
    api/wwt_data_formats.server
 
 
