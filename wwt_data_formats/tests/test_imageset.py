@@ -166,6 +166,14 @@ def test_wcs_1():
 
     _check_wcs_roundtrip(imgset, 3000, wcs_keywords)
 
+    # Also check with TPV headers, which we allow for DASCH
+
+    wcs_keywords["CTYPE1"] = "RA---TPV"
+    wcs_keywords["CTYPE2"] = "DEC--TPV"
+    imgset.set_position_from_wcs(wcs_keywords, 3000, 3000)
+    observed_xml = imgset.to_xml()
+    assert_xml_trees_equal(expected_xml, observed_xml)
+
 
 def test_wcs_only_two_pc_values():
     expected_str = """
