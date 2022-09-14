@@ -6,29 +6,11 @@ from __future__ import absolute_import, division, print_function
 
 from mock import Mock
 import os.path
-import shutil
-import tempfile
 import pytest
 from xml.etree import ElementTree as etree
 
-from . import assert_xml_trees_equal, test_path
+from . import assert_xml_trees_equal, tempdir, test_path, work_in_tempdir
 from .. import cli, folder, imageset, place
-
-
-@pytest.fixture
-def tempdir():
-    d = tempfile.mkdtemp()
-    yield d
-    shutil.rmtree(d)
-
-
-@pytest.fixture
-def in_tempdir(tempdir):
-    prev_dir = os.getcwd()
-    os.chdir(tempdir)
-    yield tempdir
-    # Windows can't remove the temp tree unless we chdir out of it.
-    os.chdir(prev_dir)
 
 
 BASIC_XML_STRING = """
@@ -205,7 +187,7 @@ def test_wtml_report():
     cli.entrypoint(["wtml", "report", test_path("report_rel.wtml")])
 
 
-def test_wtml_rewrite_disk(in_tempdir):
+def test_wtml_rewrite_disk(work_in_tempdir):
     f = folder.Folder()
     f.url = "sub%20dir/image.jpg"
 
@@ -215,12 +197,12 @@ def test_wtml_rewrite_disk(in_tempdir):
     cli.entrypoint(["wtml", "rewrite-disk", "index_rel.wtml", "index_disk.wtml"])
 
     f = folder.Folder.from_file("index_disk.wtml")
-    # abspath('') is not necessarily equal to abspath(in_tempdir), due to
+    # abspath('') is not necessarily equal to abspath(work_in_tempdir), due to
     # symlinks and Windows filename shorterning.
     assert f.url == os.path.join(os.path.abspath(""), "sub dir", "image.jpg")
 
 
-def test_wtml_rewrite_urls(in_tempdir):
+def test_wtml_rewrite_urls(work_in_tempdir):
     f = folder.Folder()
     f.url = "../updir/somewhere.wtml"
 
