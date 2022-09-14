@@ -1,4 +1,15 @@
-# rc: micro bump
+# rc: minor bump
+
+- Add support for reading and writing "version 1" WWT plate files (#55, @pkgw)
+  in the new `wwt_data_formats.plate` module.
+- Update `Imageset.set_position_from_wcs()` to accept WCS where the coordinate
+  types are labeled like `RA---TPV`, which is a non-standard way of indicating a
+  distorted tangential projection (#54, @pkgw). For the purposes of image
+  position determination, we don't need to worry about the distortions, and this
+  helps us handle DASCH images.
+
+
+# wwt_data_formats 0.15.1 (2022-08-23)
 
 - Fix `Imageset.set_position_from_wcs()` to succeed sensibly when the imageset
   uses the TOAST tiling (#50, @imbasimba). Because TOAST is a global coordinate
@@ -10,9 +21,9 @@
 - Record Toasty's Zenodo "concept" record ID so that this release, and future
   ones, will be chained together (#53, @pkgw).
 
-The DOI of this release is [xx.xxxx/dev-build.wwt_data_formats.version][xdoi].
+The DOI of this release is [10.5281/zenodo.7017142][xdoi].
 
-[xdoi]: https://doi.org/xx.xxxx/dev-build.wwt_data_formats.version
+[xdoi]: https://doi.org/10.5281/zenodo.7017142
 
 
 # wwt_data_formats 0.15.0 (2022-08-19)
