@@ -1,3 +1,11 @@
+# wwt_data_formats 0.16.1 (2022-10-25)
+
+- Fix positioning of "study" images with odd-sized axes (#56, @pkgw). These were
+  off by a half-pixel due to an oversight in the connection between the
+  coordinate computations implemented here and the way that the image data are
+  generated in Toasty.
+
+
 # wwt_data_formats 0.16.0 (2022-09-14)
 
 - Add support for reading and writing "version 1" WWT plate files (#55, @pkgw)

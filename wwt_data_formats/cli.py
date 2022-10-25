@@ -281,7 +281,7 @@ def show_impl(settings):
         print(version)
     elif settings.show_command == "version-doi":
         # This string constant will be rewritten by Cranko during releases:
-        doi = "10.5281/zenodo.7080158"
+        doi = "10.5281/zenodo.7250507"
         if not doi.startswith("10."):
             warn("this DOI is a fake value used for development builds")
         print(doi)
