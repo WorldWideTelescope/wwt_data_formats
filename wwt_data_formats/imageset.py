@@ -537,9 +537,22 @@ class ImageSet(LockedXmlTraits, UrlContainer):
             if self.tile_levels > 0:  # are we tiled?
                 self.projection = ProjectionType.TAN
                 self.bottoms_up = False
-                self.offset_x = (width / 2 - refpix_x) * scale_x
-                self.offset_y = (refpix_y - height / 2) * scale_y
                 self.base_degrees_per_tile = scale_y * 256 * 2**self.tile_levels
+
+                # In the tiled case, the proper setting of `offset_[xy]` depends
+                # on how exactly the source image will be placed onto the tile
+                # coordinate system. For instance, if the source image were only
+                # 10x10 pixels, you could drop it just about anywhere within a
+                # 256x256 tile, and you'd have to adjust these settings to
+                # match. There's one obvious preferred choice: place the image
+                # right at the center of the tiling pixelization, which makes
+                # the calculation easy. One subtlety, though, is what to do when
+                # the image size is odd, in which case it has to be shifted a
+                # half-pixel over from "optimal" centering. The expressions here
+                # give correct placement in conjunction with the "study" code in
+                # Toasty.
+                self.offset_x = ((width + 1) // 2 - refpix_x) * scale_x
+                self.offset_y = (refpix_y - (height + 1) // 2) * scale_y
             else:
                 self.projection = ProjectionType.SKY_IMAGE
                 self.bottoms_up = cd_sign == -1
