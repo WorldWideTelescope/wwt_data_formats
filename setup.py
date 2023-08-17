@@ -37,14 +37,14 @@ project homepage].
 setup_args = dict(
     name="wwt_data_formats",  # cranko project-name
     version="0.dev0",  # cranko project-version
-    description="Low-level interface to AAS WorldWide Telescope data formats",
+    description="Low-level interface to WorldWide Telescope data formats",
     long_description=get_long_desc(),
     long_description_content_type="text/markdown",
     url="https://wwt-data-formats.readthedocs.io/",
     license="MIT",
     platforms="Linux, Mac OS X",
-    author="AAS WorldWide Telescope Team",
-    author_email="wwt@aas.org",
+    author="WorldWide Telescope Team",
+    author_email="hello@worldwidetelescope.org",
     classifiers=[
         "Intended Audience :: Science/Research",
         "License :: OSI Approved :: MIT License",

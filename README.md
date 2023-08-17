@@ -5,12 +5,10 @@
 # WWT Data Formats
 
 <!--pypi-begin-->
-[wwt_data_formats] is a low-level Python package that
-interfaces with the various XML serialization formats used by the [AAS]
-[WorldWide Telescope].
+[wwt_data_formats] is a low-level Python package that interfaces with the
+various XML serialization formats used by [WorldWide Telescope].
 
 [wwt_data_formats]: https://wwt-data-formats.readthedocs.io/
-[AAS]: https://aas.org/
 [WorldWide Telescope]: http://www.worldwidetelescope.org/
 <!--pypi-end-->
 
@@ -80,10 +78,10 @@ maintained by
 
 ## Acknowledgments
 
-[wwt_data_formats] is part of the AAS WorldWide Telescope system, a [.NET Foundation]
-project managed by the non-profit [American Astronomical Society] (AAS). Work
-on WWT has been supported by the AAS, the US [National Science Foundation]
-(grants [1550701] and [1642446]), the [Gordon and Betty Moore Foundation], and
+[wwt_data_formats] is part of the WorldWide Telescope system, a [.NET
+Foundation] project. Work on WWT has been supported by the [American
+Astronomical Society] (AAS), the US [National Science Foundation] (grants
+[1550701], [1642446], and [2004840]), the [Gordon and Betty Moore Foundation], and
 [Microsoft].
 
 [.NET Foundation]: https://dotnetfoundation.org/
@@ -91,5 +89,6 @@ on WWT has been supported by the AAS, the US [National Science Foundation]
 [National Science Foundation]: https://www.nsf.gov/
 [1550701]: https://www.nsf.gov/awardsearch/showAward?AWD_ID=1550701
 [1642446]: https://www.nsf.gov/awardsearch/showAward?AWD_ID=1642446
+[2004840]: https://www.nsf.gov/awardsearch/showAward?AWD_ID=2004840
 [Gordon and Betty Moore Foundation]: https://www.moore.org/
 [Microsoft]: https://www.microsoft.com/
