@@ -12,9 +12,9 @@ __all__ = """
 ImageSet
 """.split()
 
+from argparse import Namespace
 import math
-from traitlets import Bool, Float, Int, Unicode, UseEnum
-from xml.etree import ElementTree as etree
+from traitlets import Bool, Float, Instance, Int, Unicode, UseEnum
 
 from . import LockedXmlTraits, XmlSer
 from .abcs import UrlContainer
@@ -336,6 +336,12 @@ class ImageSet(LockedXmlTraits, UrlContainer):
 
     data_max = Float(0.0).tag(xml=XmlSer.attr("DataMax"), xml_omit_zero=True)
     """Highest data value of a FITS file."""
+
+    xmeta = Instance(
+        Namespace,
+        args=(),
+        help="XML metadata - a namespace object for attaching arbitrary text to serialize",
+    ).tag(xml=XmlSer.ns_to_attr("X"))
 
     def _tag_name(self):
         return "ImageSet"

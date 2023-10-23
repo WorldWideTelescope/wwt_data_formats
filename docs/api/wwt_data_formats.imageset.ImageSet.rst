@@ -20,6 +20,8 @@ ImageSet
       ~ImageSet.credits
       ~ImageSet.credits_url
       ~ImageSet.cross_validation_lock
+      ~ImageSet.data_max
+      ~ImageSet.data_min
       ~ImageSet.data_set_type
       ~ImageSet.dem_url
       ~ImageSet.description
@@ -33,6 +35,8 @@ ImageSet
       ~ImageSet.offset_x
       ~ImageSet.offset_y
       ~ImageSet.permission
+      ~ImageSet.pixel_cut_high
+      ~ImageSet.pixel_cut_low
       ~ImageSet.projection
       ~ImageSet.quad_tree_map
       ~ImageSet.reference_frame
@@ -94,6 +98,8 @@ ImageSet
    .. autoattribute:: credits
    .. autoattribute:: credits_url
    .. autoattribute:: cross_validation_lock
+   .. autoattribute:: data_max
+   .. autoattribute:: data_min
    .. autoattribute:: data_set_type
    .. autoattribute:: dem_url
    .. autoattribute:: description
@@ -107,6 +113,8 @@ ImageSet
    .. autoattribute:: offset_x
    .. autoattribute:: offset_y
    .. autoattribute:: permission
+   .. autoattribute:: pixel_cut_high
+   .. autoattribute:: pixel_cut_low
    .. autoattribute:: projection
    .. autoattribute:: quad_tree_map
    .. autoattribute:: reference_frame
