@@ -48,6 +48,7 @@ ImageSet
       ~ImageSet.tile_levels
       ~ImageSet.url
       ~ImageSet.width_factor
+      ~ImageSet.xmeta
 
    .. rubric:: Methods Summary
 
@@ -126,6 +127,7 @@ ImageSet
    .. autoattribute:: tile_levels
    .. autoattribute:: url
    .. autoattribute:: width_factor
+   .. autoattribute:: xmeta
 
    .. rubric:: Methods Documentation
 
