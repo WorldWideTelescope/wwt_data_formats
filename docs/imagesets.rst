@@ -4,7 +4,7 @@
 WWT Image Sets
 ==============
 
-Images in the AAS WorldWide Telescope can come in a variety of formats:
+Images in WorldWide Telescope can come in a variety of formats:
 
 - Standard bitmapped images like PNG or JPG files
 - Scientific data in FITS files

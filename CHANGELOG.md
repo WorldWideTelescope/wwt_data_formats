@@ -1,4 +1,17 @@
-# rc: micro bump
+# rc: minor bump
+
+- Add an `xmeta` attribute to enable XML-serializable custom metadata that can be
+  attached to imagesets (#58, @pkgw)
+- Various updates for sponsorship branding changes.
+
+The DOI of this release should be
+[xx.xxxx/dev-build.wwt_data_formats.version][xdoi]. But Zenodo just did a big
+backend API change. Will our processing still work??
+
+[xdoi]: https://doi.org/xx.xxxx/dev-build.wwt_data_formats.version
+
+
+# wwt_data_formats 0.16.1 (2022-10-25)
 
 - Fix positioning of "study" images with odd-sized axes (#56, @pkgw). These were
   off by a half-pixel due to an oversight in the connection between the
