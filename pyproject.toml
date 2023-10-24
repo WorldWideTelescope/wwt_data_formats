@@ -1,5 +1,5 @@
 [tool.cranko]
-anotated_files = [
+annotated_files = [
   "docs/conf.py",
   "wwt_data_formats/cli.py",
 ]

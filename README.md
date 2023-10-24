@@ -5,14 +5,28 @@
 # WWT Data Formats
 
 <!--pypi-begin-->
-[wwt_data_formats] is a low-level Python package that
-interfaces with the various XML serialization formats used by the [AAS]
-[WorldWide Telescope].
+[wwt_data_formats] is a low-level Python package that interfaces with the
+various XML serialization formats used by [WorldWide Telescope].
 
 [wwt_data_formats]: https://wwt-data-formats.readthedocs.io/
-[AAS]: https://aas.org/
-[WorldWide Telescope]: http://www.worldwidetelescope.org/
+[WorldWide Telescope]: https://worldwidetelescope.org/
 <!--pypi-end-->
+
+[//]: # (numfocus-fiscal-sponsor-attribution)
+
+The WorldWide Telescope project uses an [open governance
+model](https://worldwidetelescope.org/about/governance/) and is fiscally
+sponsored by [NumFOCUS](https://numfocus.org/). Consider making a
+[tax-deductible donation](https://numfocus.org/donate-for-worldwide-telescope)
+to help the project pay for developer time, professional services, travel,
+workshops, and a variety of other needs.
+
+<div align="center">
+  <a href="https://numfocus.org/donate-for-worldwide-telescope">
+    <img height="60px"
+         src="https://raw.githubusercontent.com/numfocus/templates/master/images/numfocus-logo.png">
+  </a>
+</div>
 
 
 ## Installation
@@ -80,10 +94,10 @@ maintained by
 
 ## Acknowledgments
 
-[wwt_data_formats] is part of the AAS WorldWide Telescope system, a [.NET Foundation]
-project managed by the non-profit [American Astronomical Society] (AAS). Work
-on WWT has been supported by the AAS, the US [National Science Foundation]
-(grants [1550701] and [1642446]), the [Gordon and Betty Moore Foundation], and
+[wwt_data_formats] is part of the WorldWide Telescope system, a [.NET
+Foundation] project. Work on WWT has been supported by the [American
+Astronomical Society] (AAS), the US [National Science Foundation] (grants
+[1550701], [1642446], and [2004840]), the [Gordon and Betty Moore Foundation], and
 [Microsoft].
 
 [.NET Foundation]: https://dotnetfoundation.org/
@@ -91,5 +105,6 @@ on WWT has been supported by the AAS, the US [National Science Foundation]
 [National Science Foundation]: https://www.nsf.gov/
 [1550701]: https://www.nsf.gov/awardsearch/showAward?AWD_ID=1550701
 [1642446]: https://www.nsf.gov/awardsearch/showAward?AWD_ID=1642446
+[2004840]: https://www.nsf.gov/awardsearch/showAward?AWD_ID=2004840
 [Gordon and Betty Moore Foundation]: https://www.moore.org/
 [Microsoft]: https://www.microsoft.com/
