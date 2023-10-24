@@ -1,14 +1,15 @@
 # rc: minor bump
 
-- Add an `xmeta` attribute to enable XML-serializable custom metadata that can be
-  attached to imagesets (#58, @pkgw)
+- Add an `xmeta` attribute to enable XML-(de)serializable custom metadata that
+  can be attached to imagesets (#58, @pkgw)
 - Various updates for sponsorship branding changes.
 
-The DOI of this release should be
-[xx.xxxx/dev-build.wwt_data_formats.version][xdoi]. But Zenodo just did a big
-backend API change. Will our processing still work??
-
-[xdoi]: https://doi.org/xx.xxxx/dev-build.wwt_data_formats.version
+We have temporarily disabled DOI registration with this release (#59, @pkgw).
+The associated release artifacts will report (obviously) bogus DOIs. This is due
+to a recent major update to Zenodo, which seems to have broken their APIs. Our
+Cranko release automation tool has not yet been updated to handle the new
+system. We intend to address that soon, but we have internal motivations to get
+this release out soon, so we are going ahead without the Zenodo deposition.
 
 
 # wwt_data_formats 0.16.1 (2022-10-25)
