@@ -1,5 +1,5 @@
 # -*- mode: python; coding: utf-8 -*-
-# Copyright 2022 the AAS WorldWide Telescope project
+# Copyright 2022 the WorldWide Telescope project
 # Licensed under the MIT License.
 
 from .. import cli

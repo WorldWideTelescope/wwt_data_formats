@@ -9,8 +9,24 @@
 various XML serialization formats used by [WorldWide Telescope].
 
 [wwt_data_formats]: https://wwt-data-formats.readthedocs.io/
-[WorldWide Telescope]: http://www.worldwidetelescope.org/
+[WorldWide Telescope]: https://worldwidetelescope.org/
 <!--pypi-end-->
+
+[//]: # (numfocus-fiscal-sponsor-attribution)
+
+The WorldWide Telescope project uses an [open governance
+model](https://worldwidetelescope.org/about/governance/) and is fiscally
+sponsored by [NumFOCUS](https://numfocus.org/). Consider making a
+[tax-deductible donation](https://numfocus.org/donate-for-worldwide-telescope)
+to help the project pay for developer time, professional services, travel,
+workshops, and a variety of other needs.
+
+<div align="center">
+  <a href="https://numfocus.org/donate-for-worldwide-telescope">
+    <img height="60px"
+         src="https://raw.githubusercontent.com/numfocus/templates/master/images/numfocus-logo.png">
+  </a>
+</div>
 
 
 ## Installation

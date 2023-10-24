@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 project = "wwt_data_formats"
-author = "The AAS WorldWide Telescope Team"
-copyright = "2019-2020 the .NET Foundation"
+author = "The WorldWide Telescope Team"
+copyright = "2019-2023 the .NET Foundation"
 
 release = "0.dev0"  # cranko project-version
 version = ".".join(release.split(".")[:2])

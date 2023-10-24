@@ -29,7 +29,7 @@
 
     // Subset of HTML allowed here:
     description: 'wwt_data_formats is a low-level Python package that interfaces \
-with the various XML serialization formats used by AAS WorldWide Telescope. Learn more \
+with the various XML serialization formats used by WorldWide Telescope. Learn more \
 at <a href="https://wwt-data-formats.readthedocs.io/">the wwt_data_formats website</a>.',
 
     access_right: 'open',
@@ -45,10 +45,10 @@ at <a href="https://wwt-data-formats.readthedocs.io/">the wwt_data_formats websi
 
     // Keywords use an uncontrolled vocabulary (and so are of limited usefulness):
     keywords: [
-      'AAS WorldWide Telescope',
       'Astronomy',
       'Python',
       'Visualization',
+      'WorldWide Telescope',
     ],
   },
 }
