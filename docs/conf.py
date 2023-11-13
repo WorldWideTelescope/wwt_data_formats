@@ -4,7 +4,7 @@ project = "wwt_data_formats"
 author = "The WorldWide Telescope Team"
 copyright = "2019-2023 the .NET Foundation"
 
-release = "0.17.0"  # cranko project-version
+release = "0.18.0"  # cranko project-version
 version = ".".join(release.split(".")[:2])
 
 extensions = [
@@ -60,13 +60,17 @@ nitpick_ignore = [
     ("py:attr", "class_init"),
     ("py:attr", "name"),
     ("py:attr", "this_class"),
+    ("py:class", "EventHandler"),
     ("py:class", "Sentinel"),
+    ("py:class", "TraitType"),
     ("py:class", "t.Any"),
     ("py:class", "t.Callable"),
     ("py:class", "t.Iterable"),
+    ("py:class", "traitlets.traitlets.EventHandler"),
     ("py:class", "traitlets.traitlets.HasDescriptors"),
     ("py:class", "traitlets.traitlets.MetaHasDescriptors"),
     ("py:class", "traitlets.traitlets.MetaHasTraits"),
+    ("py:class", "traitlets.utils.bunch.Bunch"),
     ("py:obj", "handler"),
     ("py:obj", "remove"),
 ]

@@ -1,3 +1,14 @@
+# wwt_data_formats 0.18.0 (2023-11-13)
+
+- Add the `wwtdatatool wtml register-images` command to help registering
+  imagesets with the WWT Constellations system (#60, @pkgw)
+
+As in the previous release, DOI registrations are temporarily disabled (#59,
+@pkgw) because our release automation tools have not been updated to the API
+changes in the Zenodo service. The associated release artifacts will report
+(obviously) bogus DOIs.
+
+
 # wwt_data_formats 0.17.0 (2023-10-24)
 
 - Add an `xmeta` attribute to enable XML-(de)serializable custom metadata that
