@@ -16,6 +16,7 @@ CLI Reference
    cli/show-version
    cli/show-version-doi
    cli/wtml-merge
+   cli/wtml-register-images
    cli/wtml-report
    cli/wtml-rewrite-disk
    cli/wtml-rewrite-urls

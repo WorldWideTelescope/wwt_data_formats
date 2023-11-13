@@ -440,6 +440,31 @@ def wtml_getparser(parser):
         help="The path to the output WTML file.",
     )
 
+    p = subparsers.add_parser("register-images")
+    p.add_argument(
+        "--handle",
+        metavar="HANDLE",
+        required=True,
+        help="The Constellations handle that will own the images",
+    )
+    p.add_argument(
+        "--copyright",
+        metavar="TEXT",
+        required=True,
+        help='The copyright line to be attached the images ("Copyright YYYY Person" or "Public domain")',
+    )
+    p.add_argument(
+        "--license-id",
+        metavar="SPDX-LICENSE-ID",
+        required=True,
+        help='The SPDX license identifier for the image license ("CC-PDDC" for public domain)',
+    )
+    p.add_argument(
+        "path",
+        metavar="WTML",
+        help="The path to a WTML file.",
+    )
+
     p = subparsers.add_parser("report")
     p.add_argument(
         "path",
@@ -498,6 +523,8 @@ def wtml_impl(settings):
 
     if settings.wtml_command == "merge":
         return wtml_merge(settings)
+    elif settings.wtml_command == "register-images":
+        return wtml_register_images(settings)
     elif settings.wtml_command == "report":
         return wtml_report(settings)
     elif settings.wtml_command == "rewrite-disk":
@@ -546,6 +573,33 @@ def wtml_merge(settings):
 
     with open(settings.out_path, "wt", encoding="utf8") as f_out:
         out_folder.write_xml(f_out)
+
+
+def wtml_register_images(settings):
+    """
+    Identify images listed in a WTML and register them with Constellations.
+
+    Requires the wwt_api_client module.
+    """
+    from wwt_api_client import constellations as cx
+
+    from .folder import Folder
+
+    f = Folder.from_file(settings.path)
+    cl = cx.CxClient()
+    hc = cl.handle_client(settings.handle)
+    n = 0
+
+    for _, _, imgset in f.immediate_imagesets():
+        print(imgset.url, "... ", end="")
+        id = hc.add_image_from_set(imgset, settings.copyright, settings.license_id)
+        print(id)
+        n += 1
+
+    if n:
+        print()
+
+    print(f"{n} image(s) registered with WWT Constellations.")
 
 
 def wtml_report(settings):
