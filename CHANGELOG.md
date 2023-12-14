@@ -1,3 +1,14 @@
+# wwt_data_formats 0.18.1 (2023-12-14)
+
+- No code changes
+
+This release brings back DOI registration and Zenodo deposition (#61, @pkgw).
+
+The DOI of this release is [10.5281/zenodo.10383970][xdoi].
+
+[xdoi]: https://doi.org/10.5281/zenodo.10383970
+
+
 # wwt_data_formats 0.18.0 (2023-11-13)
 
 - Add the `wwtdatatool wtml register-images` command to help registering

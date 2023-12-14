@@ -271,17 +271,17 @@ def show_impl(settings):
 
     if settings.show_command == "concept-doi":
         # This string constant will be rewritten by Cranko during releases:
-        doi = "xx.xxxx/dev-build.wwt_data_formats.concept"
+        doi = "10.5281/zenodo.7011176"
         if not doi.startswith("10."):
             warn("this DOI is a fake value used for development builds")
         print(doi)
     elif settings.show_command == "version":
         # This string constant will be rewritten by Cranko during releases:
-        version = "0.18.0"  # cranko project-version
+        version = "0.18.1"  # cranko project-version
         print(version)
     elif settings.show_command == "version-doi":
         # This string constant will be rewritten by Cranko during releases:
-        doi = "xx.xxxx/dev-build.wwt_data_formats.version"
+        doi = "10.5281/zenodo.10383970"
         if not doi.startswith("10."):
             warn("this DOI is a fake value used for development builds")
         print(doi)
