@@ -1,4 +1,15 @@
-# rc: minor bump
+# rc: micro bump
+
+- No code changes
+
+This release brings back DOI registration and Zenodo deposition (#61, @pkgw).
+
+The DOI of this release is [xx.xxxx/dev-build.wwt_data_formats.version][xdoi].
+
+[xdoi]: https://doi.org/xx.xxxx/dev-build.wwt_data_formats.version
+
+
+# wwt_data_formats 0.18.0 (2023-11-13)
 
 - Add the `wwtdatatool wtml register-images` command to help registering
   imagesets with the WWT Constellations system (#60, @pkgw)
