@@ -368,7 +368,8 @@ class ImageSet(LockedXmlTraits, UrlContainer):
         ----------
         headers : :class:`~astropy.io.fits.Header` or string-keyed dict-like
 
-            A set of FITS-like headers including WCS keywords such as ``CRVAL1``.
+            A set of FITS-like headers including WCS keywords such as
+            ``CRVAL1``.
 
         width : positive integer
 
@@ -386,9 +387,9 @@ class ImageSet(LockedXmlTraits, UrlContainer):
 
         fov_factor : optional
 
-            If *place* is provided, its zoom level will be set so that the angular
-            height of the client viewport is this factor times the angular height of
-            the image. The default is 1.7.
+            If *place* is provided, its zoom level will be set so that the
+            angular height of the client viewport is this factor times the
+            angular height of the image. The default is 1.7.
 
         Returns
         -------
@@ -406,6 +407,10 @@ class ImageSet(LockedXmlTraits, UrlContainer):
 
         For the time being, the WCS must be equatorial using the gnomonic
         (``TAN``) projection.
+
+        This function may be used when the imageset :attr:`projection` is TOAST.
+        However, in this case most of the WCS parameters are irrelevant. The WCS
+        information is only used to apply basic centering and sizing settings.
 
         Required keywords in *headers* are:
 
@@ -432,10 +437,13 @@ class ImageSet(LockedXmlTraits, UrlContainer):
         will do its best to detect and reject them.
         """
 
-        if headers["CTYPE1"] not in ("RA---TAN", "RA---TPV") or headers[
-            "CTYPE2"
-        ] not in ("DEC--TAN", "DEC--TPV"):
-            raise ValueError("WCS coordinates must be in an equatorial/TAN projection")
+        if self.projection != ProjectionType.TOAST:
+            if headers["CTYPE1"] not in ("RA---TAN", "RA---TPV") or headers[
+                "CTYPE2"
+            ] not in ("DEC--TAN", "DEC--TPV"):
+                raise ValueError(
+                    "WCS coordinates must be in an equatorial/TAN projection"
+                )
 
         # Figure out the stuff we need from the headers.
 
@@ -484,33 +492,40 @@ class ImageSet(LockedXmlTraits, UrlContainer):
 
         rot_rad = math.atan2(-cd_sign * cd1_2, -cd2_2)
 
-        # We can only express square pixels with a rotation and a potential
-        # parity flip. Do some cross-checks to ensure that the input matrix can
-        # be well-approximated this way. There's probably a smarter
-        # linear-algebra way to do this.
+        # If we're in TOAST projection, we're only using the WCS to assign basic
+        # centering and sizing attributes, and the details of the projection are
+        # unimportant.
+        #
+        # In other cases, they do matter. We can only express square pixels with
+        # a rotation and a potential parity flip. Do some cross-checks to ensure
+        # that the input matrix can be well-approximated this way. There's
+        # probably a smarter linear-algebra way to do this.
 
         TOL = 0.05
-
-        if not abs(cd_det) > 0:
-            raise ValueError("determinant of the CD matrix is not positive")
 
         scale_x = math.sqrt(cd1_1**2 + cd1_2**2)
         scale_y = math.sqrt(cd2_1**2 + cd2_2**2)
 
-        if abs(scale_x - scale_y) / (scale_x + scale_y) > TOL:
-            raise ValueError("WWT cannot express non-square pixels, which this WCS has")
+        if self.projection != ProjectionType.TOAST:
+            if not abs(cd_det) > 0:
+                raise ValueError("determinant of the CD matrix zero or ill-defined")
 
-        det_scale = math.sqrt(abs(cd_det))
+            if abs(scale_x - scale_y) / (scale_x + scale_y) > TOL:
+                raise ValueError(
+                    "WWT cannot express non-square pixels, which this WCS has"
+                )
 
-        if abs((cd1_1 - cd_sign * cd2_2) / det_scale) > TOL:
-            raise ValueError(
-                f"WWT cannot express this CD matrix (1; {cd1_1} {cd_sign} {cd2_2} {det_scale})"
-            )
+            det_scale = math.sqrt(abs(cd_det))
 
-        if abs((cd2_1 + cd_sign * cd1_2) / det_scale) > TOL:
-            raise ValueError(
-                f"WWT cannot express this CD matrix (2; {cd2_1} {cd_sign} {cd1_2} {det_scale})"
-            )
+            if abs((cd1_1 - cd_sign * cd2_2) / det_scale) > TOL:
+                raise ValueError(
+                    f"WWT cannot express this CD matrix (1; {cd1_1} {cd_sign} {cd2_2} {det_scale})"
+                )
+
+            if abs((cd2_1 + cd_sign * cd1_2) / det_scale) > TOL:
+                raise ValueError(
+                    f"WWT cannot express this CD matrix (2; {cd2_1} {cd_sign} {cd1_2} {det_scale})"
+                )
 
         # This is our best effort to make sure that the view centers on the
         # center of the image.
