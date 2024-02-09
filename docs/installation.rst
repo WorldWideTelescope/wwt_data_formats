@@ -20,7 +20,7 @@ required dependencies will get installed automatically. The `README in the Git
 repository`_ lists the current dependencies if you would like to see an
 explict list.
 
-.. _README in the Git repository: https://github.com/WorldWideTelescope/wwt_data_formats/#readme
+.. _README in the Git repository: https://github.com/WorldWideTelescope/wwt_data_formats/
 
 
 Installing the developer version
