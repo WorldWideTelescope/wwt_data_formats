@@ -13,6 +13,15 @@ from . import assert_xml_trees_equal
 from .. import imageset, enums, stringify_xml_doc, write_xml_doc
 
 
+def test_multi_bandpass_roundtrip():
+    imgset = imageset.ImageSet()
+    imgset.band_pass = enums.Bandpass.MULTI
+    xml = imgset.to_xml()
+    assert xml.get("BandPass") == "Multi"
+    again = imageset.ImageSet.from_xml(etree.fromstring(etree.tostring(xml)))
+    assert again.band_pass == enums.Bandpass.MULTI
+
+
 def test_basic_xml():
     expected_str = """
 <ImageSet

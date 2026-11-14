@@ -46,6 +46,9 @@ class Bandpass(SerEnum):
     MICROWAVE = "Microwave"
     RADIO = "Radio"
     VISIBLE_NIGHT = "VisibleNight"
+    # An image combining data from several bands (e.g. an X-ray + optical
+    # composite). Not yet known to the WWT engine, which treats it as unset.
+    MULTI = "Multi"
 
 
 class Classification(SerEnum):
