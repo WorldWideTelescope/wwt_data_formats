@@ -71,6 +71,7 @@ nitpick_ignore = [
     ("py:class", "traitlets.traitlets.MetaHasDescriptors"),
     ("py:class", "traitlets.traitlets.MetaHasTraits"),
     ("py:class", "traitlets.utils.bunch.Bunch"),
+    ("py:class", "traitlets.utils.sentinel.Sentinel"),
     ("py:obj", "handler"),
     ("py:obj", "remove"),
 ]
@@ -81,3 +82,6 @@ html_logo = "images/logo.png"
 
 linkcheck_retries = 5
 linkcheck_timeout = 10
+linkcheck_ignore = [
+    r"https://aas\.org/?",
+]
