@@ -71,6 +71,7 @@ nitpick_ignore = [
     ("py:class", "traitlets.traitlets.MetaHasDescriptors"),
     ("py:class", "traitlets.traitlets.MetaHasTraits"),
     ("py:class", "traitlets.utils.bunch.Bunch"),
+    ("py:class", "traitlets.utils.sentinel.Sentinel"),
     ("py:obj", "handler"),
     ("py:obj", "remove"),
 ]
