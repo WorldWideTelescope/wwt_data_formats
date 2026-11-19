@@ -5,35 +5,35 @@ parameters:
   type: object
   default:
 
-  - name: linux_37
+  - name: linux_310
     vmImage: ubuntu-22.04
     vars:
-      PYTHON_SERIES: "3.7"
+      PYTHON_SERIES: "3.10"
 
-  - name: linux_38
+  - name: linux_311
     vmImage: ubuntu-22.04
     vars:
-      PYTHON_SERIES: "3.8"
+      PYTHON_SERIES: "3.11"
 
-  - name: macos_37
+  - name: macos_310
     vmImage: macos-15
     vars:
-      PYTHON_SERIES: "3.7"
+      PYTHON_SERIES: "3.10"
 
-  - name: macos_38
+  - name: macos_311
     vmImage: macos-15
     vars:
-      PYTHON_SERIES: "3.8"
+      PYTHON_SERIES: "3.11"
 
-  - name: windows_37
+  - name: windows_310
     vmImage: windows-2025
     vars:
-      PYTHON_SERIES: "3.7"
+      PYTHON_SERIES: "3.10"
 
-  - name: windows_38
+  - name: windows_311
     vmImage: windows-2025
     vars:
-      PYTHON_SERIES: "3.8"
+      PYTHON_SERIES: "3.11"
 
 jobs:
 - ${{ each build in parameters.builds }}:
