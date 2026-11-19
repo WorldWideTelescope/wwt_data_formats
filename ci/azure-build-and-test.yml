@@ -48,16 +48,6 @@ jobs:
       parameters:
         setupBuild: true
 
-    - ${{ if startsWith(build.vmImage, 'macos') }}:
-      - bash: |
-          set -euo pipefail
-          curl -fsSL -o miniforge.sh \
-            https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-MacOSX-$(uname -m).sh
-          bash miniforge.sh -b -p "$HOME/miniforge"
-          echo "##vso[task.setvariable variable=CONDA]$HOME/miniforge"
-          echo "##vso[task.prependpath]$HOME/miniforge/bin"
-        displayName: Install Miniforge (macOS)
-
     - bash: |
         set -euo pipefail
         source activate-conda.sh
