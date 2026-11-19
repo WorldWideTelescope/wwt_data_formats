@@ -54,6 +54,15 @@ jobs:
       targetPath: '$(Build.ArtifactStagingDirectory)/git-release'
       artifactName: git-release
 
+  - bash: |
+      set -euo pipefail
+      curl -fsSL -o miniforge.sh \
+        https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-$(uname -m).sh
+      bash miniforge.sh -b -p "$HOME/miniforge"
+      echo "##vso[task.setvariable variable=CONDA]$HOME/miniforge"
+      echo "##vso[task.prependpath]$HOME/miniforge/bin"
+    displayName: Install Miniforge
+
   # TODO: it seems that at the moment, there is no better way to create an
   # sdist than to invoke setup.py directly. People seem to be working on
   # alternatives but nothing is official yet.
