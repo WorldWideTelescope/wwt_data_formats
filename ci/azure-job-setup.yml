@@ -22,6 +22,20 @@ steps:
 - checkout: self
   submodules: recursive
 
+- bash: |
+    set -euo pipefail
+    case "$(uname -s)" in
+      Darwin) os=MacOSX ;;
+      Linux)  os=Linux ;;
+    esac
+    curl -fsSL -o miniforge.sh \
+      "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-${os}-$(uname -m).sh"
+    bash miniforge.sh -b -p "$HOME/miniforge"
+    echo "##vso[task.setvariable variable=CONDA]$HOME/miniforge"
+    echo "##vso[task.prependpath]$HOME/miniforge/bin"
+  displayName: Install Miniforge
+  condition: and(succeeded(), ne(variables['Agent.OS'], 'Windows_NT'))
+
 - ${{ if parameters.setupCranko }}:
   - bash: |
       set -euo pipefail

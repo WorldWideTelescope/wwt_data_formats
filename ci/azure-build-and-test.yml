@@ -86,15 +86,6 @@ jobs:
 
   - bash: |
       set -euo pipefail
-      curl -fsSL -o miniforge.sh \
-        https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-$(uname -m).sh
-      bash miniforge.sh -b -p "$HOME/miniforge"
-      echo "##vso[task.setvariable variable=CONDA]$HOME/miniforge"
-      echo "##vso[task.prependpath]$HOME/miniforge/bin"
-    displayName: Install Miniforge
-
-  - bash: |
-      set -euo pipefail
       source activate-conda.sh
       set -x
       \conda create -y -n build setuptools pip python=3.10
@@ -121,15 +112,6 @@ jobs:
   - template: azure-job-setup.yml
     parameters:
       setupBuild: true
-
-  - bash: |
-      set -euo pipefail
-      curl -fsSL -o miniforge.sh \
-        https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-$(uname -m).sh
-      bash miniforge.sh -b -p "$HOME/miniforge"
-      echo "##vso[task.setvariable variable=CONDA]$HOME/miniforge"
-      echo "##vso[task.prependpath]$HOME/miniforge/bin"
-    displayName: Install Miniforge
 
   - bash: |
       set -euo pipefail
