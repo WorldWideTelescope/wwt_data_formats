@@ -82,3 +82,6 @@ html_logo = "images/logo.png"
 
 linkcheck_retries = 5
 linkcheck_timeout = 10
+linkcheck_ignore = [
+    r"https://aas\.org/?",
+]
