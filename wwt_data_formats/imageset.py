@@ -14,7 +14,7 @@ ImageSet
 
 from argparse import Namespace
 import math
-from traitlets import Bool, Float, Instance, Int, Unicode, UseEnum
+from traitlets import Bool, Float, Instance, Int, List, Unicode, Union, UseEnum
 
 from . import LockedXmlTraits, XmlSer
 from .abcs import UrlContainer
@@ -60,6 +60,14 @@ class ImageSet(LockedXmlTraits, UrlContainer):
     package provides some helpful utilities to allow data-processing to use relative URLs. TODO: more
     details.
 
+    """
+    mirror_urls = List(
+        trait = Union([
+            Instance(str, args=())
+        ]),
+    ).tag(xml=XmlSer.wrapped_inner_list('MirrorUrls'))
+    """
+    Mirror URLs to fall back to.
     """
     alt_url = Unicode("").tag(xml=XmlSer.attr("AltUrl"))
     """An alternative URL that provided the data.
@@ -358,6 +366,9 @@ class ImageSet(LockedXmlTraits, UrlContainer):
 
         if self.thumbnail_url:
             self.thumbnail_url = mutator(self.thumbnail_url)
+
+        if self.mirror_urls:
+            self.mirror_urls = [mutator(url) for url in self.mirror_urls]
 
     def set_position_from_wcs(self, headers, width, height, place=None, fov_factor=1.7):
         """

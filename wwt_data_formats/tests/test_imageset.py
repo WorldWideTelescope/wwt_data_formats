@@ -677,3 +677,144 @@ def test_windows_compat():
 
     for ctag in NEED_CHILDREN:
         assert ctag in tags
+
+
+def test_deserialize_mirror_urls_present():
+    xml = """
+    <ImageSet
+      BandPass="Visible"
+      BaseDegreesPerTile="360"
+      BaseTileLevel="1"
+      BottomsUp="False"
+      CenterX="0"
+      CenterY="0"
+      DataSetType="Earth"
+      ElevationModel="True"
+      FileType=".jpeg"
+      Generic="False"
+      MeanRadius="6371000"
+      Name="Test"
+      Projection="Mercator"
+      QuadTreeMap="0123"
+      ReferenceFrame="Earth"
+      Rotation="0"
+      Sparse="False"
+      StockSet="False"
+      TileLevels="20"
+      Url="http://example.com/{0}"
+      WidthFactor="1"
+    >
+      <MirrorUrls>
+        <Url>http://example1.com/{0}</Url>
+        <Url>http://example2.com/{0}</Url>
+      </MirrorUrls>
+      <Credits>WWT Testing</Credits>
+      <CreditsUrl>http://example.com/credits</CreditsUrl>
+      <ThumbnailUrl>https://example.com/thumbnail.jpg</ThumbnailUrl>
+    </ImageSet>
+    """
+
+    imgset = imageset.ImageSet.from_xml(xml)
+    assert imgset.mirror_urls == ["http://example1.com/{0}", "http://example2.com/{0}"]
+
+
+def test_deserialize_mirror_urls_not_present():
+    xml = """
+    <ImageSet
+      BandPass="Visible"
+      BaseDegreesPerTile="360"
+      BaseTileLevel="1"
+      BottomsUp="False"
+      CenterX="0"
+      CenterY="0"
+      DataSetType="Earth"
+      ElevationModel="True"
+      FileType=".jpeg"
+      Generic="False"
+      MeanRadius="6371000"
+      Name="Test"
+      Projection="Mercator"
+      QuadTreeMap="0123"
+      ReferenceFrame="Earth"
+      Rotation="0"
+      Sparse="False"
+      StockSet="False"
+      TileLevels="20"
+      Url="http://example.com/{0}"
+      WidthFactor="1"
+    >
+      <Credits>WWT Testing</Credits>
+      <CreditsUrl>http://example.com/credits</CreditsUrl>
+      <ThumbnailUrl>https://example.com/thumbnail.jpg</ThumbnailUrl>
+    </ImageSet>
+    """
+
+    imgset = imageset.ImageSet.from_xml(xml)
+    assert imgset.mirror_urls == []
+
+
+def test_serialize_mirror_urls_present():
+    expected_str = """
+    <ImageSet
+      BandPass="Visible"
+      BaseDegreesPerTile="360"
+      BaseTileLevel="1"
+      BottomsUp="False"
+      CenterX="0"
+      CenterY="0"
+      DataSetType="Earth"
+      ElevationModel="True"
+      FileType=".jpeg"
+      Generic="False"
+      MeanRadius="6371000"
+      Name="Test"
+      Projection="Mercator"
+      QuadTreeMap="0123"
+      ReferenceFrame="Earth"
+      Rotation="0"
+      Sparse="False"
+      StockSet="False"
+      TileLevels="20"
+      Url="http://example.com/{0}"
+      WidthFactor="1"
+    >
+      <MirrorUrls>
+        <Url>http://example1.com/{0}</Url>
+        <Url>http://example2.com/{0}</Url>
+      </MirrorUrls>
+      <Credits>WWT Testing</Credits>
+      <CreditsUrl>http://example.com/credits</CreditsUrl>
+      <ThumbnailUrl>https://example.com/thumbnail.jpg</ThumbnailUrl>
+    </ImageSet>
+    """
+    expected_xml = etree.fromstring(expected_str)
+
+    imgset = imageset.ImageSet()
+    imgset.data_set_type = enums.DataSetType.EARTH
+    imgset.name = "Test"
+    imgset.url = "http://example.com/{0}"
+    imgset.width_factor = 1
+    imgset.file_type = ".jpeg"
+    imgset.bottoms_up = False
+    imgset.band_pass = enums.Bandpass.VISIBLE
+    imgset.base_degrees_per_tile = 360
+    imgset.base_tile_level = 1
+    imgset.center_x = 0
+    imgset.center_y = 0
+    imgset.elevation_model = True
+    imgset.generic = False
+    imgset.mean_radius = 6_371_000
+    imgset.projection = enums.ProjectionType.MERCATOR
+    imgset.quad_tree_map = "0123"
+    imgset.reference_frame = "Earth"
+    imgset.rotation_deg = 0
+    imgset.sparse = False
+    imgset.stock_set = False
+    imgset.tile_levels = 20
+    imgset.credits = "WWT Testing"
+    imgset.credits_url = "http://example.com/credits"
+    imgset.thumbnail_url = "http://example.com/thumbnail.jpg"
+    imgset.mirror_urls = ["http://example1.com/{0}", "http://example2.com/{0}"]
+
+    observed_xml = imgset.to_xml()
+    assert_xml_trees_equal(expected_xml, observed_xml)
