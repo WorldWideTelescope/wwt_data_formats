@@ -14,7 +14,7 @@ ImageSet
 
 from argparse import Namespace
 import math
-from traitlets import Bool, Float, Instance, Int, Unicode, UseEnum
+from traitlets import Bool, Float, Instance, Int, List, Unicode, Union, UseEnum
 
 from . import LockedXmlTraits, XmlSer
 from .abcs import UrlContainer
@@ -59,6 +59,14 @@ class ImageSet(LockedXmlTraits, UrlContainer):
     them to HTTPS if needed). The ``wwtdatatool`` program that comes with this
     package provides some helpful utilities to allow data-processing to use relative URLs. TODO: more
     details.
+
+    """
+    mirror_urls = List(Unicode()).tag(xml=XmlSer.wrapped_text_list("MirrorUrls", "Url"))
+    """
+    Mirror URLs to fall back to if the primary URL is not working.
+
+    We leave the determination of when a URL 'not working' up to the rendering client.
+    For example, the WWT web engine has a scheme for deciding which URL to use.
 
     """
     alt_url = Unicode("").tag(xml=XmlSer.attr("AltUrl"))
@@ -358,6 +366,9 @@ class ImageSet(LockedXmlTraits, UrlContainer):
 
         if self.thumbnail_url:
             self.thumbnail_url = mutator(self.thumbnail_url)
+
+        if self.mirror_urls:
+            self.mirror_urls = [mutator(url) for url in self.mirror_urls]
 
     def set_position_from_wcs(self, headers, width, height, place=None, fov_factor=1.7):
         """
