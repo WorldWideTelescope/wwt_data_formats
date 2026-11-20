@@ -63,7 +63,11 @@ class ImageSet(LockedXmlTraits, UrlContainer):
     """
     mirror_urls = List(Unicode()).tag(xml=XmlSer.wrapped_text_list("MirrorUrls", "Url"))
     """
-    Mirror URLs to fall back to.
+    Mirror URLs to fall back to if the primary URL is not working.
+
+    We leave the determination of when a URL 'not working' up to the rendering client.
+    For example, the WWT web engine has a scheme for deciding which URL to use.
+
     """
     alt_url = Unicode("").tag(xml=XmlSer.attr("AltUrl"))
     """An alternative URL that provided the data.
