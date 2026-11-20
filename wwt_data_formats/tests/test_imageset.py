@@ -782,11 +782,11 @@ def test_serialize_mirror_urls_present():
     >
       <Credits>WWT Testing</Credits>
       <CreditsUrl>http://example.com/credits</CreditsUrl>
-      <ThumbnailUrl>https://example.com/thumbnail.jpg</ThumbnailUrl>
       <MirrorUrls>
         <Url>http://example1.com/{0}</Url>
         <Url>http://example2.com/{0}</Url>
       </MirrorUrls>
+      <ThumbnailUrl>https://example.com/thumbnail.jpg</ThumbnailUrl>
     </ImageSet>
     """
     expected_xml = etree.fromstring(expected_str)

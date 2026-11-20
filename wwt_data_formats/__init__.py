@@ -358,12 +358,9 @@ class LockedXmlTraits(LockedDownTraits):
                     )
 
                 wrapper = elem.find(xml_data[0])
-                item = elem.find(xml_data[1])
-                if wrapper is not None and item is not None:
-                    item_texts = [sub.text for sub in wrapper.find_all(item) if sub.text]
+                if wrapper is not None:
+                    item_texts = [sub.text for sub in wrapper.findall(xml_data[1]) if sub is not None and sub.text]
                     value = [_parse_trait(tspec._trait, text) for text in item_texts]
-                    break
-
             else:
                 raise RuntimeError(f"unhandled XML serialization mode {xml_spec}")
 
