@@ -680,7 +680,7 @@ def test_windows_compat():
 
 
 def test_deserialize_mirror_urls_present():
-    xml = """
+    string = """
     <ImageSet
       BandPass="Visible"
       BaseDegreesPerTile="360"
@@ -713,13 +713,14 @@ def test_deserialize_mirror_urls_present():
       <ThumbnailUrl>https://example.com/thumbnail.jpg</ThumbnailUrl>
     </ImageSet>
     """
+    xml = etree.fromstring(string)
 
     imgset = imageset.ImageSet.from_xml(xml)
     assert imgset.mirror_urls == ["http://example1.com/{0}", "http://example2.com/{0}"]
 
 
 def test_deserialize_mirror_urls_not_present():
-    xml = """
+    string= """
     <ImageSet
       BandPass="Visible"
       BaseDegreesPerTile="360"
@@ -748,6 +749,7 @@ def test_deserialize_mirror_urls_not_present():
       <ThumbnailUrl>https://example.com/thumbnail.jpg</ThumbnailUrl>
     </ImageSet>
     """
+    xml = etree.fromstring(string)
 
     imgset = imageset.ImageSet.from_xml(xml)
     assert imgset.mirror_urls == []
@@ -778,13 +780,13 @@ def test_serialize_mirror_urls_present():
       Url="http://example.com/{0}"
       WidthFactor="1"
     >
+      <Credits>WWT Testing</Credits>
+      <CreditsUrl>http://example.com/credits</CreditsUrl>
+      <ThumbnailUrl>https://example.com/thumbnail.jpg</ThumbnailUrl>
       <MirrorUrls>
         <Url>http://example1.com/{0}</Url>
         <Url>http://example2.com/{0}</Url>
       </MirrorUrls>
-      <Credits>WWT Testing</Credits>
-      <CreditsUrl>http://example.com/credits</CreditsUrl>
-      <ThumbnailUrl>https://example.com/thumbnail.jpg</ThumbnailUrl>
     </ImageSet>
     """
     expected_xml = etree.fromstring(expected_str)

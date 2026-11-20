@@ -118,6 +118,7 @@ class XmlSer(Enum):
     NS_TO_ATTR = "ns_to_attr"
     INNER_LIST = "inner_list"
     WRAPPED_INNER_LIST = "wrapped_inner_list"
+    WRAPPED_TEXT_LIST = "wrapped_text_list"
 
     @classmethod
     def attr(cls, attr):
@@ -149,6 +150,10 @@ class XmlSer(Enum):
     @classmethod
     def wrapped_inner_list(cls, tag):
         return (cls.WRAPPED_INNER_LIST, tag)
+
+    @classmethod
+    def wrapped_text_list(cls, wrapper_tag, item_tag):
+        return (cls.WRAPPED_TEXT_LIST, wrapper_tag, item_tag)
 
 
 def _stringify_trait(trait_spec, value):
@@ -345,6 +350,20 @@ class LockedXmlTraits(LockedDownTraits):
                             if v is not None:
                                 value.append(v)
                                 break
+            elif xml_spec == XmlSer.WRAPPED_TEXT_LIST:
+                # Partially repeat the INNER_LIST hackiness
+                if not isinstance(tspec, List):
+                    raise RuntimeError(
+                        "XML elements serialized as WRAPPED_INNER_LIST must be of List type"
+                    )
+
+                wrapper = elem.find(xml_data[0])
+                item = elem.find(xml_data[1])
+                if wrapper is not None and item is not None:
+                    item_texts = [sub.text for sub in wrapper.find_all(item) if sub.text]
+                    value = [_parse_trait(tspec._trait, text) for text in item_texts]
+                    break
+
             else:
                 raise RuntimeError(f"unhandled XML serialization mode {xml_spec}")
 
@@ -585,6 +604,23 @@ class LockedXmlTraits(LockedDownTraits):
                     else:
                         new_sub = child._serialize_xml(None)
                         wrapper.append(new_sub)
+            elif xml_spec == XmlSer.WRAPPED_TEXT_LIST:
+                wrapper_tag, item_tag = xml_data
+                wrapper = elem.find(wrapper_tag)
+
+                if not value and not even_if_empty:
+                    if wrapper is not None:
+                        elem.remove(wrapper)
+                    continue
+
+                if wrapper is None:
+                    wrapper = etree.SubElement(elem, wrapper_tag)
+                else:
+                    for sub in wrapper.findall(item_tag):
+                        wrapper.remove(sub)
+                for item in value:
+                    sub = etree.SubElement(wrapper, item_tag)
+                    sub.text = _stringify_trait(tspec._trait, item)
             else:
                 raise RuntimeError(f"unhandled XML serialization mode {xml_spec}")
 

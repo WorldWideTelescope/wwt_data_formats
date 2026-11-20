@@ -61,11 +61,7 @@ class ImageSet(LockedXmlTraits, UrlContainer):
     details.
 
     """
-    mirror_urls = List(
-        trait = Union([
-            Instance(str, args=())
-        ]),
-    ).tag(xml=XmlSer.wrapped_inner_list('MirrorUrls'))
+    mirror_urls = List(Unicode()).tag(xml=XmlSer.wrapped_text_list("MirrorUrls", "Url"))
     """
     Mirror URLs to fall back to.
     """
